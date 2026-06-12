@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /.next/
+Disallow: /private/
+
+Sitemap: https://levelupdeen.com/sitemap.xml

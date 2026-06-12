@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --bg: #0d100d;
+  --bg-soft: #171b16;
+  --bg-card: #1d231b;
+  --text: #edf3ea;
+  --text-dim: #a7b2a0;
+  --line: #33402f;
+  --brand: #d8b45f;
+  --brand-strong: #eccb7a;
+  --danger: #f27579;
+  --success: #58d39d;
+}
+
+* {
+  border-color: var(--line);
+}
+
+body {
+  margin: 0;
+  background:
+    linear-gradient(135deg, rgba(216, 180, 95, 0.11), transparent 34%),
+    linear-gradient(215deg, rgba(88, 211, 157, 0.08), transparent 42%),
+    repeating-linear-gradient(90deg, rgba(237, 243, 234, 0.025) 0 1px, transparent 1px 96px),
+    repeating-linear-gradient(0deg, rgba(237, 243, 234, 0.018) 0 1px, transparent 1px 96px),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+@layer components {
+  .container-shell {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6;
+  }
+
+  .surface-card {
+    @apply rounded-lg border border-line bg-bg-card shadow-sm;
+  }
+
+  .section-title {
+    @apply text-lg font-semibold tracking-wide text-text;
+  }
+
+  .muted {
+    @apply text-sm text-text-dim;
+  }
+}
+
+@layer utilities {
+  .bg-bg {
+    background-color: var(--bg);
+  }
+
+  .bg-bg-soft {
+    background-color: var(--bg-soft);
+  }
+
+  .bg-bg-card {
+    background-color: var(--bg-card);
+  }
+
+  .text-text {
+    color: var(--text);
+  }
+
+  .text-text-dim {
+    color: var(--text-dim);
+  }
+
+  .border-line {
+    border-color: var(--line);
+  }
+
+  .text-brand {
+    color: var(--brand);
+  }
+
+  .bg-brand {
+    background-color: var(--brand);
+  }
+
+  .bg-brand-strong {
+    background-color: var(--brand-strong);
+  }
+
+  .text-success {
+    color: var(--success);
+  }
+
+  .text-danger {
+    color: var(--danger);
+  }
+}
