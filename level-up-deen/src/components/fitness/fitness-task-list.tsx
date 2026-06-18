@@ -5,6 +5,8 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 import { Toast } from "@/components/ui/toast";
 import type { TaskLogStatus } from "@/lib/types";
 
+import { LevelUpModal } from "@/components/gamification/level-up-modal";
+
 export interface FitnessTask {
   id: string;
   name: string;
@@ -25,6 +27,7 @@ export function FitnessTaskList({ initialTasks }: { initialTasks: FitnessTask[] 
   const [tasks, setTasks] = useState<FitnessTask[]>(initialTasks);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [levelUpData, setLevelUpData] = useState<{ isOpen: boolean; newLevel: number }>({ isOpen: false, newLevel: 1 });
 
   const updateTaskStatus = async (taskId: string, status: TaskLogStatus) => {
     setSavingId(taskId);
@@ -42,7 +45,9 @@ export function FitnessTaskList({ initialTasks }: { initialTasks: FitnessTask[] 
         current.map((task) => (task.id === taskId ? { ...task, status } : task))
       );
 
-      if (payload.expAward || payload.coinAward) {
+      if (payload.leveledUp && payload.newLevel) {
+        setLevelUpData({ isOpen: true, newLevel: payload.newLevel });
+      } else if (payload.expAward || payload.coinAward) {
         const msgParts = [];
         if (payload.expAward) msgParts.push(`+${payload.expAward} EXP`);
         if (payload.coinAward) msgParts.push(`+${payload.coinAward} coin`);
@@ -117,6 +122,12 @@ export function FitnessTaskList({ initialTasks }: { initialTasks: FitnessTask[] 
         );
       })}
       {toastMessage ? <Toast message={toastMessage} /> : null}
+
+      <LevelUpModal 
+        isOpen={levelUpData.isOpen} 
+        newLevel={levelUpData.newLevel} 
+        onClose={() => setLevelUpData((prev) => ({ ...prev, isOpen: false }))} 
+      />
     </div>
   );
 }

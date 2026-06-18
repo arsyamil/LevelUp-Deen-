@@ -63,6 +63,8 @@ export async function PATCH(request: NextRequest) {
     Number(existingLog?.exp_awarded ?? 0) > 0 ||
     Number(existingLog?.coin_awarded ?? 0) > 0;
 
+  let initialLevel = 1;
+
   if (status === "completed" && !alreadyRewarded) {
     // fetch task reward values
     const { data: taskRow, error: taskRowError } = await admin
@@ -92,6 +94,7 @@ export async function PATCH(request: NextRequest) {
 
     const newTotalExp = (statsData?.total_exp ?? 0) + expAward;
     const preview = calculateLevelFromTotalExp(newTotalExp);
+    initialLevel = statsData?.level ?? 1;
 
     if (statsData) {
       const { error: updateStatsError } = await admin
@@ -291,5 +294,21 @@ export async function PATCH(request: NextRequest) {
     },
   });
 
-  return NextResponse.json({ success: true, status, expAward, coinAward });
+  let leveledUp = false;
+  let newLevel = 1;
+
+  if (status === "completed" && !alreadyRewarded) {
+    const { data: finalStats } = await admin
+      .from("user_stats")
+      .select("level")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (finalStats) {
+      newLevel = finalStats.level;
+      leveledUp = newLevel > initialLevel;
+    }
+  }
+
+  return NextResponse.json({ success: true, status, expAward, coinAward, newLevel, leveledUp });
 }

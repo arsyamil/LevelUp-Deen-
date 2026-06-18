@@ -4,6 +4,8 @@ import { useState } from "react";
 import type { DailyTask, TaskLogStatus } from "@/lib/types";
 import { Toast } from "@/components/ui/toast";
 
+import { LevelUpModal } from "@/components/gamification/level-up-modal";
+
 const statusStyles: Record<TaskLogStatus, string> = {
   completed: "border-success/20 bg-success/10 text-success",
   pending: "border-line bg-bg-soft text-text-dim",
@@ -14,6 +16,7 @@ export function DeenTaskList({ initialTasks }: { initialTasks: DailyTask[] }) {
   const [tasks, setTasks] = useState<DailyTask[]>(initialTasks);
   const [saving, setSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [levelUpData, setLevelUpData] = useState<{ isOpen: boolean; newLevel: number }>({ isOpen: false, newLevel: 1 });
 
   const updateTaskStatus = async (taskId: string, status: TaskLogStatus) => {
     setSaving(true);
@@ -31,7 +34,9 @@ export function DeenTaskList({ initialTasks }: { initialTasks: DailyTask[] }) {
         current.map((task) => (task.id === taskId ? { ...task, status } : task))
       );
 
-      if (payload.expAward || payload.coinAward) {
+      if (payload.leveledUp && payload.newLevel) {
+        setLevelUpData({ isOpen: true, newLevel: payload.newLevel });
+      } else if (payload.expAward || payload.coinAward) {
         const msgParts = [];
         if (payload.expAward) msgParts.push(`+${payload.expAward} EXP`);
         if (payload.coinAward) msgParts.push(`+${payload.coinAward} coin`);
@@ -112,8 +117,13 @@ export function DeenTaskList({ initialTasks }: { initialTasks: DailyTask[] }) {
           </div>
         </div>
       )}
-      
       {toastMessage ? <Toast message={toastMessage} /> : null}
+
+      <LevelUpModal 
+        isOpen={levelUpData.isOpen} 
+        newLevel={levelUpData.newLevel} 
+        onClose={() => setLevelUpData((prev) => ({ ...prev, isOpen: false }))} 
+      />
     </>
   );
 }
