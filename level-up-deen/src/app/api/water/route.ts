@@ -23,9 +23,18 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const totalMl = (data ?? []).reduce((sum, row) => sum + (row.amount_ml ?? 0), 0);
+  const { data: waterTasks } = await admin
+    .from("user_tasks")
+    .select("target_value")
+    .eq("user_id", userId)
+    .eq("category", "water")
+    .limit(1)
+    .maybeSingle();
 
-  return NextResponse.json({ logs: data ?? [], totalMl, date: today });
+  const totalMl = (data ?? []).reduce((sum, row) => sum + (row.amount_ml ?? 0), 0);
+  const targetMl = waterTasks?.target_value ? Number(waterTasks.target_value) : 2000;
+
+  return NextResponse.json({ logs: data ?? [], totalMl, targetMl, date: today });
 }
 
 export async function POST(request: NextRequest) {

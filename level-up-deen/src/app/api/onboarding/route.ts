@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { clerkClient } from "@clerk/nextjs/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { createSupabaseServerClient, createSupabaseAdminClient } from "@/lib/supabase/server";
 import { getCurrentUserId } from "@/lib/auth";
 import { onboardingSchema } from "@/features/onboarding/schema";
 import {
@@ -69,12 +68,19 @@ export async function POST(request: NextRequest) {
 
   const answers: OnboardingAnswers = result.data;
   const admin = createSupabaseAdminClient();
-  const client = await clerkClient();
-  const user = await client.users.getUser(userId);
-  const email =
-    user.primaryEmailAddress?.emailAddress ?? user.emailAddresses?.[0]?.emailAddress ?? "";
-  const username = profileUsername(userId, email, user.username);
-  const fullName = user.fullName ?? user.firstName ?? username;
+
+  // Get email from Supabase Auth
+  let email = "";
+  try {
+    const supabase = createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    email = user?.email ?? "";
+  } catch {
+    // fallback
+  }
+
+  const username = profileUsername(userId, email);
+  const fullName = email.split("@")[0] || username;
 
   const { error: profileError } = await admin
     .from("users_profile")
@@ -86,6 +92,7 @@ export async function POST(request: NextRequest) {
         timezone: "Asia/Jakarta",
         user_type: answers.userType,
         onboarding_completed: true,
+        email,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "id" }
@@ -126,16 +133,6 @@ export async function POST(request: NextRequest) {
   if (updateError) {
     return NextResponse.json({ error: updateError.message }, { status: 500 });
   }
-
-  const metadata = {
-    ...(user.publicMetadata as Record<string, unknown> | undefined),
-    onboardingAnswers: answers,
-    userType: answers.userType,
-  };
-
-  await client.users.updateUser(userId, {
-    publicMetadata: metadata,
-  });
 
   const plan = generatePersonalizationPlan(answers);
 

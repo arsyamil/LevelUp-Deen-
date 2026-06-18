@@ -8,7 +8,6 @@ const publicEnvSchema = z.object({
 });
 
 const serverEnvSchema = z.object({
-  CLERK_SECRET_KEY: z.string().min(1).optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   AUTH_BYPASS_ENABLED: z.string().optional(),
   AUTH_BYPASS_USER_ID: z.string().optional(),
@@ -31,7 +30,6 @@ if (!parsedPublicEnv.success) {
 }
 
 const parsedServerEnv = serverEnvSchema.safeParse({
-  CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
   AUTH_BYPASS_ENABLED: process.env.AUTH_BYPASS_ENABLED,
   AUTH_BYPASS_USER_ID: process.env.AUTH_BYPASS_USER_ID,

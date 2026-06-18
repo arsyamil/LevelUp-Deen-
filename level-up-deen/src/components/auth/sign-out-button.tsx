@@ -1,12 +1,11 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { routes } from "@/lib/routes";
 
 export function SignOutButton({ bypassEnabled = false }: { bypassEnabled?: boolean }) {
   const router = useRouter();
-  const { isLoaded, signOut } = useAuth();
 
   const handleSignOut = async () => {
     if (bypassEnabled) {
@@ -14,12 +13,10 @@ export function SignOutButton({ bypassEnabled = false }: { bypassEnabled?: boole
       return;
     }
 
-    if (!isLoaded) {
-      return;
-    }
-
-    await signOut();
+    const supabase = createSupabaseBrowserClient();
+    await supabase.auth.signOut();
     router.push(routes.login);
+    router.refresh();
   };
 
   return (

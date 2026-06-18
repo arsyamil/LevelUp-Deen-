@@ -2,8 +2,6 @@ export const routes = {
   home: "/",
   login: "/login",
   register: "/register",
-  signIn: "/sign-in",
-  signUp: "/sign-up",
   dashboard: "/dashboard",
   onboarding: "/onboarding",
   quests: "/quests",
@@ -28,7 +26,5 @@ export const publicRoutePatterns = [
   routes.home,
   `${routes.login}(.*)`,
   `${routes.register}(.*)`,
-  `${routes.signIn}(.*)`,
-  `${routes.signUp}(.*)`,
   routes.health,
 ];

@@ -23,13 +23,13 @@ function formatTime(isoString: string) {
 
 export default function WaterPage() {
   const [totalMl, setTotalMl] = useState(0);
+  const [targetMl, setTargetMl] = useState(DEFAULT_TARGET_ML);
   const [logs, setLogs] = useState<WaterLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [customMl, setCustomMl] = useState("");
 
-  const targetMl = DEFAULT_TARGET_ML;
   const progress = Math.min(Math.round((totalMl / targetMl) * 100), 100);
 
   const fetchData = useCallback(async () => {
@@ -38,6 +38,7 @@ export default function WaterPage() {
       if (!res.ok) throw new Error("Gagal memuat data.");
       const json = await res.json();
       setTotalMl(json.totalMl ?? 0);
+      setTargetMl(json.targetMl ?? DEFAULT_TARGET_ML);
       setLogs(json.logs ?? []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan.");

@@ -1,26 +1,10 @@
 import { Card } from "@/components/ui/card";
-import { ProgressBar } from "@/components/ui/progress-bar";
 import { getCurrentUserId } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { formatDateInTimeZone } from "@/lib/date";
 import { redirect } from "next/navigation";
 import { routes } from "@/lib/routes";
-
-interface FitnessTask {
-  id: string;
-  name: string;
-  targetValue: number | null;
-  targetUnit: string | null;
-  expReward: number;
-  status: "completed" | "pending" | "skipped";
-  actualValue: number | null;
-}
-
-const statusStyles = {
-  completed: "border-success/20 bg-success/10 text-success",
-  pending: "border-line bg-bg-soft text-text-dim",
-  skipped: "border-danger/20 bg-danger/10 text-danger",
-};
+import { FitnessTaskList, type FitnessTask } from "@/components/fitness/fitness-task-list";
 
 export default async function FitnessPage() {
   const userId = await getCurrentUserId();
@@ -130,63 +114,7 @@ export default async function FitnessPage() {
           {/* Task progress list */}
           <Card className="p-5">
             <h2 className="section-title">Progress Hari Ini</h2>
-            <div className="mt-4 space-y-4">
-              {fitnessTasks.map((task) => {
-                const hasTarget = task.targetValue !== null && task.targetValue > 0;
-                const actual = task.actualValue ?? 0;
-                const progressValue = hasTarget
-                  ? Math.min(Math.round((actual / task.targetValue!) * 100), 100)
-                  : task.status === "completed"
-                  ? 100
-                  : 0;
-
-                return (
-                  <div key={task.id} className="rounded-lg border border-line bg-bg-soft p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1">
-                        <p className="font-medium">{task.name}</p>
-                        <p className="mt-1 text-xs text-text-dim">
-                          +{task.expReward} EXP
-                          {hasTarget && (
-                            <>
-                              {" "}
-                              • Target:{" "}
-                              {task.targetValue?.toLocaleString("id-ID")}{" "}
-                              {task.targetUnit ?? ""}
-                              {task.actualValue !== null && (
-                                <> • Dicapai: {task.actualValue.toLocaleString("id-ID")} {task.targetUnit ?? ""}</>
-                              )}
-                            </>
-                          )}
-                        </p>
-                        {hasTarget && (
-                          <div className="mt-3">
-                            <div className="mb-1 flex justify-between text-xs text-text-dim">
-                              <span>{actual.toLocaleString("id-ID")} {task.targetUnit ?? ""}</span>
-                              <span>{task.targetValue?.toLocaleString("id-ID")} {task.targetUnit ?? ""}</span>
-                            </div>
-                            <ProgressBar value={progressValue} />
-                          </div>
-                        )}
-                      </div>
-                      <span
-                        className={`shrink-0 rounded-md border px-2 py-1 text-xs uppercase ${statusStyles[task.status]}`}
-                      >
-                        {task.status}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <p className="mt-4 rounded-lg border border-line bg-bg p-3 text-xs text-text-dim">
-              Tandai tugas selesai di halaman{" "}
-              <a href={routes.quests} className="text-brand hover:underline">
-                Daily Quest
-              </a>{" "}
-              untuk memperbarui status di sini.
-            </p>
+            <FitnessTaskList initialTasks={fitnessTasks} />
           </Card>
         </>
       )}

@@ -1,7 +1,7 @@
-import { getClerkUserById, getCurrentUserId, normalizeRole } from "@/lib/auth";
+import { getCurrentUserId, normalizeRole } from "@/lib/auth";
+import { createSupabaseServerClient, createSupabaseAdminClient } from "@/lib/supabase/server";
 import { isAuthBypassEnabled, serverEnv } from "@/lib/env";
 import { RoleKey } from "@/lib/rbac";
-import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { formatDateInTimeZone } from "@/lib/date";
 import type { DailyTask, UserProfile, UserStats } from "@/lib/types";
 
@@ -46,6 +46,18 @@ function getBypassProfile(userId: string): AuthenticatedUserProfile {
   };
 }
 
+async function getSupabaseAuthEmail(): Promise<string> {
+  try {
+    const supabase = createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user?.email ?? "";
+  } catch {
+    return "";
+  }
+}
+
 export async function getCurrentUserProfile(): Promise<AuthenticatedUserProfile | null> {
   const userId = await getCurrentUserId();
   if (!userId) {
@@ -53,28 +65,20 @@ export async function getCurrentUserProfile(): Promise<AuthenticatedUserProfile 
   }
 
   const bypassEnabled = isAuthBypassEnabled();
-  const clerkUser = bypassEnabled ? null : await getClerkUserById(userId);
-  if (!bypassEnabled && !clerkUser) {
+
+  // Get email from Supabase Auth
+  const email = bypassEnabled ? "demo@levelupdeen.local" : await getSupabaseAuthEmail();
+  if (!bypassEnabled && !email) {
     return null;
   }
 
-  const email = bypassEnabled
-    ? "demo@levelupdeen.local"
-    : clerkUser?.emailAddresses?.[0]?.emailAddress ?? "";
-  const role = bypassEnabled
-    ? normalizeRole(serverEnv.AUTH_BYPASS_ROLE ?? "admin_system")
-    : normalizeRole(clerkUser?.publicMetadata?.role);
-  const username = bypassEnabled
-    ? "demo_user"
-    : profileUsername(userId, email, clerkUser?.username);
-  const fullName = bypassEnabled
-    ? "Demo User"
-    : clerkUser?.fullName ?? clerkUser?.firstName ?? username;
+  const username = bypassEnabled ? "demo_user" : profileUsername(userId, email);
+  const fullName = bypassEnabled ? "Demo User" : username;
 
   const admin = createSupabaseAdminClient();
   const { data, error } = await admin
     .from("users_profile")
-    .select("id, username, full_name, timezone, user_type, onboarding_completed")
+    .select("id, username, full_name, timezone, user_type, onboarding_completed, role, email")
     .eq("id", userId)
     .maybeSingle();
 
@@ -96,8 +100,10 @@ export async function getCurrentUserProfile(): Promise<AuthenticatedUserProfile 
         timezone: "Asia/Jakarta",
         user_type: defaultUserType,
         onboarding_completed: bypassEnabled,
+        role: "user",
+        email,
       }, { onConflict: "id" })
-      .select("id, username, full_name, timezone, user_type, onboarding_completed")
+      .select("id, username, full_name, timezone, user_type, onboarding_completed, role, email")
       .maybeSingle();
 
     if (insertResult.error || !insertResult.data) {
@@ -110,6 +116,10 @@ export async function getCurrentUserProfile(): Promise<AuthenticatedUserProfile 
     profile = insertResult.data;
   }
 
+  const role = bypassEnabled
+    ? normalizeRole(serverEnv.AUTH_BYPASS_ROLE ?? "admin_system")
+    : normalizeRole(profile.role);
+
   return {
     id: profile.id,
     username: profile.username,
@@ -117,7 +127,7 @@ export async function getCurrentUserProfile(): Promise<AuthenticatedUserProfile 
     timezone: profile.timezone,
     userType: profile.user_type as UserProfile["userType"],
     onboardingCompleted: profile.onboarding_completed,
-    email,
+    email: profile.email ?? email,
     role,
   };
 }

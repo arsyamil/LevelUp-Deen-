@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 import { RegisterServiceWorker } from "@/components/pwa/register-sw";
-import { routes } from "@/lib/routes";
 import { ReactNode } from "react";
 
 const geistSans = localFont({
@@ -38,16 +36,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-bg text-text antialiased`}
       >
-        <ClerkProvider
-          signInUrl={routes.login}
-          signUpUrl={routes.register}
-          signInFallbackRedirectUrl={routes.dashboard}
-          signUpFallbackRedirectUrl={routes.onboarding}
-          afterSignOutUrl={routes.login}
-        >
-          <RegisterServiceWorker />
-          {children}
-        </ClerkProvider>
+        <RegisterServiceWorker />
+        {children}
       </body>
     </html>
   );

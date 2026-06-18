@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { clerkClient } from "@clerk/nextjs/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { isAuthFailure, normalizeRole, requireAdminContext } from "@/lib/auth";
 import { roleDefinitions } from "@/lib/rbac";
@@ -29,28 +28,12 @@ export async function GET() {
 
   const { data: profiles, error: profileError } = await admin
     .from("users_profile")
-    .select("id, username, full_name, user_type, onboarding_completed, created_at")
+    .select("id, username, full_name, user_type, onboarding_completed, created_at, role, email")
     .order("created_at", { ascending: false });
 
   if (profileError) {
     return NextResponse.json({ error: profileError.message }, { status: 500 });
   }
-
-  const ids = profiles?.map((profile) => profile.id) ?? [];
-  const client = await clerkClient();
-  const usersResult = ids.length
-    ? await client.users.getUserList({ userId: ids })
-    : [];
-  const users = Array.isArray(usersResult) ? usersResult : usersResult.data ?? [];
-
-  const roleById = new Map<string, string>();
-  const emailById = new Map<string, string>();
-
-  users.forEach((user) => {
-    roleById.set(user.id, normalizeRole(user.publicMetadata?.role));
-    const primaryEmail = user.primaryEmailAddress?.emailAddress ?? user.emailAddresses?.[0]?.emailAddress ?? "";
-    emailById.set(user.id, primaryEmail);
-  });
 
   const result = profiles?.map((profile) => ({
     id: profile.id,
@@ -58,8 +41,8 @@ export async function GET() {
     fullName: profile.full_name,
     userType: profile.user_type,
     onboardingCompleted: profile.onboarding_completed,
-    email: emailById.get(profile.id) ?? "",
-    role: roleById.get(profile.id) ?? "user",
+    email: profile.email ?? "",
+    role: normalizeRole(profile.role),
     createdAt: profile.created_at,
   })) ?? [];
 
@@ -94,23 +77,32 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Invalid role" }, { status: 400 });
   }
 
-  const client = await clerkClient();
-  const targetUser = await client.users.getUser(userId);
-  if (!targetUser) {
+  const admin = createSupabaseAdminClient();
+
+  // Get current role from users_profile
+  const { data: targetProfile, error: profileError } = await admin
+    .from("users_profile")
+    .select("id, role")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (profileError || !targetProfile) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const existingRole = normalizeRole(targetUser.publicMetadata?.role);
-  const updatedMetadata = {
-    ...(targetUser.publicMetadata as Record<string, unknown>),
-    role,
-  };
+  const existingRole = normalizeRole(targetProfile.role);
 
-  await client.users.updateUser(userId, {
-    publicMetadata: updatedMetadata,
-  });
+  // Update role in users_profile
+  const { error: updateError } = await admin
+    .from("users_profile")
+    .update({ role })
+    .eq("id", userId);
 
-  const admin = createSupabaseAdminClient();
+  if (updateError) {
+    return NextResponse.json({ error: updateError.message }, { status: 500 });
+  }
+
+  // Log the change
   const { error: logError } = await admin.from("admin_role_change_logs").insert({
     changed_by: adminId,
     changed_by_email: adminEmail,

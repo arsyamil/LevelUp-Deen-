@@ -1,9 +1,8 @@
-import { auth, clerkClient, verifyToken } from "@clerk/nextjs/server";
-import { cookies } from "next/headers";
+import { createSupabaseServerClient, createSupabaseAdminClient } from "@/lib/supabase/server";
 import { getAuthBypassUserId, isAuthBypassEnabled, serverEnv } from "@/lib/env";
 import { RoleKey, roleDefinitions } from "@/lib/rbac";
 
-export interface ClerkAuthContext {
+export interface AuthContext {
   userId: string;
   email: string;
   role: RoleKey;
@@ -14,55 +13,20 @@ export interface AuthFailure {
   status: 401 | 403;
 }
 
-const clerkSessionCookieName = "__session";
-
-function getClerkSessionTokenCandidates() {
-  return Array.from(
-    new Set(
-      cookies()
-        .getAll()
-        .filter(
-          (cookie) =>
-            Boolean(cookie.value) &&
-            (cookie.name === clerkSessionCookieName ||
-              cookie.name.startsWith(`${clerkSessionCookieName}_`))
-        )
-        .map((cookie) => cookie.value)
-    )
-  );
-}
-
-export async function getCurrentUserId() {
+export async function getCurrentUserId(): Promise<string | null> {
   if (isAuthBypassEnabled()) {
     return getAuthBypassUserId();
   }
 
-  if (!serverEnv.CLERK_SECRET_KEY) {
+  try {
+    const supabase = createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user?.id ?? null;
+  } catch {
     return null;
   }
-
-  try {
-    const { userId } = await auth();
-    if (userId) {
-      return userId;
-    }
-  } catch {
-    // Fall back to direct cookie verification if Clerk request state is unavailable.
-  }
-
-  const sessionTokens = getClerkSessionTokenCandidates();
-  for (const sessionToken of sessionTokens) {
-    try {
-      const verifiedToken = await verifyToken(sessionToken, {
-        secretKey: serverEnv.CLERK_SECRET_KEY,
-      });
-      return verifiedToken.sub ?? null;
-    } catch {
-      // Try the next Clerk session cookie candidate.
-    }
-  }
-
-  return null;
 }
 
 export function normalizeRole(role: unknown): RoleKey {
@@ -74,16 +38,33 @@ export function isAdminRole(role: RoleKey) {
   return role === "admin_system";
 }
 
-export async function getClerkUserById(userId: string) {
+async function getUserRoleFromProfile(userId: string): Promise<RoleKey> {
   try {
-    const client = await clerkClient();
-    return await client.users.getUser(userId);
+    const admin = createSupabaseAdminClient();
+    const { data } = await admin
+      .from("users_profile")
+      .select("role")
+      .eq("id", userId)
+      .maybeSingle();
+    return normalizeRole(data?.role);
   } catch {
-    return null;
+    return "user";
   }
 }
 
-export async function getCurrentClerkAuthContext(): Promise<ClerkAuthContext | null> {
+async function getUserEmailFromAuth(): Promise<string> {
+  try {
+    const supabase = createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user?.email ?? "";
+  } catch {
+    return "";
+  }
+}
+
+export async function getCurrentAuthContext(): Promise<AuthContext | null> {
   const userId = await getCurrentUserId();
   if (!userId) {
     return null;
@@ -97,22 +78,15 @@ export async function getCurrentClerkAuthContext(): Promise<ClerkAuthContext | n
     };
   }
 
-  const user = await getClerkUserById(userId);
-  if (!user) {
-    return null;
-  }
+  const [email, role] = await Promise.all([
+    getUserEmailFromAuth(),
+    getUserRoleFromProfile(userId),
+  ]);
 
-  const email =
-    user.primaryEmailAddress?.emailAddress ?? user.emailAddresses?.[0]?.emailAddress ?? "";
-
-  return {
-    userId,
-    email,
-    role: normalizeRole(user.publicMetadata?.role),
-  };
+  return { userId, email, role };
 }
 
-export async function requireAdminContext(): Promise<ClerkAuthContext | AuthFailure> {
+export async function requireAdminContext(): Promise<AuthContext | AuthFailure> {
   const userId = await getCurrentUserId();
   if (!userId) {
     return { error: "Unauthorized", status: 401 };
@@ -131,27 +105,18 @@ export async function requireAdminContext(): Promise<ClerkAuthContext | AuthFail
     };
   }
 
-  const user = await getClerkUserById(userId);
-  if (!user) {
-    return { error: "Unauthorized", status: 401 };
-  }
-
-  const role = normalizeRole(user.publicMetadata?.role);
+  const [email, role] = await Promise.all([
+    getUserEmailFromAuth(),
+    getUserRoleFromProfile(userId),
+  ]);
 
   if (!isAdminRole(role)) {
     return { error: "Forbidden", status: 403 };
   }
 
-  const email =
-    user.primaryEmailAddress?.emailAddress ?? user.emailAddresses?.[0]?.emailAddress ?? "";
-
-  return {
-    userId,
-    email,
-    role,
-  };
+  return { userId, email, role };
 }
 
-export function isAuthFailure(value: ClerkAuthContext | AuthFailure): value is AuthFailure {
+export function isAuthFailure(value: AuthContext | AuthFailure): value is AuthFailure {
   return "error" in value;
 }
