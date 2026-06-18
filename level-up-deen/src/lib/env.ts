@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+function optionalEnv(value: string | undefined) {
+  return value && value.trim() !== "" ? value : undefined;
+}
+
 const publicEnvSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url().optional(),
   NEXT_PUBLIC_APP_ENV: z.string().optional(),
@@ -16,10 +20,10 @@ const serverEnvSchema = z.object({
 });
 
 const parsedPublicEnv = publicEnvSchema.safeParse({
-  NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-  NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV,
-  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  NEXT_PUBLIC_APP_URL: optionalEnv(process.env.NEXT_PUBLIC_APP_URL),
+  NEXT_PUBLIC_APP_ENV: optionalEnv(process.env.NEXT_PUBLIC_APP_ENV),
+  NEXT_PUBLIC_SUPABASE_URL: optionalEnv(process.env.NEXT_PUBLIC_SUPABASE_URL),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: optionalEnv(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
 });
 
 if (!parsedPublicEnv.success) {
@@ -30,11 +34,11 @@ if (!parsedPublicEnv.success) {
 }
 
 const parsedServerEnv = serverEnvSchema.safeParse({
-  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-  AUTH_BYPASS_ENABLED: process.env.AUTH_BYPASS_ENABLED,
-  AUTH_BYPASS_USER_ID: process.env.AUTH_BYPASS_USER_ID,
-  AUTH_BYPASS_ROLE: process.env.AUTH_BYPASS_ROLE,
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+  SUPABASE_SERVICE_ROLE_KEY: optionalEnv(process.env.SUPABASE_SERVICE_ROLE_KEY),
+  AUTH_BYPASS_ENABLED: optionalEnv(process.env.AUTH_BYPASS_ENABLED),
+  AUTH_BYPASS_USER_ID: optionalEnv(process.env.AUTH_BYPASS_USER_ID),
+  AUTH_BYPASS_ROLE: optionalEnv(process.env.AUTH_BYPASS_ROLE),
+  GEMINI_API_KEY: optionalEnv(process.env.GEMINI_API_KEY),
 });
 
 if (!parsedServerEnv.success) {
@@ -48,7 +52,7 @@ export const publicEnv = parsedPublicEnv.data;
 export const serverEnv = parsedServerEnv.data;
 
 export function isAuthBypassEnabled() {
-  return serverEnv.AUTH_BYPASS_ENABLED === "true" && publicEnv.NEXT_PUBLIC_APP_ENV !== "production";
+  return serverEnv.AUTH_BYPASS_ENABLED === "true" && publicEnv.NEXT_PUBLIC_APP_ENV === "development";
 }
 
 export function getAuthBypassUserId() {

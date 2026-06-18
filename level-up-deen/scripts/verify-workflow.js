@@ -27,14 +27,18 @@ function main() {
   assert(!fs.existsSync(path.join(root, "src/pages/api/debug/test-achievement.ts")),
     "legacy pages/api debug route must not exist");
 
-  assertIncludes(".env.example", "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=");
-  assertIncludes(".env.example", "CLERK_SECRET_KEY=");
+  assertIncludes(".env.example", "NEXT_PUBLIC_SUPABASE_URL=");
+  assertIncludes(".env.example", "NEXT_PUBLIC_SUPABASE_ANON_KEY=");
+  assertIncludes(".env.example", "SUPABASE_SERVICE_ROLE_KEY=");
   assertIncludes(".env.example", "AUTH_BYPASS_ENABLED=false");
-  assertIncludes(".env.local.example", "NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboarding");
+  assertIncludes(".env.local.example", "NEXT_PUBLIC_SUPABASE_URL=");
+  assertIncludes(".env.local.example", "NEXT_PUBLIC_SUPABASE_ANON_KEY=");
+  assertIncludes(".env.local.example", "SUPABASE_SERVICE_ROLE_KEY=");
   assertIncludes(".env.local.example", "AUTH_BYPASS_ENABLED=false");
   assert(fs.existsSync(path.join(root, "src/middleware.ts")),
-    "src/middleware.ts must exist for Clerk session sync");
-  assertIncludes("src/middleware.ts", "clerkMiddleware");
+    "src/middleware.ts must exist for Supabase session refresh");
+  assertIncludes("src/middleware.ts", "createServerClient");
+  assertIncludes("src/middleware.ts", "supabase.auth.getUser()");
   assertNotIncludes("src/middleware.ts", "auth.protect");
   assertNotIncludes("src/middleware.ts", "createRouteMatcher");
   assert(!fs.existsSync(path.join(root, "src/app/api/ai/coach/route 2.ts")),
@@ -42,11 +46,10 @@ function main() {
 
   assertIncludes("src/lib/routes.ts", "register: \"/register\"");
   assertIncludes("src/lib/routes.ts", "onboarding: \"/onboarding\"");
-  assertIncludes("src/lib/auth.ts", "await auth()");
-  assertIncludes("src/lib/auth.ts", "verifyToken");
-  assertIncludes("src/lib/auth.ts", "clerkSessionCookieName");
-  assertIncludes("src/lib/auth.ts", "CLERK_SECRET_KEY");
-  assertIncludes("src/lib/env.ts", "NEXT_PUBLIC_APP_ENV !== \"production\"");
+  assertIncludes("src/lib/auth.ts", "createSupabaseServerClient");
+  assertIncludes("src/lib/auth.ts", "supabase.auth.getUser()");
+  assertIncludes("src/lib/auth.ts", "getUserRoleFromProfile");
+  assertIncludes("src/lib/env.ts", "NEXT_PUBLIC_APP_ENV === \"development\"");
   assertIncludes("src/lib/auth.ts", "isAuthBypassEnabled");
   assertIncludes("src/app/(app)/layout.tsx", "export const dynamic = \"force-dynamic\"");
   assertIncludes("src/app/(app)/layout.tsx", "profile.onboardingCompleted");
