@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 function optionalEnv(value: string | undefined) {
-  return value && value.trim() !== "" ? value : undefined;
+  const normalized = value?.trim();
+  return normalized && normalized !== "\"\"" && normalized !== "''" ? normalized : undefined;
 }
 
 const publicEnvSchema = z.object({
