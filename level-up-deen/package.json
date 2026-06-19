@@ -9,6 +9,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "verify:workflow": "node scripts/verify-workflow.js",
+    "smoke:local": "node scripts/smoke-deploy.js --base=http://localhost:3000 --api-base=http://localhost:8000",
+    "smoke:prod": "node scripts/smoke-deploy.js --base=https://level-up-deen.vercel.app",
     "check": "npm run verify:workflow && npm run lint && npm run typecheck && npm run build"
   },
   "dependencies": {
