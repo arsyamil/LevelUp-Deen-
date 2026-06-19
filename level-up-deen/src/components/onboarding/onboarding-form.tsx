@@ -231,7 +231,7 @@ export function OnboardingForm() {
           <button
             type="submit"
             disabled={loading}
-            className="rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-black transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Menyimpan..." : "Simpan Onboarding"}
           </button>
@@ -247,7 +247,7 @@ export function OnboardingForm() {
               <Link
                 href={routes.dashboard}
                 data-testid="onboarding-continue-dashboard"
-                className="inline-flex items-center justify-center rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-black transition hover:bg-brand/90"
+                className="inline-flex items-center justify-center rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90"
               >
                 Lanjut ke Dashboard
               </Link>
@@ -309,7 +309,7 @@ export function OnboardingForm() {
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Link
                   href={routes.dashboard}
-                  className="inline-flex flex-1 items-center justify-center rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-black transition hover:bg-brand/90"
+                  className="inline-flex flex-1 items-center justify-center rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90"
                 >
                   Lanjut ke Dashboard
                 </Link>

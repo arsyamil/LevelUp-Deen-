@@ -137,7 +137,7 @@ export function ProfileSettingsForm({ profile }: ProfileSettingsFormProps) {
           <button
             type="submit"
             disabled={saving || isPending || form.username.length < 3 || !form.fullName}
-            className="w-full rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-black transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60 md:w-auto"
+            className="w-full rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60 md:w-auto"
           >
             {saving || isPending ? "Menyimpan..." : "Simpan Profil"}
           </button>

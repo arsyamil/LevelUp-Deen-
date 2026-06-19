@@ -9,11 +9,11 @@ interface BadgeProps {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  default: "border-line bg-bg-soft text-text-dim",
-  success: "border-success/20 bg-success/10 text-success",
-  danger: "border-danger/20 bg-danger/10 text-danger",
-  brand: "border-brand/30 bg-brand/10 text-brand",
-  muted: "border-transparent bg-bg-soft text-text-dim",
+  default: "border-line bg-bg text-text",
+  success: "border-success/20 bg-success-soft text-success",
+  danger: "border-danger/20 bg-danger-soft text-danger",
+  brand: "border-line-strong bg-brand-soft text-brand-strong",
+  muted: "border-line bg-bg-soft text-text-dim",
 };
 
 export function Badge({ variant = "default", className, children }: BadgeProps) {

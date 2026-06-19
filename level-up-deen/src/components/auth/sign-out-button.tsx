@@ -23,7 +23,7 @@ export function SignOutButton({ bypassEnabled = false }: { bypassEnabled?: boole
     <button
       type="button"
       onClick={handleSignOut}
-      className="rounded-2xl border border-line bg-bg px-4 py-2 text-sm font-medium text-text transition hover:border-brand hover:bg-bg-soft"
+      className="rounded border border-line-medium bg-bg-soft px-4 py-2 text-sm font-medium uppercase tracking-[0.08em] text-text transition hover:border-line-strong hover:text-brand-strong"
     >
       Keluar
     </button>

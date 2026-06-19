@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
+import { Audiowide } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { RegisterServiceWorker } from "@/components/pwa/register-sw";
 import { ReactNode } from "react";
+
+const audiowide = Audiowide({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-audiowide",
+});
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -34,7 +41,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-bg text-text antialiased`}
+        className={`${audiowide.variable} ${geistSans.variable} ${geistMono.variable} min-h-screen bg-bg text-text antialiased`}
       >
         <RegisterServiceWorker />
         {children}

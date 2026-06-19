@@ -122,7 +122,7 @@ export function ReminderPreferencesCard({ initialPrefs }: ReminderPreferencesCar
         <button
           type="submit"
           disabled={saving}
-          className="rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-text transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-60"
         >
           {saving ? "Menyimpan..." : "Simpan Preferensi"}
         </button>

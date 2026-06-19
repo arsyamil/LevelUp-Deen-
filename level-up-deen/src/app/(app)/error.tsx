@@ -20,7 +20,7 @@ export default function AppSectionError({
       <button
         type="button"
         onClick={reset}
-        className="mt-4 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-black transition hover:bg-brand-strong"
+        className="mt-4 rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-text transition hover:bg-brand-strong"
       >
         Reload Modul
       </button>

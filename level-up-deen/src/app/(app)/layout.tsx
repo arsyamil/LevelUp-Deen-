@@ -34,9 +34,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen pb-20 lg:pb-0">
       {/* Top header */}
-      <header className="sticky top-0 z-40 border-b border-line bg-bg/95 backdrop-blur-sm">
-        <div className="container-shell flex items-center justify-between py-3">
-          <Link href={routes.dashboard} className="font-semibold tracking-wide text-brand">
+      <header className="sticky top-0 z-40 border-b border-line bg-bg/90 backdrop-blur-md">
+        <div className="container-shell flex h-16 items-center justify-between">
+          <Link href={routes.dashboard} className="cosmic-gradient-text font-semibold uppercase tracking-[0.12em]">
             LEVEL UP DEEN
           </Link>
           <div className="flex items-center gap-3">
@@ -54,13 +54,13 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <div className="container-shell py-6">
+      <div className="container-shell py-8">
         <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
           {/* Sidebar — desktop only */}
           <aside className="hidden lg:block">
             <Card className="sticky top-[69px] p-4">
-              <div className="mb-4 flex items-center gap-3 rounded-xl bg-bg p-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-brand/30 bg-brand/10 text-sm font-bold text-brand">
+              <div className="mb-4 flex items-center gap-3 rounded border border-line bg-bg p-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded border border-line-strong bg-brand-soft text-sm font-bold text-brand-strong">
                   {username.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">

@@ -87,7 +87,7 @@ export function LevelUpModal({ newLevel, isOpen, onClose }: LevelUpModalProps) {
 
         <button
           onClick={handleClose}
-          className="w-full rounded-xl bg-brand px-6 py-3 font-semibold text-black transition-transform hover:scale-105 active:scale-95"
+          className="w-full rounded-xl bg-brand px-6 py-3 font-semibold text-text transition-transform hover:scale-105 active:scale-95"
         >
           Lanjutkan Perjalanan
         </button>

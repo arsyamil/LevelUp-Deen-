@@ -3,127 +3,131 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 
 const features = [
   {
-    icon: "🕌",
-    title: "Deen Tracker",
-    desc: "Checklist shalat 5 waktu, dzikir, tilawah — dengan streak harian yang memotivasimu.",
+    label: "Deen",
+    title: "Ibadah harian terukur",
+    desc: "Checklist shalat, dzikir, tilawah, dan streak harian dalam alur quest yang ringan.",
   },
   {
-    icon: "💪",
-    title: "Fitness & Body",
-    desc: "Target push up, squat, lari adaptif berdasarkan level baseline personalmu.",
+    label: "Body",
+    title: "Target fisik adaptif",
+    desc: "Push up, squat, lari, dan hidrasi disesuaikan dengan baseline personalmu.",
   },
   {
-    icon: "💧",
-    title: "Water Tracker",
-    desc: "Quick-add hidrasi harian dengan pengingat interval yang bisa dikonfigurasi.",
+    label: "Wealth",
+    title: "Finansial lebih sadar",
+    desc: "Catat transaksi, pantau budget, dan rencanakan tabungan tanpa spreadsheet rumit.",
   },
   {
-    icon: "💰",
-    title: "Finance Planner",
-    desc: "Catat transaksi harian, budget per kategori, dan prediksi kapan tabunganmu tercapai.",
+    label: "AI",
+    title: "Coach untuk konsistensi",
+    desc: "Pendamping refleksi dan motivasi personal, dengan guardrail agar tetap aman dan relevan.",
   },
   {
-    icon: "🤖",
-    title: "AI Life Coach",
-    desc: "Asisten motivasi personal — bukan pemberi fatwa, tapi pendamping konsistensi.",
+    label: "Rank",
+    title: "Progress terasa hidup",
+    desc: "EXP, level, coin, rank E sampai S+, avatar, dan achievement menjaga momentum.",
   },
   {
-    icon: "🎮",
-    title: "Gamifikasi",
-    desc: "EXP, level, rank (E → S+), coin, dan item shop untuk menjaga semangat jangka panjang.",
+    label: "Squad",
+    title: "Tumbuh bersama",
+    desc: "Retensi sosial ringan lewat squad publik atau privat untuk saling menjaga semangat.",
   },
 ];
 
 const pillars = [
-  { label: "Deen", color: "bg-emerald-400", pct: 78 },
-  { label: "Body", color: "bg-cyan-300", pct: 62 },
-  { label: "Mind", color: "bg-amber-300", pct: 45 },
-  { label: "Wealth", color: "bg-rose-300", pct: 70 },
+  { label: "Deen", pct: 78 },
+  { label: "Body", pct: 62 },
+  { label: "Mind", pct: 45 },
+  { label: "Wealth", pct: 70 },
 ];
 
 const steps = [
-  { n: "01", title: "Daftar & Onboarding", desc: "Isi profil, pilih tipe pengguna, dan set baseline fitness-mu dalam 3 menit." },
-  { n: "02", title: "Quest Harian Otomatis", desc: "Sistem membuat quest personal berdasarkan jawabanmu — ibadah, olahraga, dan finansial." },
-  { n: "03", title: "Track & Selesaikan", desc: "Centang quest, catat transaksi, tambah air minum — semua dari satu tempat." },
-  { n: "04", title: "Tumbuh Setiap Hari", desc: "Kumpulkan EXP, naikkan level, buka item avatar, dan jaga streak-mu." },
+  { n: "01", title: "Onboarding", desc: "Isi profil, prioritas, dan baseline dalam beberapa menit." },
+  { n: "02", title: "Quest harian", desc: "Sistem menyiapkan target ibadah, body, dan wealth yang personal." },
+  { n: "03", title: "Track aksi kecil", desc: "Centang quest, tambah air minum, dan catat transaksi dari satu shell." },
+  { n: "04", title: "Naik level", desc: "EXP, streak, rank, dan insight membuat konsistensi terasa nyata." },
 ];
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen">
-      {/* ── Nav ── */}
-      <header className="sticky top-0 z-10 border-b border-line bg-bg/90 backdrop-blur-sm">
-        <div className="container-shell flex items-center justify-between py-4">
-          <div>
-            <span className="text-xs uppercase tracking-widest text-brand">Level Up Deen</span>
-            <p className="text-sm font-semibold text-text">Self-Improvement Platform</p>
-          </div>
+    <main className="min-h-screen bg-bg">
+      <header className="sticky top-0 z-50 border-b border-line bg-bg/90 backdrop-blur-md">
+        <div className="container-shell flex h-16 items-center justify-between">
+          <Link href="/" className="cosmic-gradient-text font-semibold uppercase tracking-[0.14em]">
+            Level Up Deen
+          </Link>
           <nav className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="rounded-xl border border-line px-4 py-2 text-sm text-text-dim transition hover:border-brand hover:text-text"
-            >
+            <Link href="/login" className="cosmic-button-link cosmic-button-secondary px-4 py-2 text-xs">
               Masuk
             </Link>
-            <Link
-              href="/register"
-              className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-black transition hover:bg-brand-strong"
-            >
-              Mulai Gratis
+            <Link href="/register" className="cosmic-button-link cosmic-button-primary px-4 py-2 text-xs">
+              Mulai
             </Link>
           </nav>
         </div>
       </header>
 
-      {/* ── Hero ── */}
-      <section className="border-b border-line">
-        <div className="container-shell py-16 sm:py-24">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="mb-4 inline-block rounded-full border border-brand/40 bg-brand/10 px-4 py-1.5 text-xs font-medium uppercase tracking-widest text-brand">
-              Platform Pengembangan Diri Islami
+      <section className="cosmic-section min-h-[calc(100vh-4rem)]">
+        <div className="cosmic-orb left-1/2 top-16 -translate-x-1/2" />
+        <div className="cosmic-orb -left-48 top-64 opacity-40" />
+        <div className="pointer-events-none absolute left-0 right-0 top-1/2 h-px bg-gradient-to-r from-transparent via-brand-strong to-transparent opacity-50" />
+        <div className="container-shell relative z-10 grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+          <div>
+            <p className="cosmic-badge mb-8">Platform Pengembangan Diri Islami</p>
+            <div className="cosmic-heading-glow">
+              <h1 className="cosmic-gradient-text text-4xl font-semibold uppercase leading-tight tracking-[0.08em] sm:text-5xl lg:text-6xl">
+                Bangun Versi Terbaik Dirimu
+              </h1>
+            </div>
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-dim">
+              Level Up Deen menggabungkan ibadah, kesehatan, keuangan, dan AI coach dalam
+              satu platform gamifikasi. Konsisten jadi lebih mudah ketika setiap aksi kecil
+              terasa seperti progress yang terlihat.
             </p>
-            <h1 className="text-4xl font-semibold leading-tight text-text sm:text-6xl">
-              Bangun Versi Terbaik Dirimu,{" "}
-              <span className="text-brand">Satu Quest Sehari</span>
-            </h1>
-            <p className="mt-6 text-lg leading-relaxed text-text-dim">
-              Level Up Deen menggabungkan ibadah, kesehatan, dan keuangan dalam satu
-              platform gamifikasi. Konsisten jadi mudah ketika terasa seperti permainan.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-              <Link
-                href="/register"
-                className="rounded-2xl bg-brand px-8 py-4 text-base font-semibold text-black transition hover:bg-brand-strong"
-              >
-                Mulai Sekarang — Gratis
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link href="/register" className="cosmic-button-link cosmic-button-primary">
+                Mulai Gratis
               </Link>
-              <Link
-                href="/login"
-                className="rounded-2xl border border-line px-8 py-4 text-base text-text-dim transition hover:border-brand hover:text-text"
-              >
+              <Link href="/login" className="cosmic-button-link cosmic-button-secondary">
                 Sudah Punya Akun
               </Link>
             </div>
           </div>
 
-          {/* Live pillar preview */}
-          <div className="mx-auto mt-16 max-w-lg rounded-2xl border border-line bg-bg-card p-6 shadow-lg">
-            <p className="mb-4 text-xs uppercase tracking-wide text-text-dim">
-              Contoh Dashboard — 4 Pilar Progres
-            </p>
-            <div className="space-y-4">
-              {pillars.map((p) => (
-                <div key={p.label}>
-                  <div className="mb-1.5 flex justify-between text-sm">
-                    <span className="font-medium">{p.label}</span>
-                    <span className="text-text-dim">{p.pct}%</span>
+          <div className="surface-card p-6">
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.12em] text-text-dim">Live Command Center</p>
+                <h2 className="mt-2 text-2xl font-semibold uppercase tracking-[0.06em]">
+                  Dashboard Hari Ini
+                </h2>
+              </div>
+              <span className="rounded-full border border-line-strong bg-brand-soft px-3 py-1 text-xs uppercase tracking-[0.08em] text-brand-strong">
+                D-Rank
+              </span>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              {[
+                ["Level", "14"],
+                ["EXP", "220/800"],
+                ["Coin", "480"],
+              ].map(([label, value]) => (
+                <div key={label} className="rounded border border-line bg-bg p-3">
+                  <p className="text-[11px] uppercase tracking-[0.1em] text-text-dim">{label}</p>
+                  <p className="mt-2 text-xl text-text">{value}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 space-y-5">
+              {pillars.map((pillar) => (
+                <div key={pillar.label}>
+                  <div className="mb-2 flex justify-between text-xs uppercase tracking-[0.08em]">
+                    <span className="text-text">{pillar.label}</span>
+                    <span className="text-text-dim">{pillar.pct}%</span>
                   </div>
-                  <div className="h-2 rounded-full bg-bg-soft">
-                    <div
-                      className={`h-full rounded-full ${p.color} transition-all`}
-                      style={{ width: `${p.pct}%` }}
-                    />
-                  </div>
+                  <ProgressBar value={pillar.pct} />
                 </div>
               ))}
             </div>
@@ -131,140 +135,114 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Features ── */}
-      <section className="border-b border-line">
-        <div className="container-shell py-16">
-          <div className="mb-12 text-center">
-            <h2 className="text-3xl font-semibold">Semua yang Kamu Butuhkan</h2>
-            <p className="mt-3 text-text-dim">
-              Satu platform untuk Deen, Body, Mind, dan Wealth.
+      <section className="cosmic-section">
+        <div className="container-shell relative z-10">
+          <div className="mb-12 max-w-3xl">
+            <p className="cosmic-badge mb-8">Core System</p>
+            <div className="cosmic-heading-glow">
+              <h2 className="cosmic-gradient-text text-3xl font-semibold uppercase tracking-[0.08em] sm:text-4xl">
+                Semua Pilar Dalam Satu Orbit
+              </h2>
+            </div>
+            <p className="mt-4 text-base leading-relaxed text-text-dim">
+              Dirancang untuk rutinitas harian, bukan hanya tampilan dashboard. Setiap modul
+              punya fungsi jelas untuk menjaga ibadah, tubuh, pikiran, dan finansial tetap bergerak.
             </p>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map((f) => (
-              <div
-                key={f.title}
-                className="rounded-2xl border border-line bg-bg-card p-6 transition hover:border-brand/40"
-              >
-                <div className="mb-3 text-3xl">{f.icon}</div>
-                <h3 className="font-semibold">{f.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-text-dim">{f.desc}</p>
-              </div>
+            {features.map((feature) => (
+              <article key={feature.title} className="surface-card p-6">
+                <p className="mb-4 text-xs uppercase tracking-[0.12em] text-brand-strong">
+                  {feature.label}
+                </p>
+                <h3 className="text-xl font-semibold uppercase tracking-[0.06em]">
+                  {feature.title}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-text-dim">{feature.desc}</p>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── How it works ── */}
-      <section className="border-b border-line">
-        <div className="container-shell py-16">
+      <section className="cosmic-section">
+        <div className="container-shell relative z-10">
           <div className="mb-12 text-center">
-            <h2 className="text-3xl font-semibold">Cara Kerjanya</h2>
-            <p className="mt-3 text-text-dim">Mulai dalam menit, konsisten seumur hidup.</p>
+            <p className="cosmic-badge mb-8">Daily Loop</p>
+            <div className="cosmic-heading-glow">
+              <h2 className="cosmic-gradient-text text-3xl font-semibold uppercase tracking-[0.08em] sm:text-4xl">
+                Cara Kerjanya
+              </h2>
+            </div>
           </div>
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {steps.map((s) => (
-              <div key={s.n} className="space-y-3">
-                <p className="text-4xl font-bold text-brand opacity-60">{s.n}</p>
-                <h3 className="font-semibold">{s.title}</h3>
-                <p className="text-sm leading-relaxed text-text-dim">{s.desc}</p>
-              </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {steps.map((step) => (
+              <article key={step.n} className="surface-card p-5">
+                <p className="text-3xl text-brand-strong">{step.n}</p>
+                <h3 className="mt-5 text-lg font-semibold uppercase tracking-[0.06em]">
+                  {step.title}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-text-dim">{step.desc}</p>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── EXP progress demo ── */}
-      <section className="border-b border-line">
-        <div className="container-shell py-16">
-          <div className="grid items-center gap-10 lg:grid-cols-2">
-            <div>
-              <h2 className="text-3xl font-semibold">
+      <section className="cosmic-section">
+        <div className="cosmic-orb right-0 top-10 opacity-60" />
+        <div className="container-shell relative z-10 grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <p className="cosmic-badge mb-8">EXP Engine</p>
+            <div className="cosmic-heading-glow">
+              <h2 className="cosmic-gradient-text text-3xl font-semibold uppercase tracking-[0.08em] sm:text-4xl">
                 Setiap Kebiasaan Kecil Memberi EXP
               </h2>
-              <p className="mt-4 leading-relaxed text-text-dim">
-                Shalat Subuh? +20 EXP. Minum 2L air? +15 EXP. Catat pengeluaran hari ini?
-                +15 EXP. Semua aksi kecil terhitung — dan level naik tanpa kamu sadari.
-              </p>
-              <ul className="mt-6 space-y-3 text-sm">
-                {[
-                  ["Rank E → S+", "Sistem ranking 7 level dengan threshold EXP yang adaptif"],
-                  ["Coin reward", "Kumpulkan coin dan buka item kosmetik avatar"],
-                  ["Streak bonus", "Prayer streak dan full quest streak terlacak otomatis"],
-                ].map(([title, desc]) => (
-                  <li key={title} className="flex gap-3">
-                    <span className="mt-0.5 text-brand">✓</span>
-                    <span>
-                      <strong>{title}</strong> — {desc}
-                    </span>
-                  </li>
-                ))}
-              </ul>
             </div>
-            <div className="rounded-2xl border border-line bg-bg-card p-6">
-              <p className="mb-1 text-xs uppercase tracking-wide text-text-dim">Contoh Profil</p>
-              <div className="flex items-center gap-4">
-                <div className="grid h-16 w-16 place-items-center rounded-xl border border-brand/40 bg-brand/10 text-2xl font-bold text-brand">
-                  D
-                </div>
-                <div>
-                  <p className="font-semibold">Fajr Striver</p>
-                  <p className="text-sm text-text-dim">Level 14 • D-Rank</p>
-                </div>
-              </div>
-              <div className="mt-5 space-y-3">
-                <div>
-                  <div className="mb-1 flex justify-between text-xs text-text-dim">
-                    <span>EXP Progress</span>
-                    <span>220 / 800</span>
-                  </div>
-                  <ProgressBar value={27} />
-                </div>
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div className="rounded-lg border border-line bg-bg-soft p-3">
-                    <p className="text-text-dim">Prayer streak</p>
-                    <p className="mt-1 font-semibold">9 hari 🔥</p>
-                  </div>
-                  <div className="rounded-lg border border-line bg-bg-soft p-3">
-                    <p className="text-text-dim">Coin</p>
-                    <p className="mt-1 font-semibold">480 🪙</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <p className="mt-5 leading-relaxed text-text-dim">
+              Shalat Subuh, minum air, olahraga, atau mencatat pengeluaran hari ini semuanya
+              masuk ke sistem progres. Aksi kecil menjadi sinyal pertumbuhan yang bisa dilihat.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[
+              ["Rank E - S+", "Threshold EXP adaptif untuk menjaga tantangan tetap masuk akal."],
+              ["Coin Reward", "Kumpulkan coin untuk membuka item kosmetik avatar."],
+              ["Streak Bonus", "Prayer streak dan quest streak terlacak otomatis."],
+            ].map(([title, desc]) => (
+              <article key={title} className="surface-card p-5">
+                <h3 className="text-base font-semibold uppercase tracking-[0.06em]">{title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-text-dim">{desc}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── CTA ── */}
-      <section>
-        <div className="container-shell py-20 text-center">
-          <h2 className="text-3xl font-semibold sm:text-4xl">
-            Siap Mulai Level Up?
-          </h2>
+      <section className="cosmic-section text-center">
+        <div className="container-shell relative z-10">
+          <p className="cosmic-badge mb-8">Ready</p>
+          <div className="cosmic-heading-glow">
+            <h2 className="cosmic-gradient-text text-3xl font-semibold uppercase tracking-[0.08em] sm:text-4xl">
+              Siap Mulai Level Up?
+            </h2>
+          </div>
           <p className="mx-auto mt-4 max-w-xl text-text-dim">
-            Gratis selamanya untuk fitur inti. Tidak perlu kartu kredit.
+            Fitur inti gratis untuk membangun ritme harian yang lebih sadar, terukur, dan konsisten.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <Link
-              href="/register"
-              className="rounded-2xl bg-brand px-10 py-4 text-base font-semibold text-black transition hover:bg-brand-strong"
-            >
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <Link href="/register" className="cosmic-button-link cosmic-button-primary">
               Daftar Sekarang
             </Link>
-            <Link
-              href="/login"
-              className="rounded-2xl border border-line px-10 py-4 text-base text-text-dim transition hover:border-brand hover:text-text"
-            >
+            <Link href="/login" className="cosmic-button-link cosmic-button-secondary">
               Masuk
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="border-t border-line">
-        <div className="container-shell flex flex-wrap items-center justify-between gap-3 py-6 text-xs text-text-dim">
+      <footer className="border-t border-line bg-bg">
+        <div className="container-shell flex flex-wrap items-center justify-between gap-3 py-6 text-xs uppercase tracking-[0.08em] text-text-dim">
           <p>© {new Date().getFullYear()} Level Up Deen</p>
           <p>Platform pengembangan diri berbasis gamifikasi Islami</p>
         </div>

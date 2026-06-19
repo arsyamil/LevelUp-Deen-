@@ -209,7 +209,7 @@ export function PlanningManager({ budgets, savingsGoals, month }: PlanningManage
           <button
             type="submit"
             disabled={isPending || budgetForm.budgetAmount <= 0}
-            className="w-full rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-black transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {editingBudgetId ? "Simpan Budget" : "Tambah Budget"}
           </button>
@@ -330,7 +330,7 @@ export function PlanningManager({ budgets, savingsGoals, month }: PlanningManage
           <button
             type="submit"
             disabled={isPending || !goalForm.name || goalForm.targetAmount <= 0}
-            className="w-full rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-black transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {editingGoalId ? "Simpan Goal" : "Tambah Goal"}
           </button>

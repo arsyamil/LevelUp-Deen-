@@ -265,7 +265,7 @@ export function QuestList() {
                                 task.status === "completed" ? "pending" : "completed"
                               )
                             }
-                            className="rounded-2xl bg-brand px-4 py-2 text-xs font-semibold text-black transition hover:bg-brand/90 disabled:opacity-60"
+                            className="rounded-2xl bg-brand px-4 py-2 text-xs font-semibold text-text transition hover:bg-brand/90 disabled:opacity-60"
                           >
                             {task.status === "completed" ? "Tandai Pending" : "Tandai Selesai"}
                           </button>
@@ -391,7 +391,7 @@ export function QuestList() {
             <button
               type="submit"
               disabled={saving || !form.name.trim()}
-              className="w-full rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-black transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {saving ? "Menyimpan..." : "Tambah Task"}
             </button>

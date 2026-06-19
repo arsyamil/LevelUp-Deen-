@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { routes } from "@/lib/routes";
 
@@ -67,9 +68,14 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="container-shell py-12">
+    <main className="cosmic-section min-h-screen">
+      <div className="cosmic-orb left-1/2 top-12 -translate-x-1/2" />
       <Card className="mx-auto max-w-md p-8">
-        <h1 className="text-2xl font-semibold">Daftar Akun</h1>
+        <div className="cosmic-heading-glow">
+          <h1 className="cosmic-gradient-text text-3xl font-semibold uppercase tracking-[0.08em]">
+            Daftar Akun
+          </h1>
+        </div>
         <p className="mt-2 text-sm text-text-dim">
           Buat akun baru untuk mulai menyimpan progress harian Anda.
         </p>
@@ -78,7 +84,7 @@ export default function RegisterPage() {
           <button
             type="button"
             onClick={handleGoogleRegister}
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-line bg-bg px-4 py-3 text-sm font-semibold text-text transition hover:border-brand hover:bg-bg-soft"
+            className="flex w-full items-center justify-center gap-3 rounded border border-line-medium bg-bg-soft px-4 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-text transition hover:border-line-strong hover:text-brand-strong"
           >
             <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
               <path
@@ -123,7 +129,7 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="email@contoh.com"
-              className="w-full rounded-xl border border-line bg-bg-soft px-4 py-3 text-sm text-text placeholder:text-text-dim/60 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+              className="input-field"
             />
           </div>
 
@@ -138,7 +144,7 @@ export default function RegisterPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Minimal 6 karakter"
-              className="w-full rounded-xl border border-line bg-bg-soft px-4 py-3 text-sm text-text placeholder:text-text-dim/60 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+              className="input-field"
             />
           </div>
 
@@ -153,21 +159,17 @@ export default function RegisterPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Ulangi password"
-              className="w-full rounded-xl border border-line bg-bg-soft px-4 py-3 text-sm text-text placeholder:text-text-dim/60 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+              className="input-field"
             />
           </div>
 
           {error && (
-            <p className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">{error}</p>
+            <p className="rounded border border-danger/20 bg-danger-soft px-3 py-2 text-sm text-danger">{error}</p>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-black transition hover:bg-brand-strong disabled:opacity-50"
-          >
+          <Button type="submit" variant="primary" loading={loading} className="w-full">
             {loading ? "Memproses..." : "Daftar"}
-          </button>
+          </Button>
           </form>
         </div>
 

@@ -50,7 +50,7 @@ export function DataExportCard() {
         type="button"
         onClick={downloadExport}
         disabled={exporting}
-        className="mt-4 rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-black transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-4 rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {exporting ? "Menyiapkan..." : "Download JSON"}
       </button>

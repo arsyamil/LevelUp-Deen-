@@ -423,7 +423,7 @@ export function FinanceTracker() {
                   type="button"
                   onClick={parseWithAI}
                   disabled={parsing || !nlInput.trim()}
-                  className="shrink-0 rounded-xl bg-brand px-3 py-2 text-xs font-semibold text-black transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-50"
+                  className="shrink-0 rounded-xl bg-brand px-3 py-2 text-xs font-semibold text-text transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {parsing ? "..." : "Parse"}
                 </button>
@@ -440,7 +440,7 @@ export function FinanceTracker() {
                   onClick={() => setForm((current) => ({ ...current, type }))}
                   className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${
                     form.type === type
-                      ? "border-brand bg-brand text-black"
+                      ? "border-brand bg-brand text-text"
                       : "border-line bg-bg text-text"
                   }`}
                 >
@@ -505,7 +505,7 @@ export function FinanceTracker() {
             <button
               type="submit"
               disabled={saving || form.amount <= 0}
-              className="w-full rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-black transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {saving
                 ? "Menyimpan..."

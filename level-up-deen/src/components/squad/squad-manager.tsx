@@ -117,7 +117,7 @@ export function SquadManager({ onSquadChanged }: Props) {
           onClick={() => setTab("join")}
           className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
             tab === "join"
-              ? "border-brand bg-brand text-black"
+              ? "border-brand bg-brand text-text"
               : "border-line bg-bg text-text"
           }`}
         >
@@ -128,7 +128,7 @@ export function SquadManager({ onSquadChanged }: Props) {
           onClick={() => setTab("create")}
           className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
             tab === "create"
-              ? "border-brand bg-brand text-black"
+              ? "border-brand bg-brand text-text"
               : "border-line bg-bg text-text"
           }`}
         >

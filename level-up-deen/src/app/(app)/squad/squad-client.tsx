@@ -89,7 +89,7 @@ export function SquadPageClient({
               onClick={() => setLeaderboardTab("global")}
               className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${
                 leaderboardTab === "global"
-                  ? "border-brand bg-brand text-black"
+                  ? "border-brand bg-brand text-text"
                   : "border-line bg-bg text-text-dim"
               }`}
             >
@@ -100,7 +100,7 @@ export function SquadPageClient({
               onClick={() => setLeaderboardTab("squad")}
               className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${
                 leaderboardTab === "squad"
-                  ? "border-brand bg-brand text-black"
+                  ? "border-brand bg-brand text-text"
                   : "border-line bg-bg text-text-dim"
               }`}
             >

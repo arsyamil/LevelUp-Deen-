@@ -112,7 +112,7 @@ export function FitnessTaskList({ initialTasks }: { initialTasks: FitnessTask[] 
                 <button
                   disabled={isSaving}
                   onClick={() => updateTaskStatus(task.id, task.status === "completed" ? "pending" : "completed")}
-                  className="rounded bg-brand px-3 py-1 text-xs font-semibold text-black hover:bg-brand/90 disabled:opacity-50"
+                  className="rounded bg-brand px-3 py-1 text-xs font-semibold text-text hover:bg-brand/90 disabled:opacity-50"
                 >
                   {task.status === "completed" ? "Batal" : "Selesai"}
                 </button>
