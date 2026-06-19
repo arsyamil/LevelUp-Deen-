@@ -310,5 +310,33 @@ export async function PATCH(request: NextRequest) {
     }
   }
 
+  // ── Update leaderboard snapshot ──
+  try {
+    // Count today's completed tasks for this user
+    const { data: todayLogs } = await admin
+      .from("daily_task_logs")
+      .select("status")
+      .eq("user_id", userId)
+      .eq("log_date", today);
+
+    const completedCount = (todayLogs ?? []).filter((l) => l.status === "completed").length;
+    const totalCount = (todayLogs ?? []).length;
+    const completionScore = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+    await admin
+      .from("leaderboard_snapshots")
+      .upsert(
+        {
+          user_id: userId,
+          snapshot_date: today,
+          completion_score: completionScore,
+          rank_position: null,
+        },
+        { onConflict: "user_id,snapshot_date" }
+      );
+  } catch {
+    // Non-fatal: leaderboard is optional
+  }
+
   return NextResponse.json({ success: true, status, expAward, coinAward, newLevel, leveledUp });
 }

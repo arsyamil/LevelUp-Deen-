@@ -6,6 +6,8 @@ import { completionRate } from "@/lib/gamification";
 import { getCurrentUserDashboardData, getCurrentUserDailyTasks } from "@/lib/user";
 import { routes } from "@/lib/routes";
 import { redirect } from "next/navigation";
+import { DailySummary } from "@/components/dashboard/daily-summary";
+import { InteractiveAvatar } from "@/components/avatar/interactive-avatar";
 
 const rankColors: Record<string, string> = {
   "E": "muted",
@@ -66,14 +68,17 @@ export default async function DashboardPage() {
       {/* Hero card */}
       <Card className="p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-sm text-text-dim">Assalamu alaikum,</p>
-            <h1 className="mt-1 text-2xl font-semibold">{name}</h1>
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              <Badge variant={rankBadge}>{stats.rank}-Rank</Badge>
-              <span className="text-sm text-text-dim">Level {stats.level}</span>
-              <span className="text-sm text-text-dim">·</span>
-              <span className="text-sm text-text-dim">{stats.coins} 🪙</span>
+          <div className="flex items-center gap-4">
+            <InteractiveAvatar />
+            <div>
+              <p className="text-sm text-text-dim">Assalamu alaikum,</p>
+              <h1 className="mt-1 text-2xl font-semibold">{name}</h1>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <Badge variant={rankBadge}>{stats.rank}-Rank</Badge>
+                <span className="text-sm text-text-dim">Level {stats.level}</span>
+                <span className="text-sm text-text-dim">·</span>
+                <span className="text-sm text-text-dim">{stats.coins} 🪙</span>
+              </div>
             </div>
           </div>
           <div className="flex gap-2">
@@ -95,6 +100,9 @@ export default async function DashboardPage() {
           <ProgressBar value={expProgress} />
         </div>
       </Card>
+
+      {/* Daily Summary — greeting, streak, AI insight */}
+      <DailySummary />
 
       {/* Stat row */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

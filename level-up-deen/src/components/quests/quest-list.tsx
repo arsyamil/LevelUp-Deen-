@@ -48,6 +48,7 @@ export function QuestList() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [aiInsights, setAiInsights] = useState<Record<string, { loading: boolean; text?: string }>>({});
   const [form, setForm] = useState<CreateTaskForm>({
     name: "",
     category: "deen",
@@ -114,6 +115,25 @@ export function QuestList() {
       setError(err instanceof Error ? err.message : "Gagal memperbarui status tugas");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleGetAiInsight = async (taskName: string, taskId: string) => {
+    setAiInsights((prev) => ({ ...prev, [taskId]: { loading: true } }));
+    try {
+      const response = await fetch("/api/ai/quest-recommendation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ taskName, failCount: 1 }), // Assuming 1 fail count to get initial suggestion
+      });
+      const data = await response.json();
+      if (response.ok && data.recommendation) {
+        setAiInsights((prev) => ({ ...prev, [taskId]: { loading: false, text: data.recommendation } }));
+      } else {
+        throw new Error(data.error || "Gagal mengambil saran AI");
+      }
+    } catch {
+      setAiInsights((prev) => ({ ...prev, [taskId]: { loading: false, text: "Gagal memuat saran AI saat ini." } }));
     }
   };
 
@@ -224,6 +244,18 @@ export function QuestList() {
                           <span className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase ${statusStyles[task.status]}`}>
                             {task.status}
                           </span>
+                          
+                          {task.status !== "completed" && (
+                            <button
+                              type="button"
+                              onClick={() => handleGetAiInsight(task.name, task.id)}
+                              disabled={aiInsights[task.id]?.loading}
+                              className="rounded-2xl border border-brand/30 bg-brand/5 px-4 py-2 text-xs font-semibold text-brand transition hover:bg-brand/10 disabled:opacity-60"
+                            >
+                              {aiInsights[task.id]?.loading ? "Memikirkan..." : "✨ Saran AI"}
+                            </button>
+                          )}
+
                           <button
                             type="button"
                             disabled={saving}
@@ -247,6 +279,14 @@ export function QuestList() {
                           </button>
                         </div>
                       </div>
+                      
+                      {/* AI Insight Dropdown */}
+                      {aiInsights[task.id]?.text && (
+                        <div className="mt-4 rounded-xl border border-brand/20 bg-brand/5 p-3 text-sm">
+                          <p className="font-semibold text-brand text-xs mb-1">Coach Deen says:</p>
+                          <p className="text-text">{aiInsights[task.id].text}</p>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
