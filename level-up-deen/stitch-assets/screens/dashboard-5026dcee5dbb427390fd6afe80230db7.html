@@ -391,24 +391,30 @@
                 particle.className = 'particle';
                 document.body.appendChild(particle);
 
-                const size = Math.floor(Math.random() * 8 + 4);
+                const size = Math.floor(randomUnit() * 8 + 4);
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
-                particle.style.background = `hsl(${Math.random() * 60 + 260}, 100%, 70%)`;
+                particle.style.background = `hsl(${randomUnit() * 60 + 260}, 100%, 70%)`;
 
-                const destX = x + (Math.random() - 0.5) * 200;
-                const destY = y + (Math.random() - 0.5) * 200;
+                const destX = x + (randomUnit() - 0.5) * 200;
+                const destY = y + (randomUnit() - 0.5) * 200;
 
                 const animation = particle.animate([
                     { transform: `translate(${x}px, ${y}px) scale(1)`, opacity: 1 },
                     { transform: `translate(${destX}px, ${destY}px) scale(0)`, opacity: 0 }
                 ], {
-                    duration: 600 + Math.random() * 400,
+                    duration: 600 + randomUnit() * 400,
                     easing: 'cubic-bezier(0, .9, .57, 1)',
                     fill: 'forwards'
                 });
 
                 animation.onfinish = () => particle.remove();
+            }
+
+            function randomUnit() {
+                const values = new Uint32Array(1);
+                crypto.getRandomValues(values);
+                return values[0] / 0x100000000;
             }
 
             // Smooth horizontal scrolling for streaks
