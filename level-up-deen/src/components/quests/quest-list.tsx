@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import type { TaskCategory, TaskType, TaskLogStatus } from "@/lib/types";
 import { Toast } from "@/components/ui/toast";
+import { useTranslation } from "@/components/providers";
 
 const sections: TaskType[] = ["mandatory", "recommended", "custom", "bonus"];
 const categoryLabels: Record<TaskCategory, string> = {
@@ -43,6 +44,7 @@ interface CreateTaskForm {
 }
 
 export function QuestList() {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState<TaskPayload[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -59,7 +61,7 @@ export function QuestList() {
     coinReward: 0,
   });
 
-  const loadTasks = async () => {
+  const loadTasks = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -67,19 +69,19 @@ export function QuestList() {
       const response = await fetch("/api/tasks", { cache: "no-store" });
       const payload = await response.json();
       if (!response.ok) {
-        throw new Error(payload.error || "Gagal memuat tugas");
+        throw new Error(payload.error || t("errLoadTasks"));
       }
       setTasks(payload.tasks ?? []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal memuat tugas");
+      setError(err instanceof Error ? err.message : t("errLoadTasks"));
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     loadTasks();
-  }, []);
+  }, [loadTasks]);
 
   const taskCounts = useMemo(() => {
     return {
@@ -99,7 +101,7 @@ export function QuestList() {
       });
       const payload = await response.json();
       if (!response.ok) {
-        throw new Error(payload.error || "Gagal memperbarui status tugas");
+        throw new Error(payload.error || t("errUpdateTask"));
       }
       setTasks((current) =>
         current.map((task) => (task.id === taskId ? { ...task, status } : task))
@@ -112,7 +114,7 @@ export function QuestList() {
         setToastMessage(msgParts.join(" • "));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal memperbarui status tugas");
+      setError(err instanceof Error ? err.message : t("errUpdateTask"));
     } finally {
       setSaving(false);
     }
@@ -130,10 +132,10 @@ export function QuestList() {
       if (response.ok && data.recommendation) {
         setAiInsights((prev) => ({ ...prev, [taskId]: { loading: false, text: data.recommendation } }));
       } else {
-        throw new Error(data.error || "Gagal mengambil saran AI");
+        throw new Error(data.error || t("errAiInsight"));
       }
     } catch {
-      setAiInsights((prev) => ({ ...prev, [taskId]: { loading: false, text: "Gagal memuat saran AI saat ini." } }));
+      setAiInsights((prev) => ({ ...prev, [taskId]: { loading: false, text: t("errAiInsightLoad") } }));
     }
   };
 
@@ -150,7 +152,7 @@ export function QuestList() {
       });
       const payload = await response.json();
       if (!response.ok) {
-        throw new Error(payload.error || "Gagal membuat tugas");
+        throw new Error(payload.error || t("errCreateTask"));
       }
       setTasks((current) => [...current, payload.task]);
       setForm({
@@ -163,7 +165,7 @@ export function QuestList() {
         coinReward: 0,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal membuat tugas");
+      setError(err instanceof Error ? err.message : t("errCreateTask"));
     } finally {
       setSaving(false);
     }
@@ -188,19 +190,19 @@ export function QuestList() {
       <Card className="p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold">Daily Quest System</h1>
+            <h1 className="text-2xl font-semibold">{t("quests")}</h1>
             <p className="mt-2 text-sm text-text-dim">
-              Tanda tugas selesai untuk melacak progress, atau tambah task custom yang ingin kamu capai hari ini.
+              {t("questsDesc")}
             </p>
           </div>
           <div className="grid gap-2 sm:grid-cols-2">
             <div className="rounded-2xl border border-line bg-bg-soft p-4 text-sm">
-              <p className="font-semibold">Tugas hari ini</p>
-              <p>{taskCounts.completed} / {taskCounts.total} selesai</p>
+              <p className="font-semibold">{t("tasksToday")}</p>
+              <p>{taskCounts.completed} / {taskCounts.total} {t("completedStatus")}</p>
             </div>
             <div className="rounded-2xl border border-line bg-bg-soft p-4 text-sm">
-              <p className="font-semibold">Status</p>
-              <p>{loading ? "Memuat..." : `${taskCounts.total} tugas aktif`}</p>
+              <p className="font-semibold">{t("status")}</p>
+              <p>{loading ? t("loading") : `${taskCounts.total} ${t("activeTasks")}`}</p>
             </div>
           </div>
         </div>
@@ -220,7 +222,7 @@ export function QuestList() {
 
             return (
               <Card key={section} className="p-5">
-                <h2 className="section-title capitalize">{section} Quest</h2>
+                <h2 className="section-title capitalize">{t(`${section}Quest` as keyof typeof import('@/lib/i18n').translations['id'])}</h2>
                 <div className="mt-4 space-y-3">
                   {sectionTasks.map((task) => (
                     <div
@@ -252,7 +254,7 @@ export function QuestList() {
                               disabled={aiInsights[task.id]?.loading}
                               className="rounded-2xl border border-brand/30 bg-brand/5 px-4 py-2 text-xs font-semibold text-brand transition hover:bg-brand/10 disabled:opacity-60"
                             >
-                              {aiInsights[task.id]?.loading ? "Memikirkan..." : "✨ Saran AI"}
+                              {aiInsights[task.id]?.loading ? t("thinking") : t("aiInsightBtn")}
                             </button>
                           )}
 
@@ -267,7 +269,7 @@ export function QuestList() {
                             }
                             className="rounded-2xl bg-brand px-4 py-2 text-xs font-semibold text-text transition hover:bg-brand/90 disabled:opacity-60"
                           >
-                            {task.status === "completed" ? "Tandai Pending" : "Tandai Selesai"}
+                            {task.status === "completed" ? t("markPending") : t("markCompleted")}
                           </button>
                           <button
                             type="button"
@@ -275,7 +277,7 @@ export function QuestList() {
                             onClick={() => updateTaskStatus(task.id, "skipped")}
                             className="rounded-2xl border border-line bg-bg px-4 py-2 text-xs font-semibold text-text transition hover:border-brand hover:text-brand disabled:opacity-60"
                           >
-                            Skip
+                            {t("skip")}
                           </button>
                         </div>
                       </div>
@@ -283,7 +285,7 @@ export function QuestList() {
                       {/* AI Insight Dropdown */}
                       {aiInsights[task.id]?.text && (
                         <div className="mt-4 rounded-xl border border-brand/20 bg-brand/5 p-3 text-sm">
-                          <p className="font-semibold text-brand text-xs mb-1">Coach Deen says:</p>
+                          <p className="font-semibold text-brand text-xs mb-1">{t("coachDeenSays")}</p>
                           <p className="text-text">{aiInsights[task.id].text}</p>
                         </div>
                       )}
@@ -296,16 +298,16 @@ export function QuestList() {
 
           {tasks.length === 0 && !loading ? (
             <Card className="p-5 text-sm text-text-dim">
-              Belum ada tugas aktif untuk akun Anda. Gunakan form di samping untuk membuat task custom.
+              {t("noActiveTasks")}
             </Card>
           ) : null}
         </div>
 
         <Card className="p-5">
-          <h2 className="section-title">Tambah Task Custom</h2>
+          <h2 className="section-title">{t("addCustomTask")}</h2>
           <form onSubmit={handleCreateTask} className="mt-4 space-y-4">
             <label className="block text-sm">
-              <span className="font-medium">Nama tugas</span>
+              <span className="font-medium">{t("taskName")}</span>
               <input
                 value={form.name}
                 onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
@@ -314,7 +316,7 @@ export function QuestList() {
             </label>
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block text-sm">
-                <span className="font-medium">Kategori</span>
+                <span className="font-medium">{t("category")}</span>
                 <select
                   value={form.category}
                   onChange={(event) => setForm((current) => ({ ...current, category: event.target.value as TaskCategory }))}
@@ -328,7 +330,7 @@ export function QuestList() {
                 </select>
               </label>
               <label className="block text-sm">
-                <span className="font-medium">Tipe tugas</span>
+                <span className="font-medium">{t("taskType")}</span>
                 <select
                   value={form.taskType}
                   onChange={(event) => setForm((current) => ({ ...current, taskType: event.target.value as TaskType }))}
@@ -344,7 +346,7 @@ export function QuestList() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block text-sm">
-                <span className="font-medium">Target nilai</span>
+                <span className="font-medium">{t("targetValue")}</span>
                 <input
                   type="number"
                   value={form.targetValue ?? ""}
@@ -358,7 +360,7 @@ export function QuestList() {
                 />
               </label>
               <label className="block text-sm">
-                <span className="font-medium">Unit target</span>
+                <span className="font-medium">{t("targetUnit")}</span>
                 <input
                   value={form.targetUnit}
                   onChange={(event) => setForm((current) => ({ ...current, targetUnit: event.target.value }))}
@@ -368,7 +370,7 @@ export function QuestList() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block text-sm">
-                <span className="font-medium">EXP reward</span>
+                <span className="font-medium">{t("expReward")}</span>
                 <input
                   type="number"
                   min={0}
@@ -378,7 +380,7 @@ export function QuestList() {
                 />
               </label>
               <label className="block text-sm">
-                <span className="font-medium">Coin reward</span>
+                <span className="font-medium">{t("coinReward")}</span>
                 <input
                   type="number"
                   min={0}
@@ -393,7 +395,7 @@ export function QuestList() {
               disabled={saving || !form.name.trim()}
               className="w-full rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {saving ? "Menyimpan..." : "Tambah Task"}
+              {saving ? t("saving") : t("addTaskBtn")}
             </button>
           </form>
         </Card>
@@ -402,4 +404,3 @@ export function QuestList() {
     </div>
   );
 }
-

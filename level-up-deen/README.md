@@ -3,10 +3,10 @@
 Codebase awal untuk platform pengembangan diri harian berbasis gamifikasi Islami sesuai PRD v1.1.
 
 ## Stack
-- Next.js 14 (App Router)
+- Next.js 16 (App Router)
 - TypeScript
 - Tailwind CSS
-- Clerk (Auth + role metadata)
+- Supabase Auth (email/password session)
 - Supabase (PostgreSQL, RLS-ready, Storage-ready)
 - PWA manifest retained; service-worker caching is currently disabled with a cleanup worker
 
@@ -47,7 +47,7 @@ Codebase awal untuk platform pengembangan diri harian berbasis gamifikasi Islami
 ## Menjalankan Proyek
 1. Install dependencies
 ```bash
-npm install
+npm ci
 ```
 
 2. Copy environment
@@ -58,11 +58,10 @@ cp .env.example .env.local
 3. Isi variabel Supabase di `.env.local`
 ```bash
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=...
-CLERK_SECRET_KEY=...
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...
+AUTH_BYPASS_ENABLED=false
 ```
 
 4. Jalankan dev server
@@ -76,10 +75,13 @@ npm run dev
 ## Quality Checks
 - Lint: `npm run lint`
 - Type check: `npm run typecheck`
-- Full check (lint + types + build): `npm run check`
+- Test: `npm run test`
+- Local sanity check: `npm run doctor`
+- Full check: `npm run check`
+- Bersihkan cache lokal: `npm run clean`
 
 ## Catatan Implementasi
-- Auth menggunakan Clerk sebagai sumber identitas. `src/middleware.ts` hanya menyinkronkan sesi Clerk, sementara route protection tetap dilakukan di Server Components/API routes via `src/lib/auth.ts`.
+- Auth menggunakan Supabase Auth sebagai sumber identitas. `src/proxy.ts` menyegarkan sesi Supabase, sementara route protection tetap dilakukan di Server Components/API routes via `src/lib/auth.ts`.
 - Sebagian besar alur inti sudah membaca/menulis ke Supabase melalui server-side admin client dengan filter `user_id`.
 - Jalur workflow utama didefinisikan di `src/lib/routes.ts`.
 - PWA caching sedang dimatikan; `public/sw.js` hanya membersihkan service worker/cache lama.
@@ -94,7 +96,7 @@ npm run dev
 - `docs/Document_Audit_0d528d9c-ba71-4d84-9197-bfc9263f6ebd.md` - hasil audit dokumen/workflow
 
 ## Next Steps (Disarankan)
-1. Tambahkan regression test untuk sign-in, onboarding, dashboard, dan admin guard.
+1. Tambahkan regression test untuk login/register, onboarding, dashboard, dan admin guard.
 2. Selesaikan observability event untuk KPI (DAU, D7, D30, MDCR).
 3. Re-enable PWA caching hanya setelah browser cache regression test tersedia.
 4. Rapikan backlog AI agar sesuai implementasi Gemini saat ini atau target AI Gateway baru.

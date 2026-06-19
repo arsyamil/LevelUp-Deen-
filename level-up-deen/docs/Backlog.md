@@ -21,7 +21,7 @@
 
 | ID | Item | Priority | Ref | Status |
 |----|------|----------|-----|--------|
-| SETUP-01 | Setup Next.js 14 + TypeScript + Tailwind + shadcn/ui | P0 | Architecture §1 | ✅ Done |
+| SETUP-01 | Setup Next.js 16 + TypeScript + Tailwind + shadcn/ui | P0 | Architecture §1 | ✅ Done |
 | SETUP-02 | Setup Supabase project (Auth, DB, Storage) | P0 | Architecture §2.3 | ⬜ Todo |
 | SETUP-03 | Setup Vercel deployment + CI/CD dari GitHub | P0 | Architecture §1 | ⬜ Todo |
 | SETUP-04 | PWA manifest + service worker dasar | P0 | PRD NFR-02 | 🔶 Partial |
@@ -57,13 +57,13 @@
 
 | ID | Item | Priority | Ref | Status |
 |----|------|----------|-----|--------|
-| AUTH-01 | Register page (email/password via Clerk) | P0 | FR-AUTH-01 | ✅ Done |
-| AUTH-02 | Login page (email/password via Clerk) | P0 | FR-AUTH-02 | ✅ Done |
+| AUTH-01 | Register page (email/password via Supabase Auth) | P0 | FR-AUTH-01 | ✅ Done |
+| AUTH-02 | Login page (email/password via Supabase Auth) | P0 | FR-AUTH-02 | ✅ Done |
 | AUTH-03 | Google OAuth login | P1 | FR-AUTH-03 | ⬜ Todo |
-| AUTH-04 | Server-side Clerk guards for protected pages/APIs | P0 | Security §2.3 | ✅ Done |
+| AUTH-04 | Server-side Supabase Auth guards for protected pages/APIs | P0 | Security §2.3 | ✅ Done |
 | AUTH-05 | Redirect unauthenticated → /login | P0 | Architecture §2.2 | ✅ Done |
 | AUTH-06 | Redirect non-onboarded → /onboarding | P0 | Architecture §2.2 | ✅ Done |
-| AUTH-07 | OAuth callback handled by Clerk | P1 | Architecture §2.2 | ✅ Done |
+| AUTH-07 | OAuth melalui Supabase Auth | P1 | Architecture §2.2 | ✅ Done |
 | AUTH-08 | Supabase server client utility | P0 | Architecture §3.3 | ✅ Done |
 | AUTH-09 | Supabase browser client utility | P0 | Architecture §3.3 | ✅ Done |
 

@@ -1,0 +1,15 @@
+.DS_Store
+*.swp
+*.tsbuildinfo
+
+.next
+coverage
+node_modules
+
+docs
+stitch-assets
+*.zip
+
+public/workbox-*.js
+public/worker-*.js
+public/swe-worker-*.js

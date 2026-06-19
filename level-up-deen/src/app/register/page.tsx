@@ -7,8 +7,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { routes } from "@/lib/routes";
+import { useTranslation } from "@/components/providers";
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -37,12 +39,12 @@ export default function RegisterPage() {
     setError(null);
 
     if (password !== confirmPassword) {
-      setError("Password tidak cocok.");
+      setError(t("passwordMismatch"));
       return;
     }
 
     if (password.length < 6) {
-      setError("Password minimal 6 karakter.");
+      setError(t("passwordMin6"));
       return;
     }
 
@@ -73,11 +75,11 @@ export default function RegisterPage() {
       <Card className="mx-auto max-w-md p-8">
         <div className="cosmic-heading-glow">
           <h1 className="cosmic-gradient-text text-3xl font-semibold uppercase tracking-[0.08em]">
-            Daftar Akun
+            {t("registerTitle")}
           </h1>
         </div>
         <p className="mt-2 text-sm text-text-dim">
-          Buat akun baru untuk mulai menyimpan progress harian Anda.
+          {t("registerDesc")}
         </p>
 
         <div className="mt-8 space-y-6">
@@ -105,7 +107,7 @@ export default function RegisterPage() {
               />
               <path d="M1 1h22v22H1z" fill="none" />
             </svg>
-            Daftar dengan Google
+            {t("registerWithGoogle")}
           </button>
 
           <div className="relative">
@@ -113,14 +115,14 @@ export default function RegisterPage() {
               <div className="w-full border-t border-line"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-bg-card px-2 text-text-dim">Atau dengan email</span>
+              <span className="bg-bg-card px-2 text-text-dim">{t("orWithEmail")}</span>
             </div>
           </div>
 
           <form onSubmit={handleRegister} className="space-y-4">
             <div>
             <label htmlFor="register-email" className="mb-1.5 block text-sm font-medium">
-              Email
+              {t("email")}
             </label>
             <input
               id="register-email"
@@ -128,14 +130,14 @@ export default function RegisterPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="email@contoh.com"
+              placeholder={t("emailPlaceholder")}
               className="input-field"
             />
           </div>
 
           <div>
             <label htmlFor="register-password" className="mb-1.5 block text-sm font-medium">
-              Password
+              {t("password")}
             </label>
             <input
               id="register-password"
@@ -143,14 +145,14 @@ export default function RegisterPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Minimal 6 karakter"
+              placeholder={t("passwordMin6")}
               className="input-field"
             />
           </div>
 
           <div>
             <label htmlFor="register-confirm" className="mb-1.5 block text-sm font-medium">
-              Konfirmasi Password
+              {t("confirmPassword")}
             </label>
             <input
               id="register-confirm"
@@ -158,7 +160,7 @@ export default function RegisterPage() {
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Ulangi password"
+              placeholder={t("repeatPassword")}
               className="input-field"
             />
           </div>
@@ -168,15 +170,15 @@ export default function RegisterPage() {
           )}
 
           <Button type="submit" variant="primary" loading={loading} className="w-full">
-            {loading ? "Memproses..." : "Daftar"}
+            {loading ? t("processing") : t("signUpBtn")}
           </Button>
           </form>
         </div>
 
         <p className="mt-6 text-sm text-text-dim">
-          Sudah punya akun?{" "}
+          {t("alreadyHaveAccount")}
           <Link href={routes.login} className="font-medium text-brand">
-            Masuk di sini
+            {t("loginHere")}
           </Link>
           .
         </p>

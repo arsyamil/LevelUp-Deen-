@@ -4,7 +4,7 @@ Level Up Deen keeps its web app manifest and offline fallback assets, but produc
 
 ## Why Caching Is Disabled
 
-During the June 2026 Vercel/Clerk stabilization work, a Workbox service worker served stale app chunks and stale error UI after production deploys. To keep auth and onboarding reliable, `next-pwa` generation is disabled in `next.config.mjs`.
+During the June 2026 auth and deployment stabilization work, a Workbox service worker served stale app chunks and stale error UI after production deploys. To keep auth and onboarding reliable, Workbox generation is disabled and the PWA generator dependency is not part of the active runtime.
 
 ## Current Behavior
 
@@ -18,7 +18,7 @@ During the June 2026 Vercel/Clerk stabilization work, a Workbox service worker s
 
 | File | Purpose |
 | --- | --- |
-| `next.config.mjs` | `next-pwa` is installed but disabled with `disable: true` |
+| `next.config.mjs` | plain Next.js config; no Workbox/PWA generator wrapper |
 | `src/components/pwa/register-sw.tsx` | cleanup of old service workers/caches |
 | `public/sw.js` | cleanup service worker |
 | `src/app/manifest.ts` | install metadata |
@@ -30,7 +30,7 @@ Only re-enable service-worker caching after the auth and deployment flow has bro
 
 Required checklist:
 
-- Verify Clerk sign-in, sign-up, dashboard, onboarding, and sign-out after deploy.
+- Verify Supabase login, register, dashboard, onboarding, and sign-out after deploy.
 - Exclude authenticated RSC/data responses from long-lived caches.
 - Keep `/api/*` network-first or no-store.
 - Confirm a new deployment replaces app chunks without manual cache clearing.

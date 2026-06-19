@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Audiowide } from "next/font/google";
 import localFont from "next/font/local";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { RegisterServiceWorker } from "@/components/pwa/register-sw";
 import { AppProviders } from "@/components/providers";
@@ -47,6 +49,8 @@ export default function RootLayout({
         <AppProviders attribute="class" defaultTheme="dark" enableSystem={false}>
           <RegisterServiceWorker />
           {children}
+          <Analytics />
+          <SpeedInsights />
         </AppProviders>
       </body>
     </html>

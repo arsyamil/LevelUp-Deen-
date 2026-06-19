@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomInt } from "node:crypto";
 import { z } from "zod";
 import { getCurrentUserId } from "@/lib/auth";
 import { writeSystemAuditLog } from "@/lib/audit";
@@ -29,6 +30,7 @@ export async function GET() {
     id: string;
     name: string;
     isPrivate: boolean;
+    inviteCode?: string;
     myRole: string;
     memberCount: number;
     members: Array<{ userId: string; username: string; role: string; joinedAt: string }>;
@@ -39,7 +41,7 @@ export async function GET() {
     const [squadResult, membersResult] = await Promise.all([
       admin
         .from("squad_groups")
-        .select("id, name, is_private")
+        .select("id, name, is_private, invite_code")
         .eq("id", membership.squad_id)
         .maybeSingle(),
       admin
@@ -66,6 +68,7 @@ export async function GET() {
         id: squadResult.data.id,
         name: squadResult.data.name,
         isPrivate: squadResult.data.is_private,
+        inviteCode: squadResult.data.invite_code,
         myRole: membership.role,
         memberCount: (membersResult.data ?? []).length,
         members: (membersResult.data ?? []).map((m) => ({
@@ -81,7 +84,7 @@ export async function GET() {
   // Fetch public squads for the browse list (exclude user's current squad)
   const publicSquadsQuery = admin
     .from("squad_groups")
-    .select("id, name, created_at")
+    .select("id, name, created_at, invite_code")
     .eq("is_private", false)
     .order("created_at", { ascending: false })
     .limit(20);
@@ -110,10 +113,20 @@ export async function GET() {
     .map((s) => ({
       id: s.id,
       name: s.name,
+      inviteCode: s.invite_code,
       memberCount: memberCounts.get(s.id) ?? 0,
     }));
 
   return NextResponse.json({ mySquad, availableSquads });
+}
+
+function generateInviteCode(): string {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let result = "";
+  for (let i = 0; i < 6; i++) {
+    result += chars.charAt(randomInt(chars.length));
+  }
+  return result;
 }
 
 // POST /api/squad — create a new squad
@@ -148,6 +161,22 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Generate unique invite code
+  let inviteCode = generateInviteCode();
+  let isUnique = false;
+  while (!isUnique) {
+    const { data: existingGroup } = await admin
+      .from("squad_groups")
+      .select("id")
+      .eq("invite_code", inviteCode)
+      .maybeSingle();
+    if (!existingGroup) {
+      isUnique = true;
+    } else {
+      inviteCode = generateInviteCode();
+    }
+  }
+
   // Create squad
   const { data: squad, error: createError } = await admin
     .from("squad_groups")
@@ -155,8 +184,9 @@ export async function POST(request: NextRequest) {
       name: result.data.name,
       created_by: userId,
       is_private: result.data.isPrivate,
+      invite_code: inviteCode,
     })
-    .select("id, name, is_private")
+    .select("id, name, is_private, invite_code")
     .maybeSingle();
 
   if (createError || !squad) {

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { Toast } from "@/components/ui/toast";
 import type { TaskLogStatus } from "@/lib/types";
+import { useTranslation } from "@/components/providers";
 
 import { LevelUpModal } from "@/components/gamification/level-up-modal";
 
@@ -24,6 +25,7 @@ const statusStyles: Record<TaskLogStatus, string> = {
 };
 
 export function FitnessTaskList({ initialTasks }: { initialTasks: FitnessTask[] }) {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState<FitnessTask[]>(initialTasks);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -39,7 +41,7 @@ export function FitnessTaskList({ initialTasks }: { initialTasks: FitnessTask[] 
       });
       const payload = await response.json();
       if (!response.ok) {
-        throw new Error(payload.error || "Gagal memperbarui status tugas");
+        throw new Error(payload.error || t("errUpdateTask"));
       }
       setTasks((current) =>
         current.map((task) => (task.id === taskId ? { ...task, status } : task))
@@ -54,7 +56,7 @@ export function FitnessTaskList({ initialTasks }: { initialTasks: FitnessTask[] 
         setToastMessage(msgParts.join(" • "));
       }
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Gagal memperbarui status tugas");
+      alert(err instanceof Error ? err.message : t("errUpdateTask"));
     } finally {
       setSavingId(null);
     }
@@ -87,7 +89,7 @@ export function FitnessTaskList({ initialTasks }: { initialTasks: FitnessTask[] 
                       {task.targetValue?.toLocaleString("id-ID")}{" "}
                       {task.targetUnit ?? ""}
                       {task.actualValue !== null && (
-                        <> • Dicapai: {task.actualValue.toLocaleString("id-ID")} {task.targetUnit ?? ""}</>
+                        <> • {t("reached")}: {task.actualValue.toLocaleString("id-ID")} {task.targetUnit ?? ""}</>
                       )}
                     </>
                   )}
@@ -114,7 +116,7 @@ export function FitnessTaskList({ initialTasks }: { initialTasks: FitnessTask[] 
                   onClick={() => updateTaskStatus(task.id, task.status === "completed" ? "pending" : "completed")}
                   className="rounded bg-brand px-3 py-1 text-xs font-semibold text-text hover:bg-brand/90 disabled:opacity-50"
                 >
-                  {task.status === "completed" ? "Batal" : "Selesai"}
+                  {task.status === "completed" ? t("cancelBtn") : t("completed")}
                 </button>
               </div>
             </div>

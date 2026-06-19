@@ -19,10 +19,8 @@ const nextConfig = {
           },
         ],
       },
-      // PWA cleanup headers — keep serving sw.js and manifest for existing
-      // browser installs until the cleanup worker has finished unregistering.
       {
-        source: "/manifest.json",
+        source: "/manifest.webmanifest",
         headers: [
           {
             key: "Content-Type",

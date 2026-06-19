@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
   // Get email from Supabase Auth
   let email = "";
   try {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     email = user?.email ?? "";
   } catch {
@@ -186,7 +186,6 @@ export async function POST(request: NextRequest) {
     }
   } catch (e) {
     // don't fail onboarding if task creation fails; log for debugging
-    // eslint-disable-next-line no-console
     console.error("onboarding: failed to create initial tasks", e);
   }
 

@@ -200,7 +200,7 @@ CREATE POLICY "Users delete own data" ON my_table
 
 ### 5.3 Key Constraints
 
-- All user tables MUST have Clerk-compatible `user_id text NOT NULL REFERENCES public.users_profile(id) ON DELETE CASCADE`
+- All user tables MUST have Supabase Auth-compatible `user_id text NOT NULL REFERENCES public.users_profile(id) ON DELETE CASCADE`
 - `username` must be unique
 - Mandatory prayers: `is_deletable=false`, `is_system_required=true`
 - Financial transactions: `type IN ('income', 'expense')`
@@ -318,7 +318,7 @@ npx vercel --prod
 | Issue | Solution |
 |-------|----------|
 | Supabase connection refused | Run `supabase start`, check Docker is running |
-| RLS blocking queries | Verify Clerk `sub` claim matches `user_id`, check policy with service role |
+| RLS blocking queries | Verify Supabase Auth user id matches `user_id`, check policy with service role |
 | Hydration mismatch | Ensure client/server render same initial content |
 | Tailwind classes not working | Check `content` paths in `tailwind.config.ts` |
 | Type errors after DB changes | Regenerate types: `supabase gen types typescript` |

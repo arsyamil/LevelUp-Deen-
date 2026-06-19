@@ -19,7 +19,7 @@ export async function getCurrentUserId(): Promise<string | null> {
   }
 
   try {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -54,7 +54,7 @@ async function getUserRoleFromProfile(userId: string): Promise<RoleKey> {
 
 async function getUserEmailFromAuth(): Promise<string> {
   try {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { DailyTask, TaskLogStatus } from "@/lib/types";
 import { Toast } from "@/components/ui/toast";
+import { useTranslation } from "@/components/providers";
 
 import { LevelUpModal } from "@/components/gamification/level-up-modal";
 
@@ -13,6 +14,7 @@ const statusStyles: Record<TaskLogStatus, string> = {
 };
 
 export function DeenTaskList({ initialTasks }: { initialTasks: DailyTask[] }) {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState<DailyTask[]>(initialTasks);
   const [saving, setSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -28,7 +30,7 @@ export function DeenTaskList({ initialTasks }: { initialTasks: DailyTask[] }) {
       });
       const payload = await response.json();
       if (!response.ok) {
-        throw new Error(payload.error || "Gagal memperbarui status tugas");
+        throw new Error(payload.error || t("errUpdateTask"));
       }
       setTasks((current) =>
         current.map((task) => (task.id === taskId ? { ...task, status } : task))
@@ -43,7 +45,7 @@ export function DeenTaskList({ initialTasks }: { initialTasks: DailyTask[] }) {
         setToastMessage(msgParts.join(" • "));
       }
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Gagal memperbarui status tugas");
+      alert(err instanceof Error ? err.message : t("errUpdateTask"));
     } finally {
       setSaving(false);
     }
@@ -74,7 +76,7 @@ export function DeenTaskList({ initialTasks }: { initialTasks: DailyTask[] }) {
                   onClick={() => updateTaskStatus(task.id, task.status === "completed" ? "pending" : "completed")}
                   className="rounded bg-brand px-3 py-1 text-xs font-semibold text-text hover:bg-brand/90 disabled:opacity-50"
                 >
-                  {task.status === "completed" ? "Batal" : "Selesai"}
+                  {task.status === "completed" ? t("cancelBtn") : t("completed")}
                 </button>
               </div>
             </li>
@@ -82,13 +84,13 @@ export function DeenTaskList({ initialTasks }: { initialTasks: DailyTask[] }) {
         </ul>
       ) : (
         <div className="mt-3 rounded-lg border border-line bg-bg-soft p-4 text-sm text-text-dim">
-          Belum ada checklist shalat wajib. Selesaikan onboarding untuk membuat task shalat otomatis.
+          {t("noMandatoryPrayers")}
         </div>
       )}
 
       {sunnahTasks.length > 0 && (
         <div className="mt-6">
-          <h2 className="section-title mb-4">Sunnah & Deen Tasks</h2>
+          <h2 className="section-title mb-4">{t("sunnahDeenTasks")}</h2>
           <div className="grid gap-3 md:grid-cols-2">
             {sunnahTasks.map((task) => (
               <div key={task.id} className="rounded-lg border border-line bg-bg-soft p-3">
@@ -108,7 +110,7 @@ export function DeenTaskList({ initialTasks }: { initialTasks: DailyTask[] }) {
                       onClick={() => updateTaskStatus(task.id, task.status === "completed" ? "pending" : "completed")}
                       className="rounded bg-brand px-3 py-1 text-xs font-semibold text-text hover:bg-brand/90 disabled:opacity-50"
                     >
-                      {task.status === "completed" ? "Batal" : "Selesai"}
+                      {task.status === "completed" ? t("cancelBtn") : t("completed")}
                     </button>
                   </div>
                 </div>

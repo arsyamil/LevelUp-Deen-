@@ -19,6 +19,8 @@
 # misc
 .DS_Store
 *.pem
+*.swp
+docs/.Rhistory
 
 # debug
 npm-debug.log*
@@ -30,6 +32,14 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# generated PWA artifacts
+public/workbox-*.js
+public/worker-*.js
+public/swe-worker-*.js
+
+# generated design import artifacts
+stitch-assets/
 
 # typescript
 *.tsbuildinfo

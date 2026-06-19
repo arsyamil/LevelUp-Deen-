@@ -121,8 +121,8 @@ Kebutuhan desain:
 | `/` | Daily Command Center preview | Menampilkan pengalaman inti aplikasi |
 | `/login` | Login user | Cepat, jelas, minim distraksi |
 | `/register` | Registrasi user | Sederhana dan trust-building |
-| `/sign-in` | Auth route tambahan | Konsisten dengan login |
-| `/sign-up` | Auth route tambahan | Konsisten dengan register |
+| `/login` | Auth login | Supabase Auth email/password |
+| `/register` | Auth register | Supabase Auth email/password |
 | `/ai-coach` | AI Coach public/preview | Menampilkan konsep AI assistant |
 
 ## 5.2 App Routes
@@ -729,4 +729,3 @@ Next design work:
 - Add avatar preview asset system.
 - Add theme preview in settings.
 - Add AI chat interface with confirmation flows.
-

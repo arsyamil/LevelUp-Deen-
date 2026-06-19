@@ -7,8 +7,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { routes } from "@/lib/routes";
+import { useTranslation } from "@/components/providers";
 
 function LoginForm() {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || routes.dashboard;
@@ -80,7 +82,7 @@ function LoginForm() {
           />
           <path d="M1 1h22v22H1z" fill="none" />
         </svg>
-        Lanjutkan dengan Google
+        {t("continueWithGoogle")}
       </button>
 
       <div className="relative">
@@ -88,14 +90,14 @@ function LoginForm() {
           <div className="w-full border-t border-line"></div>
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-bg-card px-2 text-text-dim">Atau dengan email</span>
+          <span className="bg-bg-card px-2 text-text-dim">{t("orWithEmail")}</span>
         </div>
       </div>
 
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
         <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium">
-          Email
+          {t("email")}
         </label>
         <input
           id="login-email"
@@ -103,14 +105,14 @@ function LoginForm() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="email@contoh.com"
+          placeholder={t("emailPlaceholder")}
           className="input-field"
         />
       </div>
 
       <div>
         <label htmlFor="login-password" className="mb-1.5 block text-sm font-medium">
-          Password
+          {t("password")}
         </label>
         <input
           id="login-password"
@@ -118,7 +120,7 @@ function LoginForm() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="••••••••"
+          placeholder={t("passwordPlaceholder")}
           className="input-field"
         />
       </div>
@@ -128,7 +130,7 @@ function LoginForm() {
       )}
 
       <Button type="submit" variant="primary" loading={loading} className="w-full">
-        {loading ? "Memproses..." : "Masuk"}
+        {loading ? t("processing") : t("signInBtn")}
       </Button>
       </form>
     </div>
@@ -136,17 +138,18 @@ function LoginForm() {
 }
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   return (
     <main className="cosmic-section min-h-screen">
       <div className="cosmic-orb left-1/2 top-12 -translate-x-1/2" />
       <Card className="mx-auto max-w-md p-8">
         <div className="cosmic-heading-glow">
           <h1 className="cosmic-gradient-text text-3xl font-semibold uppercase tracking-[0.08em]">
-            Login
+            {t("loginTitle")}
           </h1>
         </div>
         <p className="mt-2 text-sm text-text-dim">
-          Masuk ke akun Level Up Deen untuk melanjutkan progress harianmu.
+          {t("loginDesc")}
         </p>
 
         <Suspense fallback={<div className="mt-8 text-sm text-text-dim">Memuat...</div>}>
@@ -154,9 +157,9 @@ export default function LoginPage() {
         </Suspense>
 
         <p className="mt-6 text-sm text-text-dim">
-          Belum punya akun?{" "}
+          {t("noAccount")}
           <Link href={routes.register} className="font-medium text-brand">
-            Daftar di sini
+            {t("registerHere")}
           </Link>
           .
         </p>

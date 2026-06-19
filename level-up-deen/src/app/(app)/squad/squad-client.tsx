@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { SquadManager } from "@/components/squad/squad-manager";
 import { SquadMemberList } from "@/components/squad/squad-member-list";
+import { useTranslation } from "@/components/providers";
 
 interface LeaderboardEntry {
   rank: number;
@@ -28,6 +30,7 @@ export function SquadPageClient({
   globalLeaderboard,
   squadLeaderboard,
 }: Props) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [leaderboardTab, setLeaderboardTab] = useState<"global" | "squad">(
     hasSquad ? "squad" : "global"
@@ -93,7 +96,7 @@ export function SquadPageClient({
                   : "border-line bg-bg text-text-dim"
               }`}
             >
-              🌍 Global
+              🌍 {t("global")}
             </button>
             <button
               type="button"
@@ -104,28 +107,31 @@ export function SquadPageClient({
                   : "border-line bg-bg text-text-dim"
               }`}
             >
-              👥 My Squad
+              👥 {t("mySquad")}
             </button>
           </div>
         ) : null}
 
         <h2 className="section-title">
           {leaderboardTab === "squad" && hasSquad
-            ? "Leaderboard Squad"
-            : "Leaderboard Global"}
-          <span className="ml-2 text-xs font-normal text-text-dim">Hari Ini</span>
+            ? t("leaderboardSquad")
+            : t("leaderboardGlobal")}
+          <span className="ml-2 text-xs font-normal text-text-dim">{t("today")}</span>
         </h2>
 
         {currentLeaderboard.length === 0 ? (
           <p className="mt-3 text-sm text-text-dim">
             {leaderboardTab === "squad"
-              ? "Belum ada anggota squad yang menyelesaikan quest hari ini."
-              : "Belum ada data hari ini. Leaderboard diperbarui saat pengguna menyelesaikan quest."}
+              ? t("noSquadDataToday")
+              : t("noGlobalDataToday")}
           </p>
         ) : (
           <ul className="mt-3 space-y-2">
             {currentLeaderboard.map((entry) => (
-              <li
+              <motion.li
+                layout
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
                 key={entry.userId}
                 className={`flex items-center justify-between rounded-lg border px-3 py-2 text-sm ${
                   entry.isMe
@@ -145,7 +151,7 @@ export function SquadPageClient({
                   </span>
                   <span className={entry.isMe ? "font-semibold text-brand" : ""}>
                     {entry.username}
-                    {entry.isMe && " (kamu)"}
+                    {entry.isMe && ` ${t("youIndicator")}`}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -160,7 +166,7 @@ export function SquadPageClient({
                   )}
                   <span className="text-text-dim">{entry.score} pts</span>
                 </div>
-              </li>
+              </motion.li>
             ))}
           </ul>
         )}
@@ -171,7 +177,7 @@ export function SquadPageClient({
         {hasSquad ? (
           squadLoading ? (
             <Card className="p-5">
-              <p className="text-sm text-text-dim">Memuat data squad...</p>
+              <p className="text-sm text-text-dim">{t("loadingSquad")}</p>
             </Card>
           ) : squadData ? (
             <SquadMemberList
@@ -181,7 +187,7 @@ export function SquadPageClient({
             />
           ) : (
             <Card className="p-5">
-              <p className="text-sm text-text-dim">Squad tidak ditemukan.</p>
+              <p className="text-sm text-text-dim">{t("squadNotFound")}</p>
             </Card>
           )
         ) : (

@@ -48,7 +48,7 @@ function getBypassProfile(userId: string): AuthenticatedUserProfile {
 
 async function getSupabaseAuthEmail(): Promise<string> {
   try {
-    const supabase = createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();

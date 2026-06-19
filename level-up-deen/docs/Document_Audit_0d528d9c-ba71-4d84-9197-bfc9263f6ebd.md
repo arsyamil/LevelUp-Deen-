@@ -18,8 +18,8 @@ The ID `0d528d9c-ba71-4d84-9197-bfc9263f6ebd` was not found in the local reposit
 
 | Severity | Finding | Status |
 | --- | --- | --- |
-| High | `scripts/verify-workflow.js` required deleted `src/middleware.ts`, so workflow verification was broken. | Fixed |
-| High | Docs claimed Clerk middleware route protection, while production route protection belongs in server-side guards. | Fixed in canonical docs |
+| High | `scripts/verify-workflow.js` required deleted `src/proxy.ts`, so workflow verification was broken. | Fixed |
+| High | Docs claimed Clerk proxy route protection, while production route protection belongs in server-side guards. | Fixed in canonical docs |
 | High | Docs claimed production PWA caching/offline support, but service-worker caching is disabled for stability. | Fixed in PWA docs/runbook |
 | Medium | Duplicate AI coach file `src/app/api/ai/coach/route 2.ts` existed and duplicated an old Supabase-session implementation. | Removed |
 | Medium | Root `design.md` overlapped with `docs/design.md`. | Root file converted to canonical pointer |
@@ -33,14 +33,14 @@ The ID `0d528d9c-ba71-4d84-9197-bfc9263f6ebd` was not found in the local reposit
 | --- | --- | --- |
 | `design.md` and `docs/design.md` | Two design references could drift. | Keep `docs/design.md` canonical; root `design.md` now points there. |
 | `PWA_SETUP.md`, `docs/Architecture.md`, `docs/Security.md`, `docs/Backlog.md` | PWA state conflicted with current disabled service worker. | Updated to current disabled-cache state. |
-| `docs/Security.md` vs runtime | Described middleware route protection instead of sync-only middleware plus server-side guards. | Updated security model. |
-| `docs/Workflow.md` vs runtime | Too short; did not explain sync-only middleware, server-side auth guards, and PWA cleanup. | Expanded and linked runbook. |
+| `docs/Security.md` vs runtime | Described proxy route protection instead of sync-only proxy plus server-side guards. | Updated security model. |
+| `docs/Workflow.md` vs runtime | Too short; did not explain sync-only proxy, server-side auth guards, and PWA cleanup. | Expanded and linked runbook. |
 | `src/app/api/ai/coach/route.ts` and `route 2.ts` | Duplicate endpoint intent; old file used Supabase auth session and could confuse future work. | Deleted `route 2.ts`. |
 
 ## Workflow Gaps Closed
 
 - Added `docs/Runtime_Runbook.md`.
-- Updated workflow verification to assert current sync-only middleware auth architecture.
+- Updated workflow verification to assert current sync-only proxy auth architecture.
 - Added verification checks for PWA cleanup state.
 - Added verification checks that duplicate AI coach route is absent.
 - Documented required Vercel production env vars.
@@ -70,12 +70,12 @@ npm run build
 npm run check
 ```
 
-`npm run verify:workflow` initially failed because it expected the wrong middleware state. That was a workflow bug and has been corrected.
+`npm run verify:workflow` initially failed because it expected the wrong proxy state. That was a workflow bug and has been corrected.
 
 ## Validation Checklist
 
 - [x] Remove duplicate AI coach route artifact.
-- [x] Update workflow verification for sync-only middleware auth.
+- [x] Update workflow verification for sync-only proxy auth.
 - [x] Update root docs that contradicted runtime.
 - [x] Create missing runtime runbook.
 - [x] Keep audit record tied to requested ID.

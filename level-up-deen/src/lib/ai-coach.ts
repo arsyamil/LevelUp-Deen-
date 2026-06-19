@@ -63,11 +63,13 @@ export async function getGeminiCoachAnswer(
   intent?: CoachIntent,
   userContext?: {
     username?: string;
+    userType?: string;
     level?: number;
     rank?: string;
     prayerStreak?: number;
     questStreak?: number;
     coins?: number;
+    activeTasks?: { name: string; is_completed: boolean }[];
   }
 ): Promise<string> {
   if (!GEMINI_API_KEY) {
@@ -94,7 +96,11 @@ export async function getGeminiCoachAnswer(
     // Build context-enriched message
     let contextPrefix = "";
     if (userContext) {
-      contextPrefix = `<system_context>User profile: name=${userContext.username ?? "anonim"}, level=${userContext.level ?? 1}, rank=${userContext.rank ?? "E"}, prayer_streak=${userContext.prayerStreak ?? 0}, quest_streak=${userContext.questStreak ?? 0}, coins=${userContext.coins ?? 0}</system_context>\n\n`;
+      const tasksInfo = userContext.activeTasks && userContext.activeTasks.length > 0
+        ? ` Active tasks today: ${userContext.activeTasks.map(t => `${t.name} (${t.is_completed ? 'Done' : 'Pending'})`).join(', ')}.`
+        : "";
+
+      contextPrefix = `<system_context>User profile: name=${userContext.username ?? "anonim"}, type=${userContext.userType ?? "umum"}, level=${userContext.level ?? 1}, rank=${userContext.rank ?? "E"}, prayer_streak=${userContext.prayerStreak ?? 0}, quest_streak=${userContext.questStreak ?? 0}, coins=${userContext.coins ?? 0}.${tasksInfo}</system_context>\n\n`;
     }
     
     // We omit intent if it is burnout but the user typed something else, 

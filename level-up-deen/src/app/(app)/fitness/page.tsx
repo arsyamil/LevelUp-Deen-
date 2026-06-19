@@ -5,8 +5,12 @@ import { formatDateInTimeZone } from "@/lib/date";
 import { redirect } from "next/navigation";
 import { routes } from "@/lib/routes";
 import { FitnessTaskList, type FitnessTask } from "@/components/fitness/fitness-task-list";
+import { cookies } from "next/headers";
+import { getServerTranslation } from "@/lib/i18n";
 
 export default async function FitnessPage() {
+  const cookieStore = await cookies();
+  const { t } = getServerTranslation(cookieStore.get("app-lang")?.value);
   const userId = await getCurrentUserId();
   if (!userId) {
     redirect(routes.login);
@@ -60,26 +64,25 @@ export default async function FitnessPage() {
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h1 className="text-2xl font-semibold">Fitness Tracker</h1>
+        <h1 className="text-2xl font-semibold">{t("fitnessTrackerTitle")}</h1>
         <p className="mt-2 text-sm text-text-dim">
-          Tracking aktivitas fisik harian berdasarkan target personal dari onboarding.
+          {t("fitnessTrackerDesc")}
         </p>
       </Card>
 
       {tasksError && (
         <div className="rounded-lg border border-danger/30 bg-danger/10 p-4 text-sm text-danger">
-          Gagal memuat data: {tasksError.message}
+          {t("loadDataError")}{tasksError.message}
         </div>
       )}
 
       {fitnessTasks.length === 0 ? (
         <Card className="p-5">
-          <h2 className="section-title">Belum Ada Tugas Fitness</h2>
+          <h2 className="section-title">{t("noFitnessTasks")}</h2>
           <p className="mt-3 text-sm text-text-dim">
-            Tugas fitness otomatis dibuat saat onboarding selesai. Jika belum ada,
-            kamu bisa menambahkan custom task di halaman{" "}
+            {t("noFitnessTasksDesc")}
             <a href={routes.quests} className="text-brand hover:underline">
-              Daily Quest
+              {t("dailyQuestLink")}
             </a>
             .
           </p>
@@ -89,20 +92,20 @@ export default async function FitnessPage() {
           {/* Summary card */}
           <div className="grid gap-4 sm:grid-cols-3">
             <Card className="p-4">
-              <p className="text-xs uppercase tracking-wide text-text-dim">Selesai</p>
+              <p className="text-xs uppercase tracking-wide text-text-dim">{t("completed")}</p>
               <p className="mt-2 text-2xl font-semibold">
                 {completedCount}
                 <span className="text-base font-normal text-text-dim">/{totalCount}</span>
               </p>
             </Card>
             <Card className="p-4">
-              <p className="text-xs uppercase tracking-wide text-text-dim">Progress</p>
+              <p className="text-xs uppercase tracking-wide text-text-dim">{t("progress")}</p>
               <p className="mt-2 text-2xl font-semibold">
                 {totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0}%
               </p>
             </Card>
             <Card className="p-4">
-              <p className="text-xs uppercase tracking-wide text-text-dim">EXP Tersedia</p>
+              <p className="text-xs uppercase tracking-wide text-text-dim">{t("expAvailable")}</p>
               <p className="mt-2 text-2xl font-semibold">
                 {fitnessTasks
                   .filter((t) => t.status !== "completed")
@@ -113,7 +116,7 @@ export default async function FitnessPage() {
 
           {/* Task progress list */}
           <Card className="p-5">
-            <h2 className="section-title">Progress Hari Ini</h2>
+            <h2 className="section-title">{t("todayProgress")}</h2>
             <FitnessTaskList initialTasks={fitnessTasks} />
           </Card>
         </>

@@ -3,10 +3,10 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { requireSupabaseClientEnv, serverEnv } from "@/lib/env";
 
-export function createSupabaseServerClient() {
+export async function createSupabaseServerClient() {
   const { url, anonKey } = requireSupabaseClientEnv();
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
 
   return createServerClient(url, anonKey, {
     cookies: {

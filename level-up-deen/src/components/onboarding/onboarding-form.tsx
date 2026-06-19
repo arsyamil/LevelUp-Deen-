@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { routes } from "@/lib/routes";
 import type { OnboardingAnswers, PersonalizationPlan } from "@/lib/types";
+import { useTranslation } from "@/components/providers";
 
 const defaultAnswers: OnboardingAnswers = {
   userType: "mahasiswa",
@@ -35,6 +36,7 @@ const goalOptions = [
 ] as const;
 
 export function OnboardingForm() {
+  const { t } = useTranslation();
   const [form, setForm] = useState<OnboardingAnswers>(defaultAnswers);
   const [plan, setPlan] = useState<PersonalizationPlan | null>(null);
   const [loading, setLoading] = useState(false);
@@ -88,9 +90,9 @@ export function OnboardingForm() {
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h2 className="text-2xl font-semibold">Mulai Onboarding</h2>
+        <h2 className="text-2xl font-semibold">{t("startOnboarding")}</h2>
         <p className="mt-2 text-sm text-text-dim">
-          Isi data ini agar sistem bisa membuat target harian dan rekomendasi yang lebih relevan.
+          {t("startOnboardingDesc")}
         </p>
       </Card>
 
@@ -98,7 +100,7 @@ export function OnboardingForm() {
         <Card className="space-y-6 p-6">
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="space-y-2 text-sm">
-              <span className="font-medium">Tipe pengguna</span>
+              <span className="font-medium">{t("userTypeLabel")}</span>
               <select
                 value={form.userType}
                 onChange={(event) => handleChange("userType", event.target.value)}
@@ -113,7 +115,7 @@ export function OnboardingForm() {
             </label>
 
             <label className="space-y-2 text-sm">
-              <span className="font-medium">Waktu harian tersedia (menit)</span>
+              <span className="font-medium">{t("dailyTimeAvailable")}</span>
               <input
                 type="number"
                 value={form.dailyTimeMinutes}
@@ -126,7 +128,7 @@ export function OnboardingForm() {
           </div>
 
           <div className="space-y-3">
-            <p className="font-medium text-sm">Prioritas tujuan</p>
+            <p className="font-medium text-sm">{t("targetPriority")}</p>
             <div className="grid gap-3 sm:grid-cols-2">
               {goalOptions.map((goal) => (
                 <button
@@ -147,7 +149,7 @@ export function OnboardingForm() {
 
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="space-y-2 text-sm">
-              <span className="font-medium">Push-up dasar</span>
+              <span className="font-medium">{t("basePushUp")}</span>
               <input
                 type="number"
                 value={form.pushUpBase}
@@ -158,7 +160,7 @@ export function OnboardingForm() {
               />
             </label>
             <label className="space-y-2 text-sm">
-              <span className="font-medium">Squat dasar</span>
+              <span className="font-medium">{t("baseSquat")}</span>
               <input
                 type="number"
                 value={form.squatBase}
@@ -169,7 +171,7 @@ export function OnboardingForm() {
               />
             </label>
             <label className="space-y-2 text-sm">
-              <span className="font-medium">Pull-up dasar</span>
+              <span className="font-medium">{t("basePullUp")}</span>
               <input
                 type="number"
                 value={form.pullUpBase}
@@ -180,7 +182,7 @@ export function OnboardingForm() {
               />
             </label>
             <label className="space-y-2 text-sm">
-              <span className="font-medium">Lari dasar (km)</span>
+              <span className="font-medium">{t("baseRunKm")}</span>
               <input
                 type="number"
                 step="0.5"
@@ -195,7 +197,7 @@ export function OnboardingForm() {
 
           <div className="space-y-3">
             <label className="space-y-2 text-sm">
-              <span className="font-medium">Target tilawah</span>
+              <span className="font-medium">{t("tilawahTargetLabel")}</span>
               <input
                 type="text"
                 value={form.tilawahTarget}
@@ -205,7 +207,7 @@ export function OnboardingForm() {
             </label>
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="space-y-2 text-sm">
-                <span className="font-medium">Target air (ml)</span>
+                <span className="font-medium">{t("waterTargetMlLabel")}</span>
                 <input
                   type="number"
                   value={form.waterTargetMl}
@@ -216,7 +218,7 @@ export function OnboardingForm() {
                 />
               </label>
               <label className="space-y-2 text-sm">
-                <span className="font-medium">Pendapatan bulanan</span>
+                <span className="font-medium">{t("monthlyIncomeLabel")}</span>
                 <input
                   type="number"
                   value={form.monthlyIncome}
@@ -233,7 +235,7 @@ export function OnboardingForm() {
             disabled={loading}
             className="rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading ? "Menyimpan..." : "Simpan Onboarding"}
+            {loading ? t("savingOnboarding") : t("saveOnboarding")}
           </button>
 
           {message ? (
@@ -249,13 +251,13 @@ export function OnboardingForm() {
                 data-testid="onboarding-continue-dashboard"
                 className="inline-flex items-center justify-center rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90"
               >
-                Lanjut ke Dashboard
+                {t("continueToDashboard")}
               </Link>
               <Link
                 href={routes.quests}
                 className="inline-flex items-center justify-center rounded-2xl border border-brand/40 px-5 py-3 text-sm font-semibold text-brand transition hover:bg-brand/10"
               >
-                Buka Daily Quest
+                {t("openDailyQuest")}
               </Link>
             </div>
           ) : null}
@@ -263,25 +265,25 @@ export function OnboardingForm() {
 
         <div className="space-y-6">
           <Card className="space-y-4 p-5">
-            <h3 className="text-lg font-semibold">Ringkasan Onboarding</h3>
+            <h3 className="text-lg font-semibold">{t("onboardingSummaryTitle")}</h3>
             <p className="text-sm text-text-dim">
-              Form ini membantu sistem menentukan kebiasaan harian, target kebugaran, dan rekomendasi yang relevan.
+              {t("onboardingSummaryDesc1")}
             </p>
             <ul className="space-y-2 text-sm text-text-dim">
-              <li>Goal utama membentuk prioritas tenaga harian.</li>
-              <li>Profil user akan digunakan untuk rekomendasi AI dan quest.</li>
-              <li>Hasil akan tersimpan di profil Supabase user.</li>
+              <li>{t("onboardingSummaryItem1")}</li>
+              <li>{t("onboardingSummaryItem2")}</li>
+              <li>{t("onboardingSummaryItem3")}</li>
             </ul>
           </Card>
 
           {plan ? (
             <Card className="space-y-4 p-5">
               <div>
-                <h3 className="text-lg font-semibold">Rencana Anda</h3>
-                <p className="mt-2 text-sm text-text-dim">Rencana ini dihasilkan berdasarkan input onboarding.</p>
+                <h3 className="text-lg font-semibold">{t("yourPlanTitle")}</h3>
+                <p className="mt-2 text-sm text-text-dim">{t("yourPlanDesc")}</p>
               </div>
               <div className="space-y-3 text-sm">
-                <p className="font-semibold">Quest harian</p>
+                <p className="font-semibold">{t("dailyQuestsLabel")}</p>
                 <ul className="list-disc space-y-2 pl-5 text-text-dim">
                   {plan.dailyQuests.map((quest) => (
                     <li key={quest}>{quest}</li>
@@ -290,20 +292,20 @@ export function OnboardingForm() {
               </div>
               <div className="grid gap-3 sm:grid-cols-2 text-sm text-text-dim">
                 <div className="rounded-2xl border border-line bg-bg-soft p-4">
-                  <p className="font-semibold">Fitness target</p>
-                  <p>Push-up: {plan.fitnessTargets.pushUp}</p>
-                  <p>Squat: {plan.fitnessTargets.squat}</p>
-                  <p>Pull-up: {plan.fitnessTargets.pullUp}</p>
-                  <p>Lari: {plan.fitnessTargets.runKm} km</p>
+                  <p className="font-semibold">{t("fitnessTargetTitle")}</p>
+                  <p>{t("pushUpLabel")}{plan.fitnessTargets.pushUp}</p>
+                  <p>{t("squatLabel")}{plan.fitnessTargets.squat}</p>
+                  <p>{t("pullUpLabel")}{plan.fitnessTargets.pullUp}</p>
+                  <p>{t("runLabel")}{plan.fitnessTargets.runKm} km</p>
                 </div>
                 <div className="rounded-2xl border border-line bg-bg-soft p-4">
-                  <p className="font-semibold">Water & tilawah</p>
-                  <p>Minum: {plan.waterTargetMl} ml</p>
-                  <p>Tilawah: {plan.tilawahTarget}</p>
+                  <p className="font-semibold">{t("waterAndTilawah")}</p>
+                  <p>{t("drinkLabel")}{plan.waterTargetMl} ml</p>
+                  <p>{t("tilawahLabel")}{plan.tilawahTarget}</p>
                 </div>
               </div>
               <div className="rounded-2xl border border-line bg-bg p-4 text-sm text-text-dim">
-                <p className="font-semibold">Reminder</p>
+                <p className="font-semibold">{t("reminderLabel")}</p>
                 <p>{plan.suggestedReminders.join(" • ")}</p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row">
@@ -311,13 +313,13 @@ export function OnboardingForm() {
                   href={routes.dashboard}
                   className="inline-flex flex-1 items-center justify-center rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90"
                 >
-                  Lanjut ke Dashboard
+                  {t("continueToDashboard")}
                 </Link>
                 <Link
                   href={routes.quests}
                   className="inline-flex flex-1 items-center justify-center rounded-2xl border border-line px-5 py-3 text-sm font-semibold text-text transition hover:border-brand hover:text-brand"
                 >
-                  Lihat Quest
+                  {t("viewQuest")}
                 </Link>
               </div>
             </Card>

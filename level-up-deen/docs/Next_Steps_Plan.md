@@ -2,17 +2,17 @@
 
 ## Tujuan Terdekat
 
-Menstabilkan fondasi Clerk + Supabase, lalu mengubah halaman yang masih memakai mock data menjadi alur MVP yang benar-benar menyimpan dan membaca data user.
+Menstabilkan fondasi Supabase Auth + Supabase, lalu mengubah halaman yang masih memakai mock data menjadi alur MVP yang benar-benar menyimpan dan membaca data user.
 
 ## Status Saat Ini
 
-- Clerk menjadi sumber autentikasi dan otorisasi utama.
+- Supabase Auth menjadi sumber autentikasi utama dan users_profile.role menjadi sumber otorisasi aplikasi.
 - Supabase dipakai sebagai persistence layer.
-- User ID di migrasi sudah diselaraskan menjadi `text` agar kompatibel dengan Clerk ID.
+- User ID di migrasi sudah diselaraskan menjadi `text` agar kompatibel dengan Supabase Auth user ID.
 - Route workflow utama sudah dikonsolidasikan di `src/lib/routes.ts`.
 - `npm run check` sudah mencakup workflow verification, lint, typecheck, dan build.
 - Onboarding menyiapkan mandatory prayer tasks dan mencegah duplikasi task berbasis template.
-- Finance sudah mendukung create/list/edit/delete transaksi dengan ownership berbasis Clerk user ID.
+- Finance sudah mendukung create/list/edit/delete transaksi dengan ownership berbasis Supabase Auth user ID.
 - Finance sudah punya filter bulanan dan ringkasan income/expense per kategori.
 - Planning sudah membaca budget dan savings goals aktif dari Supabase untuk user saat ini.
 - Planning sudah punya form create/edit/delete budget dan create/edit/archive savings goal.
@@ -30,7 +30,7 @@ Menstabilkan fondasi Clerk + Supabase, lalu mengubah halaman yang masih memakai 
    - `202606030002_align_user_ids_with_clerk.sql`
    - Pastikan tabel lama yang memakai UUID user ID berhasil dikonversi ke `text`.
 
-2. Verifikasi Clerk metadata:
+2. Verifikasi users_profile.role:
    - Pastikan admin punya `publicMetadata.role = "admin_system"`.
    - Pastikan user biasa default ke role `user`.
 
@@ -46,7 +46,7 @@ Menstabilkan fondasi Clerk + Supabase, lalu mengubah halaman yang masih memakai 
    - Profile dibuat otomatis jika belum ada.
    - Onboarding membuat default tasks tanpa duplikasi.
    - Mandatory prayer tasks sudah disiapkan sebagai non-deletable.
-   - Lanjutkan dengan validasi end-to-end memakai user Clerk nyata dan database Supabase.
+   - Lanjutkan dengan validasi end-to-end memakai user Supabase Auth nyata dan database Supabase.
 
 2. Daily Quest:
    - Tambahkan input actual value untuk task numerik.
@@ -95,7 +95,7 @@ Prioritas halaman:
 
 1. Kurangi penggunaan `createSupabaseAdminClient` di flow user biasa.
 2. Jika tetap pakai service role di server route, semua query wajib:
-   - Mengambil Clerk user ID dari helper auth.
+   - Mengambil Supabase Auth user ID dari helper auth.
    - Filter `.eq("user_id", userId)` atau `.eq("id", userId)`.
    - Tidak menerima `user_id` dari payload client untuk operasi user biasa.
 
@@ -131,7 +131,7 @@ Prioritas halaman:
 
 ## Definition Of Done MVP
 
-- User bisa register/login dengan Clerk.
+- User bisa register/login dengan Supabase Auth.
 - User baru diarahkan ke onboarding.
 - Onboarding membuat profile dan task awal.
 - User bisa menyelesaikan daily quest dan reward tidak double.

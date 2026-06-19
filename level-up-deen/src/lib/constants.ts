@@ -60,6 +60,7 @@ export const APP_NAV = [
     href: routes.accessControl,
     label: "Access Control",
     description: "Role & permission management",
+    adminOnly: true,
   },
   {
     href: routes.adminAudit,

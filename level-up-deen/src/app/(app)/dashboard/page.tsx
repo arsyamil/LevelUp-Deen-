@@ -43,7 +43,7 @@ export default async function DashboardPage() {
 
   if (!dashboardData) redirect(routes.login);
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const { t } = getServerTranslation(cookieStore.get("app-lang")?.value);
 
   const { profile, stats, totalDailyTasks, completedDailyTasks } = dashboardData;

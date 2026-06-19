@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   const next = searchParams.get('next') ?? '/dashboard';
 
   if (code) {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
             cookieStore.set({ name, value, ...options });
           } catch {
             // The `set` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
+            // This can be ignored if the proxy is refreshing
             // user sessions.
           }
         },
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
             cookieStore.set({ name, value: '', ...options });
           } catch {
             // The `remove` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
+            // This can be ignored if the proxy is refreshing
             // user sessions.
           }
         },

@@ -29,10 +29,10 @@ export async function POST(request: NextRequest) {
   const admin = createSupabaseAdminClient();
 
   // Fetch user context to enrich the Gemini prompt
-  const [profileResult, statsResult] = await Promise.all([
+  const [profileResult, statsResult, tasksResult] = await Promise.all([
     admin
       .from("users_profile")
-      .select("username")
+      .select("username, user_type")
       .eq("id", userId)
       .maybeSingle(),
     admin
@@ -40,15 +40,22 @@ export async function POST(request: NextRequest) {
       .select("level, rank, coins, prayer_streak, full_quest_streak")
       .eq("user_id", userId)
       .maybeSingle(),
+    admin
+      .from("user_tasks")
+      .select("name, is_completed")
+      .eq("user_id", userId)
+      .eq("is_active", true)
   ]);
 
   const userContext = {
     username: profileResult.data?.username ?? undefined,
+    userType: profileResult.data?.user_type ?? undefined,
     level: statsResult.data?.level ?? 1,
     rank: statsResult.data?.rank ?? "E",
     prayerStreak: statsResult.data?.prayer_streak ?? 0,
     questStreak: statsResult.data?.full_quest_streak ?? 0,
     coins: statsResult.data?.coins ?? 0,
+    activeTasks: tasksResult.data ?? [],
   };
 
   const prompt = message || "Halo Coach, beri aku saran!";

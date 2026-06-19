@@ -4,6 +4,7 @@ import { FormEvent, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import type { PlanningBudgetItem, PlanningSavingsGoal } from "@/lib/planning";
+import { useTranslation } from "@/components/providers";
 
 const categoryOptions = [
   "Makan dan minum",
@@ -37,6 +38,7 @@ function getMonthParts(month: string) {
 }
 
 export function PlanningManager({ budgets, savingsGoals, month }: PlanningManagerProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -160,21 +162,21 @@ export function PlanningManager({ budgets, savingsGoals, month }: PlanningManage
 
       <Card className="p-5">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="section-title">{editingBudgetId ? "Edit Budget" : "Tambah Budget"}</h2>
+          <h2 className="section-title">{editingBudgetId ? t("editBudget") : t("addBudget")}</h2>
           {editingBudgetId ? (
             <button
               type="button"
               onClick={resetBudgetForm}
               className="rounded-lg border border-line px-3 py-1 text-xs font-medium text-text-dim transition hover:border-brand hover:text-text"
             >
-              Batal
+              {t("cancel")}
             </button>
           ) : null}
         </div>
 
         <form onSubmit={submitBudget} className="mt-4 space-y-4">
           <label className="block text-sm">
-            <span className="font-medium">Kategori</span>
+            <span className="font-medium">{t("category")}</span>
             <select
               value={budgetForm.category}
               onChange={(event) =>
@@ -191,7 +193,7 @@ export function PlanningManager({ budgets, savingsGoals, month }: PlanningManage
           </label>
 
           <label className="block text-sm">
-            <span className="font-medium">Nominal Budget</span>
+            <span className="font-medium">{t("budgetAmount")}</span>
             <input
               type="number"
               min={1}
@@ -211,7 +213,7 @@ export function PlanningManager({ budgets, savingsGoals, month }: PlanningManage
             disabled={isPending || budgetForm.budgetAmount <= 0}
             className="w-full rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {editingBudgetId ? "Simpan Budget" : "Tambah Budget"}
+            {editingBudgetId ? t("saveBudget") : t("addBudget")}
           </button>
         </form>
 
@@ -222,7 +224,7 @@ export function PlanningManager({ budgets, savingsGoals, month }: PlanningManage
                 <div className="flex items-center justify-between gap-3 text-sm">
                   <div>
                     <p className="font-medium">{budget.category}</p>
-                    <p className="text-xs text-text-dim">Budget aktif bulan ini</p>
+                    <p className="text-xs text-text-dim">{t("activeBudgetMonth")}</p>
                   </div>
                   <div className="flex gap-2">
                     <button
@@ -236,14 +238,14 @@ export function PlanningManager({ budgets, savingsGoals, month }: PlanningManage
                       }}
                       className="rounded-lg border border-line px-3 py-1 text-xs font-medium text-text-dim transition hover:border-brand hover:text-text"
                     >
-                      Edit
+                      {t("edit")}
                     </button>
                     <button
                       type="button"
                       onClick={() => deleteBudget(budget.id)}
                       className="rounded-lg border border-danger/30 px-3 py-1 text-xs font-medium text-danger transition hover:bg-danger/10"
                     >
-                      Hapus
+                      {t("delete")}
                     </button>
                   </div>
                 </div>
@@ -256,7 +258,7 @@ export function PlanningManager({ budgets, savingsGoals, month }: PlanningManage
       <Card className="p-5">
         <div className="flex items-center justify-between gap-3">
           <h2 className="section-title">
-            {editingGoalId ? "Edit Savings Goal" : "Tambah Savings Goal"}
+            {editingGoalId ? t("editSavingsGoal") : t("addSavingsGoal")}
           </h2>
           {editingGoalId ? (
             <button
@@ -264,14 +266,14 @@ export function PlanningManager({ budgets, savingsGoals, month }: PlanningManage
               onClick={resetGoalForm}
               className="rounded-lg border border-line px-3 py-1 text-xs font-medium text-text-dim transition hover:border-brand hover:text-text"
             >
-              Batal
+              {t("cancel")}
             </button>
           ) : null}
         </div>
 
         <form onSubmit={submitGoal} className="mt-4 space-y-4">
           <label className="block text-sm">
-            <span className="font-medium">Nama Target</span>
+            <span className="font-medium">{t("targetName")}</span>
             <input
               value={goalForm.name}
               onChange={(event) =>
@@ -283,7 +285,7 @@ export function PlanningManager({ budgets, savingsGoals, month }: PlanningManage
 
           <div className="grid gap-4 md:grid-cols-2">
             <label className="block text-sm">
-              <span className="font-medium">Target</span>
+              <span className="font-medium">{t("targetValue")}</span>
               <input
                 type="number"
                 min={1}
@@ -299,7 +301,7 @@ export function PlanningManager({ budgets, savingsGoals, month }: PlanningManage
             </label>
 
             <label className="block text-sm">
-              <span className="font-medium">Terkumpul</span>
+              <span className="font-medium">{t("collectedAmount")}</span>
               <input
                 type="number"
                 min={0}
@@ -316,7 +318,7 @@ export function PlanningManager({ budgets, savingsGoals, month }: PlanningManage
           </div>
 
           <label className="block text-sm">
-            <span className="font-medium">Tanggal Target</span>
+            <span className="font-medium">{t("targetDate")}</span>
             <input
               type="date"
               value={goalForm.targetDate}
@@ -332,7 +334,7 @@ export function PlanningManager({ budgets, savingsGoals, month }: PlanningManage
             disabled={isPending || !goalForm.name || goalForm.targetAmount <= 0}
             className="w-full rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {editingGoalId ? "Simpan Goal" : "Tambah Goal"}
+            {editingGoalId ? t("saveGoal") : t("addSavingsGoal")}
           </button>
         </form>
 
@@ -343,7 +345,7 @@ export function PlanningManager({ budgets, savingsGoals, month }: PlanningManage
                 <div className="flex items-center justify-between gap-3 text-sm">
                   <div>
                     <p className="font-medium">{goal.name}</p>
-                    <p className="text-xs text-text-dim">Goal aktif</p>
+                    <p className="text-xs text-text-dim">{t("activeGoal")}</p>
                   </div>
                   <div className="flex gap-2">
                     <button
@@ -359,14 +361,14 @@ export function PlanningManager({ budgets, savingsGoals, month }: PlanningManage
                       }}
                       className="rounded-lg border border-line px-3 py-1 text-xs font-medium text-text-dim transition hover:border-brand hover:text-text"
                     >
-                      Edit
+                      {t("edit")}
                     </button>
                     <button
                       type="button"
                       onClick={() => archiveGoal(goal.id)}
                       className="rounded-lg border border-danger/30 px-3 py-1 text-xs font-medium text-danger transition hover:bg-danger/10"
                     >
-                      Arsip
+                      {t("archive")}
                     </button>
                   </div>
                 </div>

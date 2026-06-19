@@ -16,6 +16,7 @@ interface SquadInfo {
   id: string;
   name: string;
   isPrivate: boolean;
+  inviteCode?: string;
   myRole: string;
   memberCount: number;
   members: SquadMember[];
@@ -55,12 +56,12 @@ export function SquadMemberList({ squad, currentUserId, onSquadChanged }: Props)
 
   const copySquadId = async () => {
     try {
-      await navigator.clipboard.writeText(squad.id);
+      await navigator.clipboard.writeText(squad.inviteCode ?? squad.id);
       setShowIdCopied(true);
       setTimeout(() => setShowIdCopied(false), 2000);
     } catch {
       // Fallback
-      showMsg(`ID Squad: ${squad.id}`, "success");
+      showMsg(`Kode Invite: ${squad.inviteCode ?? squad.id}`, "success");
     }
   };
 
@@ -97,9 +98,9 @@ export function SquadMemberList({ squad, currentUserId, onSquadChanged }: Props)
           </div>
 
           <div className="flex flex-col items-end gap-2">
-            {squad.isPrivate && (
+            {squad.inviteCode && (
               <Button size="sm" variant="secondary" onClick={copySquadId}>
-                {showIdCopied ? "✓ Copied!" : "📋 Copy ID"}
+                {showIdCopied ? "✓ Copied!" : "📋 Copy Code"}
               </Button>
             )}
             <Button

@@ -253,7 +253,6 @@ export async function PATCH(request: NextRequest) {
       }
     } catch (e) {
       // non-fatal
-      // eslint-disable-next-line no-console
       console.error("achievement-check failed", e);
     }
   }

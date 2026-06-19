@@ -3,6 +3,8 @@ import { PlanningManager } from "@/components/planning/planning-manager";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { forecastSavingsDate } from "@/lib/finance-ai";
 import { getCurrentPlanningMonthParts, getCurrentUserPlanningData } from "@/lib/planning";
+import { cookies } from "next/headers";
+import { getServerTranslation } from "@/lib/i18n";
 
 function formatRupiah(value: number) {
   return new Intl.NumberFormat("id-ID", {
@@ -22,6 +24,9 @@ function formatMonthLabel(month: string) {
 }
 
 export default async function PlanningPage() {
+  const cookieStore = await cookies();
+  const { t } = getServerTranslation(cookieStore.get("app-lang")?.value);
+
   const planning = await getCurrentUserPlanningData();
   const monthlyNetSaving = planning?.monthlyNetSaving ?? 0;
   const fallbackMonth = getCurrentPlanningMonthParts().monthKey;
@@ -29,15 +34,15 @@ export default async function PlanningPage() {
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h1 className="text-2xl font-semibold">Budget Planning & Savings Goal</h1>
+        <h1 className="text-2xl font-semibold">{t("budgetPlanningTitle")}</h1>
         <p className="mt-2 text-sm text-text-dim">
-          Monitoring budget per kategori, cashflow, dan prediksi target tabungan
-          {planning ? ` untuk ${formatMonthLabel(planning.month)}.` : "."}
+          {t("budgetPlanningDesc1")}
+          {planning ? `${t("budgetPlanningDesc2")}${formatMonthLabel(planning.month)}.` : "."}
         </p>
       </Card>
 
       <Card className="p-5">
-        <h2 className="section-title">Budget Per Kategori</h2>
+        <h2 className="section-title">{t("budgetPerCategory")}</h2>
         <div className="mt-4 space-y-4">
           {planning?.budgets.length ? (
             planning.budgets.map((item) => {
@@ -51,23 +56,22 @@ export default async function PlanningPage() {
                     </span>
                   </div>
                   <ProgressBar value={Math.min(ratio, 100)} />
-                  <p className="mt-1 text-xs text-text-dim">{ratio}% terpakai</p>
+                  <p className="mt-1 text-xs text-text-dim">{ratio}% {t("used")}</p>
                 </div>
               );
             })
           ) : (
             <p className="rounded-lg border border-line bg-bg-soft p-4 text-sm text-text-dim">
-              Belum ada budget bulan ini. Tambahkan budget kategori agar transaksi finance bisa
-              dibandingkan dengan batas pengeluaran.
+              {t("noBudgetMonth")}
             </p>
           )}
         </div>
       </Card>
 
       <Card className="p-5">
-        <h2 className="section-title">Savings Forecast (AI v1.1)</h2>
+        <h2 className="section-title">{t("savingsForecast")}</h2>
         <p className="mt-3 text-sm text-text-dim">
-          Net saving bulan ini: {formatRupiah(monthlyNetSaving)}
+          {t("netSavingMonth")}{formatRupiah(monthlyNetSaving)}
         </p>
 
         <div className="mt-4 space-y-4">
@@ -91,19 +95,18 @@ export default async function PlanningPage() {
                     <ProgressBar value={Math.min(progress, 100)} />
                   </div>
                   <p className="mt-3 text-sm text-text-dim">
-                    Target tanggal: {goal.targetDate || "Belum ditentukan"}
+                    {t("targetDate")}{goal.targetDate || t("notSet")}
                   </p>
                   <p className="mt-1 text-sm text-text-dim">
-                    Prediksi tercapai: {forecast.predictedDate ?? "Belum dapat diprediksi"}
+                    {t("forecastReached")}{forecast.predictedDate ?? t("cannotForecast")}
                   </p>
-                  <p className="mt-1 text-sm text-text-dim">Risk level: {forecast.risk}</p>
+                  <p className="mt-1 text-sm text-text-dim">{t("riskLevel")}{forecast.risk}</p>
                 </div>
               );
             })
           ) : (
             <p className="rounded-lg border border-line bg-bg-soft p-4 text-sm text-text-dim">
-              Belum ada savings goal aktif. Tambahkan target tabungan agar prediksi bisa dihitung
-              dari cashflow bulanan.
+              {t("noSavingsGoal")}
             </p>
           )}
         </div>

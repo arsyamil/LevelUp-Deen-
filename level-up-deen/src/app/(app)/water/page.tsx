@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { ProgressBar } from "@/components/ui/progress-bar";
+import { useTranslation } from "@/components/providers";
 
 const QUICK_AMOUNTS = [150, 250, 330, 500, 750];
 const DEFAULT_TARGET_ML = 2000;
@@ -22,6 +23,7 @@ function formatTime(isoString: string) {
 }
 
 export default function WaterPage() {
+  const { t } = useTranslation();
   const [totalMl, setTotalMl] = useState(0);
   const [targetMl, setTargetMl] = useState(DEFAULT_TARGET_ML);
   const [logs, setLogs] = useState<WaterLog[]>([]);
@@ -35,17 +37,17 @@ export default function WaterPage() {
   const fetchData = useCallback(async () => {
     try {
       const res = await fetch("/api/water");
-      if (!res.ok) throw new Error("Gagal memuat data.");
+      if (!res.ok) throw new Error(t("errLoadData"));
       const json = await res.json();
       setTotalMl(json.totalMl ?? 0);
       setTargetMl(json.targetMl ?? DEFAULT_TARGET_ML);
       setLogs(json.logs ?? []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Terjadi kesalahan.");
+      setError(err instanceof Error ? err.message : t("errOccurred"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchData();
@@ -63,11 +65,11 @@ export default function WaterPage() {
       });
       if (!res.ok) {
         const json = await res.json();
-        throw new Error(json.error ?? "Gagal menambah log.");
+        throw new Error(json.error ?? t("errAddLog"));
       }
       await fetchData();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Terjadi kesalahan.");
+      setError(err instanceof Error ? err.message : t("errOccurred"));
     } finally {
       setAdding(null);
     }
@@ -85,9 +87,9 @@ export default function WaterPage() {
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h1 className="text-2xl font-semibold">Water Tracker</h1>
+        <h1 className="text-2xl font-semibold">{t("waterTrackerTitle")}</h1>
         <p className="mt-2 text-sm text-text-dim">
-          Pantau asupan air harian dan jaga konsistensi hidrasi.
+          {t("waterTrackerDesc")}
         </p>
       </Card>
 
@@ -101,7 +103,7 @@ export default function WaterPage() {
       <Card className="p-5">
         <div className="mb-4 flex items-end justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-wide text-text-dim">Hari Ini</p>
+            <p className="text-xs uppercase tracking-wide text-text-dim">{t("today")}</p>
             <p className="mt-1 text-3xl font-semibold">
               {totalMl.toLocaleString("id-ID")}{" "}
               <span className="text-lg font-normal text-text-dim">
@@ -110,7 +112,7 @@ export default function WaterPage() {
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-text-dim">Sisa</p>
+            <p className="text-xs text-text-dim">{t("remaining")}</p>
             <p className="text-xl font-semibold text-brand">
               {remaining.toLocaleString("id-ID")} ml
             </p>
@@ -119,18 +121,18 @@ export default function WaterPage() {
 
         <ProgressBar value={progress} />
 
-        <p className="mt-2 text-sm text-text-dim">{progress}% tercapai</p>
+        <p className="mt-2 text-sm text-text-dim">{progress}% {t("reached")}</p>
 
         {progress >= 100 && (
           <p className="mt-3 rounded-lg border border-success/30 bg-success/10 p-3 text-sm text-success">
-            🎉 Target hidrasi hari ini tercapai! Pertahankan!
+            {t("targetReached")}
           </p>
         )}
       </Card>
 
       {/* Quick add buttons */}
       <Card className="p-5">
-        <h2 className="section-title">Tambah Cepat</h2>
+        <h2 className="section-title">{t("quickAdd")}</h2>
         <div className="mt-4 flex flex-wrap gap-2">
           {QUICK_AMOUNTS.map((ml) => (
             <button
@@ -151,7 +153,7 @@ export default function WaterPage() {
             value={customMl}
             onChange={(e) => setCustomMl(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleCustomAdd()}
-            placeholder="Jumlah lain (ml)"
+            placeholder={t("customAmountPlaceholder")}
             min={1}
             max={5000}
             disabled={adding !== null}
@@ -163,19 +165,19 @@ export default function WaterPage() {
             disabled={adding !== null || !customMl}
             className="rounded-lg border border-line bg-bg-soft px-4 py-2 text-sm font-medium text-text-dim transition hover:border-brand hover:bg-brand/10 hover:text-brand disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Tambah
+            {t("addBtn")}
           </button>
         </div>
       </Card>
 
       {/* Log history */}
       <Card className="p-5">
-        <h2 className="section-title">Riwayat Hari Ini</h2>
+        <h2 className="section-title">{t("historyToday")}</h2>
         {loading ? (
-          <p className="mt-3 text-sm text-text-dim">Memuat...</p>
+          <p className="mt-3 text-sm text-text-dim">{t("loading")}</p>
         ) : logs.length === 0 ? (
           <p className="mt-3 text-sm text-text-dim">
-            Belum ada catatan hari ini. Mulai dengan menekan tombol di atas.
+            {t("noLogsToday")}
           </p>
         ) : (
           <ul className="mt-3 space-y-2">

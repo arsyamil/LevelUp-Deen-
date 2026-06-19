@@ -55,6 +55,10 @@ export default async function AccessControlPage() {
   const currentRole = profile.role;
   const isAdmin = isAdminRole(currentRole);
 
+  if (!isAdmin) {
+    redirect(routes.dashboard);
+  }
+
   return (
     <div className="space-y-6">
       <Card className="p-6">

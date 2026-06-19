@@ -3,6 +3,7 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import type { FinancialTransaction } from "@/lib/types";
+import { useTranslation } from "@/components/providers";
 
 const categoryOptions = [
   "Makan dan minum",
@@ -70,6 +71,7 @@ function formatMonthLabel(month: string) {
 }
 
 export function FinanceTracker() {
+  const { t } = useTranslation();
   const [transactions, setTransactions] = useState<FinancialTransaction[]>([]);
   const [selectedMonth, setSelectedMonth] = useState(currentMonth());
   const [categorySummary, setCategorySummary] = useState<FinancePayload["categorySummary"]>([]);
@@ -130,18 +132,18 @@ export function FinanceTracker() {
       });
       const payload = (await response.json()) as Partial<FinancePayload> & { error?: string };
       if (!response.ok) {
-        throw new Error(payload.error || "Gagal memuat transaksi");
+        throw new Error(payload.error || t("errLoadFinance"));
       }
 
       setTransactions(payload.transactions ?? []);
       setCategorySummary(payload.categorySummary ?? []);
       setTotals(payload.totals ?? { income: 0, expense: 0, net: 0 });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal memuat transaksi");
+      setError(err instanceof Error ? err.message : t("errLoadFinance"));
     } finally {
       setLoading(false);
     }
-  }, [selectedMonth]);
+  }, [selectedMonth, t]);
 
   useEffect(() => {
     loadTransactions();
@@ -158,10 +160,6 @@ export function FinanceTracker() {
   const monthLabel = useMemo(() => {
     return formatMonthLabel(selectedMonth);
   }, [selectedMonth]);
-
-  const transactionCountText = useMemo(() => {
-    return `${transactions.length} transaksi`;
-  }, [transactions]);
 
   const resetForm = () => {
     setEditingId(null);
@@ -202,13 +200,13 @@ export function FinanceTracker() {
       };
 
       if (!response.ok || !payload.transaction) {
-        throw new Error(payload.error || "Gagal menyimpan transaksi");
+        throw new Error(payload.error || t("errSaveFinance"));
       }
 
       await loadTransactions();
       resetForm();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal menyimpan transaksi");
+      setError(err instanceof Error ? err.message : t("errSaveFinance"));
     } finally {
       setSaving(false);
     }
@@ -226,7 +224,7 @@ export function FinanceTracker() {
       });
       const payload = (await response.json()) as { error?: string };
       if (!response.ok) {
-        throw new Error(payload.error || "Gagal menghapus transaksi");
+        throw new Error(payload.error || t("errDeleteFinance"));
       }
 
       if (editingId === transactionId) {
@@ -234,7 +232,7 @@ export function FinanceTracker() {
       }
       await loadTransactions();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal menghapus transaksi");
+      setError(err instanceof Error ? err.message : t("errDeleteFinance"));
     } finally {
       setDeletingId(null);
     }
@@ -250,15 +248,15 @@ export function FinanceTracker() {
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="p-4">
-          <p className="text-xs uppercase tracking-wide text-text-dim">Income</p>
+          <p className="text-xs uppercase tracking-wide text-text-dim">{t("income")}</p>
           <p className="mt-2 text-xl font-semibold">{formatRupiah(totals.income)}</p>
         </Card>
         <Card className="p-4">
-          <p className="text-xs uppercase tracking-wide text-text-dim">Expense</p>
+          <p className="text-xs uppercase tracking-wide text-text-dim">{t("expense")}</p>
           <p className="mt-2 text-xl font-semibold">{formatRupiah(totals.expense)}</p>
         </Card>
         <Card className="p-4">
-          <p className="text-xs uppercase tracking-wide text-text-dim">Net</p>
+          <p className="text-xs uppercase tracking-wide text-text-dim">{t("net")}</p>
           <p className="mt-2 text-xl font-semibold">{formatRupiah(totals.net)}</p>
         </Card>
       </div>
@@ -266,13 +264,13 @@ export function FinanceTracker() {
       <Card className="p-5">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <h2 className="section-title">Ringkasan Bulanan</h2>
+            <h2 className="section-title">{t("monthlySummary")}</h2>
             <p className="mt-1 text-sm text-text-dim">
-              {monthLabel} · {transactionCountText}
+              {monthLabel} · {transactions.length} {t("transactionsForMonth")}
             </p>
           </div>
           <label className="block text-sm md:w-56">
-            <span className="font-medium">Bulan</span>
+            <span className="font-medium">{t("month")}</span>
             <input
               type="month"
               value={selectedMonth}
@@ -284,7 +282,7 @@ export function FinanceTracker() {
 
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <div className="rounded-lg border border-line bg-bg-soft p-4">
-            <p className="text-sm font-semibold">Expense per Kategori</p>
+            <p className="text-sm font-semibold">{t("expenseByCategory")}</p>
             <div className="mt-3 space-y-3">
               {expenseCategorySummary.length > 0 ? (
                 (() => {
@@ -305,13 +303,13 @@ export function FinanceTracker() {
                   ));
                 })()
               ) : (
-                <p className="text-sm text-text-dim">Belum ada expense di bulan ini.</p>
+                <p className="text-sm text-text-dim">{t("noExpenseMonth")}</p>
               )}
             </div>
           </div>
 
           <div className="rounded-lg border border-line bg-bg-soft p-4">
-            <p className="text-sm font-semibold">Income per Kategori</p>
+            <p className="text-sm font-semibold">{t("incomeByCategory")}</p>
             <div className="mt-3 space-y-3">
               {incomeCategorySummary.length > 0 ? (
                 (() => {
@@ -332,7 +330,7 @@ export function FinanceTracker() {
                   ));
                 })()
               ) : (
-                <p className="text-sm text-text-dim">Belum ada income di bulan ini.</p>
+                <p className="text-sm text-text-dim">{t("noIncomeMonth")}</p>
               )}
             </div>
           </div>
@@ -341,10 +339,10 @@ export function FinanceTracker() {
 
       <div className="grid gap-4 xl:grid-cols-[1fr_420px]">
         <Card className="p-5">
-          <h2 className="section-title">Transaksi {monthLabel}</h2>
+          <h2 className="section-title">{t("transactionsForMonth")} {monthLabel}</h2>
           <div className="mt-3 space-y-2 text-sm">
             {loading ? (
-              <p className="text-text-dim">Memuat transaksi...</p>
+              <p className="text-text-dim">{t("loadingTransactions")}</p>
             ) : transactions.length > 0 ? (
               transactions.map((tx) => (
                 <div key={tx.id} className="rounded-lg border border-line bg-bg-soft p-3">
@@ -366,7 +364,7 @@ export function FinanceTracker() {
                           onClick={() => handleEdit(tx)}
                           className="rounded-lg border border-line px-3 py-1 text-xs font-medium text-text-dim transition hover:border-brand hover:text-text"
                         >
-                          Edit
+                          {t("edit")}
                         </button>
                         <button
                           type="button"
@@ -374,7 +372,7 @@ export function FinanceTracker() {
                           disabled={deletingId === tx.id}
                           className="rounded-lg border border-danger/30 px-3 py-1 text-xs font-medium text-danger transition hover:bg-danger/10 disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          {deletingId === tx.id ? "Hapus..." : "Hapus"}
+                          {deletingId === tx.id ? t("deleting") : t("delete")}
                         </button>
                       </div>
                     </div>
@@ -383,7 +381,7 @@ export function FinanceTracker() {
               ))
             ) : (
               <p className="rounded-lg border border-line bg-bg-soft p-4 text-text-dim">
-                Belum ada transaksi di bulan ini.
+                {t("noTransactionsMonth")}
               </p>
             )}
           </div>
@@ -392,7 +390,7 @@ export function FinanceTracker() {
         <Card className="p-5">
           <div className="flex items-center justify-between gap-3">
             <h2 className="section-title">
-              {editingId ? "Edit Transaksi" : "Tambah Transaksi"}
+              {editingId ? t("editTransaction") : t("addTransaction")}
             </h2>
             {editingId ? (
               <button
@@ -400,7 +398,7 @@ export function FinanceTracker() {
                 onClick={resetForm}
                 className="rounded-lg border border-line px-3 py-1 text-xs font-medium text-text-dim transition hover:border-brand hover:text-text"
               >
-                Batal
+                {t("cancel")}
               </button>
             ) : null}
           </div>
@@ -408,14 +406,14 @@ export function FinanceTracker() {
           {/* AI natural language quick-input */}
           {!editingId && (
             <div className="mt-4 rounded-xl border border-brand/20 bg-brand/5 p-3">
-              <p className="text-xs font-medium text-brand mb-2">✨ Input Cepat (AI Parse)</p>
+              <p className="text-xs font-medium text-brand mb-2">{t("quickInputAI")}</p>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={nlInput}
                   onChange={(e) => setNlInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && parseWithAI()}
-                  placeholder='Contoh: "makan siang warteg 25rb" atau "gaji bulan ini 5jt"'
+                  placeholder={t("placeholderAI")}
                   disabled={parsing}
                   className="flex-1 rounded-xl border border-line bg-bg px-3 py-2 text-sm text-text outline-none focus:border-brand disabled:opacity-50"
                 />
@@ -425,10 +423,10 @@ export function FinanceTracker() {
                   disabled={parsing || !nlInput.trim()}
                   className="shrink-0 rounded-xl bg-brand px-3 py-2 text-xs font-semibold text-text transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {parsing ? "..." : "Parse"}
+                  {parsing ? "..." : t("parse")}
                 </button>
               </div>
-              <p className="mt-1 text-xs text-text-dim">Tekan Enter atau klik Parse — form akan terisi otomatis.</p>
+              <p className="mt-1 text-xs text-text-dim">{t("parseAIInfo")}</p>
             </div>
           )}
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
@@ -444,13 +442,13 @@ export function FinanceTracker() {
                       : "border-line bg-bg text-text"
                   }`}
                 >
-                  {type === "expense" ? "Expense" : "Income"}
+                  {type === "expense" ? t("expense") : t("income")}
                 </button>
               ))}
             </div>
 
             <label className="block text-sm">
-              <span className="font-medium">Nominal</span>
+              <span className="font-medium">{t("amount")}</span>
               <input
                 type="number"
                 min={1}
@@ -463,7 +461,7 @@ export function FinanceTracker() {
             </label>
 
             <label className="block text-sm">
-              <span className="font-medium">Kategori</span>
+              <span className="font-medium">{t("category")}</span>
               <select
                 value={form.category}
                 onChange={(event) =>
@@ -480,7 +478,7 @@ export function FinanceTracker() {
             </label>
 
             <label className="block text-sm">
-              <span className="font-medium">Tanggal</span>
+              <span className="font-medium">{t("date")}</span>
               <input
                 type="date"
                 value={form.transactionDate}
@@ -492,7 +490,7 @@ export function FinanceTracker() {
             </label>
 
             <label className="block text-sm">
-              <span className="font-medium">Catatan</span>
+              <span className="font-medium">{t("note")}</span>
               <textarea
                 value={form.note}
                 onChange={(event) =>
@@ -508,10 +506,10 @@ export function FinanceTracker() {
               className="w-full rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-text transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {saving
-                ? "Menyimpan..."
+                ? t("saving")
                 : editingId
-                  ? "Simpan Perubahan"
-                  : "Simpan Transaksi"}
+                  ? t("saveChanges")
+                  : t("saveTransaction")}
             </button>
           </form>
         </Card>

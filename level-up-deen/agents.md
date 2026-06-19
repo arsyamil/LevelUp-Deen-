@@ -5,7 +5,7 @@ This file describes how an AI assistant should understand and work with the Leve
 It is intended to help the AI quickly reason about project structure, key features, and expected behavior.
 
 ## App Summary
-Level Up Deen is a progressive self-improvement platform built with Next.js 14, TypeScript, Tailwind CSS, and Supabase.
+Level Up Deen is a progressive self-improvement platform built with Next.js 16, TypeScript, Tailwind CSS, and Supabase.
 It includes a modular app shell, user onboarding, gamified daily habits, finance planning, and an AI coach component.
 The app also supports progressive web app (PWA) features and admin role-based access control.
 
@@ -30,7 +30,7 @@ The app also supports progressive web app (PWA) features and admin role-based ac
 - `src/lib/supabase/server.ts` - server-side Supabase helpers and admin client.
 - `src/lib/supabase/client.ts` - browser-side Supabase client for auth operations.
 - `src/lib/rbac.ts` - role definitions, permission matrix, and UI helpers.
-- `src/middleware.ts` - Supabase session refresh and route protection middleware.
+- `src/proxy.ts` - Supabase session refresh and route protection proxy.
 - `supabase/migrations/202605010001_init_level_up_deen.sql` - initial database schema.
 - `supabase/migrations/202606030001_add_admin_role_change_logs.sql` - admin audit log schema.
 - `supabase/migrations/202606190001_add_role_and_email_to_profile.sql` - role and email columns on users_profile.
@@ -40,7 +40,7 @@ When making changes, follow these guidelines:
 - Preserve existing auth and security logic — Supabase Auth is the sole identity provider.
 - Keep admin and user separation strict: normal users must not access other users' data.
 - Prefer server-side guards in Next.js components and API routes.
-- Middleware handles Supabase session refresh and unauthenticated route redirects.
+- Proxy handles Supabase session refresh and unauthenticated route redirects.
 - Maintain compile safety: always run `npm run build` after changes when possible.
 - Keep UI and content consistent with Indonesian language and the existing style.
 - Use `src/lib/routes.ts` instead of repeating route strings for core workflow paths.

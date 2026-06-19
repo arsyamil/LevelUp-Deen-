@@ -35,12 +35,12 @@ function main() {
   assertIncludes(".env.local.example", "NEXT_PUBLIC_SUPABASE_ANON_KEY=");
   assertIncludes(".env.local.example", "SUPABASE_SERVICE_ROLE_KEY=");
   assertIncludes(".env.local.example", "AUTH_BYPASS_ENABLED=false");
-  assert(fs.existsSync(path.join(root, "src/middleware.ts")),
-    "src/middleware.ts must exist for Supabase session refresh");
-  assertIncludes("src/middleware.ts", "createServerClient");
-  assertIncludes("src/middleware.ts", "supabase.auth.getUser()");
-  assertNotIncludes("src/middleware.ts", "auth.protect");
-  assertNotIncludes("src/middleware.ts", "createRouteMatcher");
+  assert(fs.existsSync(path.join(root, "src/proxy.ts")),
+    "src/proxy.ts must exist for Supabase session refresh");
+  assertIncludes("src/proxy.ts", "createServerClient");
+  assertIncludes("src/proxy.ts", "supabase.auth.getUser()");
+  assertNotIncludes("src/proxy.ts", "auth.protect");
+  assertNotIncludes("src/proxy.ts", "createRouteMatcher");
   assert(!fs.existsSync(path.join(root, "src/app/api/ai/coach/route 2.ts")),
     "duplicate AI coach route artifact must not exist");
 
@@ -79,7 +79,8 @@ function main() {
   assertIncludes("src/components/finance/finance-tracker.tsx", "setEditingId");
   assertIncludes("src/components/finance/finance-tracker.tsx", "handleDelete");
   assertIncludes("src/components/finance/finance-tracker.tsx", "type=\"month\"");
-  assertIncludes("src/components/finance/finance-tracker.tsx", "Ringkasan Bulanan");
+  assertIncludes("src/components/finance/finance-tracker.tsx", "t(\"monthlySummary\")");
+  assertIncludes("src/lib/i18n.ts", "Ringkasan Bulanan");
   assertIncludes("src/app/(app)/planning/page.tsx", "getCurrentUserPlanningData");
   assertNotIncludes("src/app/(app)/planning/page.tsx", "@/lib/mock-data");
   assertIncludes("src/lib/planning.ts", "budgets");

@@ -1,33 +1,8 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { UserRoleManagement } from "@/components/admin/user-role-management";
-import { getCurrentUserProfile } from "@/lib/user";
-import { routes } from "@/lib/routes";
-import { isAdminRole } from "@/lib/auth";
-import { redirect } from "next/navigation";
 
 export default async function AdminPage() {
-  const profile = await getCurrentUserProfile();
-  if (!profile) {
-    redirect(routes.login);
-  }
-
-  const role = profile.role;
-
-  if (!isAdminRole(role)) {
-    return (
-      <main className="container-shell py-12">
-        <Card className="max-w-2xl p-8">
-          <h1 className="text-2xl font-semibold">Akses Admin Ditolak</h1>
-          <p className="mt-4 text-sm text-text-dim">
-            Halaman ini hanya tersedia untuk admin sistem. Jika Anda seorang user,
-            akses data user lain tidak diperbolehkan oleh kebijakan keamanan.
-          </p>
-        </Card>
-      </main>
-    );
-  }
-
   return (
     <main className="container-shell py-12">
       <div className="grid gap-6 xl:grid-cols-[1fr_420px]">

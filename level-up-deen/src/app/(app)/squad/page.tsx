@@ -6,8 +6,12 @@ import { formatDateInTimeZone } from "@/lib/date";
 import { redirect } from "next/navigation";
 import { routes } from "@/lib/routes";
 import { SquadPageClient } from "./squad-client";
+import { cookies } from "next/headers";
+import { getServerTranslation } from "@/lib/i18n";
 
 export default async function SquadPage() {
+  const cookieStore = await cookies();
+  const { t } = getServerTranslation(cookieStore.get("app-lang")?.value);
   const userId = await getCurrentUserId();
   if (!userId) {
     redirect(routes.login);
@@ -71,7 +75,7 @@ export default async function SquadPage() {
       return {
         rank: idx + 1,
         userId: s.user_id,
-        username: usernameMap.get(s.user_id) ?? "Pengguna",
+        username: usernameMap.get(s.user_id) ?? t("userFallback"),
         score: s.completion_score,
         isMe: s.user_id === userId,
         trend,
@@ -118,17 +122,16 @@ export default async function SquadPage() {
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h1 className="text-2xl font-semibold">Squad &amp; Leaderboard</h1>
+        <h1 className="text-2xl font-semibold">{t("squadTitle")}</h1>
         <p className="mt-2 text-sm text-text-dim">
-          Fitur sosial opsional. Hanya indikator progres umum yang ditampilkan — data
-          keuangan dan ibadah tetap privat.
+          {t("squadDesc")}
         </p>
       </Card>
 
       {/* My position card */}
       {myGlobalEntry ? (
         <Card className="p-5">
-          <p className="text-xs uppercase tracking-wide text-text-dim">Posisiku Hari Ini</p>
+          <p className="text-xs uppercase tracking-wide text-text-dim">{t("myPositionToday")}</p>
           <div className="mt-3 flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-brand bg-brand/10 text-lg font-bold text-brand">
               #{myGlobalEntry.rank}
@@ -145,7 +148,7 @@ export default async function SquadPage() {
       ) : (
         <Card className="p-5">
           <p className="text-sm text-text-dim">
-            Kamu belum masuk leaderboard hari ini. Selesaikan quest harian untuk muncul di sini!
+            {t("notInLeaderboard")}
           </p>
         </Card>
       )}

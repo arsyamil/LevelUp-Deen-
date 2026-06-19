@@ -1,14 +1,8 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-interface PublicSquad {
-  id: string;
-  name: string;
-  memberCount: number;
-}
 
 interface Props {
   onSquadChanged: () => void;
@@ -16,8 +10,6 @@ interface Props {
 
 export function SquadManager({ onSquadChanged }: Props) {
   const [tab, setTab] = useState<"create" | "join">("join");
-  const [squads, setSquads] = useState<PublicSquad[]>([]);
-  const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [joiningId, setJoiningId] = useState<string | null>(null);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
@@ -30,23 +22,6 @@ export function SquadManager({ onSquadChanged }: Props) {
     setMessage({ text, type });
     setTimeout(() => setMessage(null), 4000);
   }
-
-  const fetchSquads = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/squad");
-      const json = await res.json();
-      setSquads(json.availableSquads ?? []);
-    } catch {
-      showMsg("Gagal memuat daftar squad.", "error");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchSquads();
-  }, [fetchSquads]);
 
   const handleCreate = async (e: FormEvent) => {
     e.preventDefault();
@@ -72,13 +47,13 @@ export function SquadManager({ onSquadChanged }: Props) {
     }
   };
 
-  const handleJoin = async (squadId: string) => {
-    setJoiningId(squadId);
+  const handleJoin = async (inviteCode: string) => {
+    setJoiningId(inviteCode);
     try {
       const res = await fetch("/api/squad/join", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ squadId }),
+        body: JSON.stringify({ inviteCode }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Gagal bergabung");
@@ -138,38 +113,34 @@ export function SquadManager({ onSquadChanged }: Props) {
 
       {/* Join tab */}
       {tab === "join" && (
-        <div className="mt-4 space-y-3">
-          {loading ? (
-            <p className="text-sm text-text-dim">Memuat daftar squad publik...</p>
-          ) : squads.length === 0 ? (
-            <div className="rounded-lg border border-line bg-bg-soft p-4 text-sm text-text-dim">
-              Belum ada squad publik. Jadilah yang pertama membuat squad! 🚀
-            </div>
-          ) : (
-            squads.map((squad) => (
-              <div
-                key={squad.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-line bg-bg-soft p-3"
-              >
-                <div>
-                  <p className="font-medium">{squad.name}</p>
-                  <p className="text-xs text-text-dim">
-                    {squad.memberCount} anggota
-                  </p>
-                </div>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  loading={joiningId === squad.id}
-                  disabled={joiningId !== null}
-                  onClick={() => handleJoin(squad.id)}
-                >
-                  Gabung
-                </Button>
-              </div>
-            ))
-          )}
-        </div>
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const code = (e.currentTarget.elements.namedItem("inviteCode") as HTMLInputElement).value;
+            if (code) handleJoin(code);
+          }}
+          className="mt-4 space-y-4"
+        >
+          <label className="block text-sm">
+            <span className="font-medium">Kode Undangan (6 Karakter)</span>
+            <input
+              name="inviteCode"
+              type="text"
+              placeholder="Contoh: A1B2C3"
+              maxLength={6}
+              className="mt-2 w-full uppercase rounded-2xl border border-line bg-bg px-4 py-3 text-sm text-text outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
+            />
+          </label>
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            loading={joiningId !== null}
+            className="w-full"
+          >
+            Gabung Squad
+          </Button>
+        </form>
       )}
 
       {/* Create tab */}

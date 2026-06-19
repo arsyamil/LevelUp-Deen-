@@ -5,10 +5,10 @@ import { writeSystemAuditLog } from "@/lib/audit";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 
 const joinSchema = z.object({
-  squadId: z.string().uuid("ID Squad tidak valid"),
+  inviteCode: z.string().length(6, "Kode undangan harus 6 karakter"),
 });
 
-// POST /api/squad/join — join a specific squad
+// POST /api/squad/join — join via invite code
 export async function POST(request: NextRequest) {
   const userId = await getCurrentUserId();
   if (!userId) {
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
   }
 
   const admin = createSupabaseAdminClient();
-  const { squadId } = result.data;
+  const { inviteCode } = result.data;
 
   // Check if user is already in a squad
   const { data: existing } = await admin
@@ -41,29 +41,29 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Verify squad exists
+  // Verify squad exists by invite code
   const { data: squad } = await admin
     .from("squad_groups")
-    .select("id, name, is_private")
-    .eq("id", squadId)
+    .select("id, name")
+    .ilike("invite_code", inviteCode)
     .maybeSingle();
 
   if (!squad) {
     return NextResponse.json(
-      { error: "Squad tidak ditemukan" },
+      { error: "Squad dengan kode tersebut tidak ditemukan" },
       { status: 404 }
     );
   }
 
   // Add member
   const { error: joinError } = await admin.from("squad_members").insert({
-    squad_id: squadId,
+    squad_id: squad.id,
     user_id: userId,
     role: "member",
   });
 
   if (joinError) {
-    // Duplicate key means already a member (race condition guard)
+    // Duplicate key means already a member
     if (joinError.code === "23505") {
       return NextResponse.json(
         { error: "Kamu sudah menjadi anggota squad ini" },
@@ -77,8 +77,8 @@ export async function POST(request: NextRequest) {
     actorUserId: userId,
     action: "squad.join",
     entityType: "squad_group",
-    entityId: squadId,
-    metadata: { squadName: squad.name },
+    entityId: squad.id,
+    metadata: { squadName: squad.name, inviteCode },
   });
 
   return NextResponse.json({ success: true, squadName: squad.name });

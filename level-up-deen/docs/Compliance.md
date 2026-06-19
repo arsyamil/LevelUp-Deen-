@@ -123,7 +123,7 @@ sequenceDiagram
     participant User
     participant App
     participant DB as Supabase DB
-    participant Auth as Clerk Auth
+    participant Auth as Supabase Auth
 
     User->>App: Request Delete Account
     App->>App: Show confirmation dialog<br/>(require password)
