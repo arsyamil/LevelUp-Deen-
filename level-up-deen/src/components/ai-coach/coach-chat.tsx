@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { CoachIntent, CoachMessage } from "@/lib/ai-coach";
 
-const intents: { key: CoachIntent; label: string; emoji: string }[] = [
-  { key: "burnout", label: "Burnout", emoji: "😮‍💨" },
-  { key: "time_management", label: "Manajemen Waktu", emoji: "⏰" },
-  { key: "consistency_drop", label: "Konsistensi Drop", emoji: "📉" },
-  { key: "finance_discipline", label: "Disiplin Finansial", emoji: "💰" },
+const intents: { key: CoachIntent; label: string; emoji: string; prompt: string }[] = [
+  { key: "burnout", label: "Burnout", emoji: "😮‍💨", prompt: "Aku merasa agak lelah dan burnout akhir-akhir ini. Punya saran biar semangat lagi?" },
+  { key: "time_management", label: "Manajemen Waktu", emoji: "⏰", prompt: "Gimana ya caranya biar aku bisa ngatur waktu lebih baik setiap hari?" },
+  { key: "consistency_drop", label: "Konsistensi Drop", emoji: "📉", prompt: "Akhir-akhir ini kebiasaan baikku lagi drop nih. Tolong bantu dong." },
+  { key: "finance_discipline", label: "Disiplin Finansial", emoji: "💰", prompt: "Aku lagi susah banget disiplin soal uang. Punya tips praktis?" },
 ];
 
 interface ConversationItem {
@@ -37,7 +37,8 @@ export function CoachChat() {
     setError(null);
     setLoading(true);
 
-    const userText = text || `Berikan saran untuk: ${intent}`;
+    const defaultPrompt = intents.find((i) => i.key === intent)?.prompt || "Halo Coach!";
+    const userText = text || defaultPrompt;
 
     setConversation((prev) => [
       ...prev,
@@ -182,10 +183,10 @@ export function CoachChat() {
             <button
               type="button"
               disabled={loading}
-              onClick={() => handleSend(`Berikan saran untuk intent: ${intent}`)}
+              onClick={() => handleSend(intents.find((i) => i.key === intent)?.prompt)}
               className="rounded-xl border border-line px-5 py-2.5 text-sm text-text-dim transition hover:border-brand hover:text-text disabled:opacity-50"
             >
-              Gunakan intent: {intents.find((i) => i.key === intent)?.label}
+              Mulai topik: {intents.find((i) => i.key === intent)?.label}
             </button>
           )}
           {conversation.length > 0 && (

@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     coins: statsResult.data?.coins ?? 0,
   };
 
-  const prompt = message || `Berikan saran untuk intent: ${intent}`;
+  const prompt = message || "Halo Coach, beri aku saran!";
   const answer = await getGeminiCoachAnswer(prompt, history, intent, userContext);
 
   // Log to ai_conversations table
