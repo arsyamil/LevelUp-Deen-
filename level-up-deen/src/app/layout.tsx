@@ -3,6 +3,7 @@ import { Audiowide } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { RegisterServiceWorker } from "@/components/pwa/register-sw";
+import { AppProviders } from "@/components/providers";
 import { ReactNode } from "react";
 
 const audiowide = Audiowide({
@@ -39,12 +40,14 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="id">
+    <html lang="id" suppressHydrationWarning>
       <body
         className={`${audiowide.variable} ${geistSans.variable} ${geistMono.variable} min-h-screen bg-bg text-text antialiased`}
       >
-        <RegisterServiceWorker />
-        {children}
+        <AppProviders attribute="class" defaultTheme="dark" enableSystem={false}>
+          <RegisterServiceWorker />
+          {children}
+        </AppProviders>
       </body>
     </html>
   );

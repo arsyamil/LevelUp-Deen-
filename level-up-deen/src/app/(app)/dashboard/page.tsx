@@ -8,6 +8,8 @@ import { routes } from "@/lib/routes";
 import { redirect } from "next/navigation";
 import { DailySummary } from "@/components/dashboard/daily-summary";
 import { InteractiveAvatar } from "@/components/avatar/interactive-avatar";
+import { cookies } from "next/headers";
+import { getServerTranslation } from "@/lib/i18n";
 
 const rankColors: Record<string, string> = {
   "E": "muted",
@@ -41,6 +43,9 @@ export default async function DashboardPage() {
 
   if (!dashboardData) redirect(routes.login);
 
+  const cookieStore = cookies();
+  const { t } = getServerTranslation(cookieStore.get("app-lang")?.value);
+
   const { profile, stats, totalDailyTasks, completedDailyTasks } = dashboardData;
   const name = profile.fullName ?? profile.username ?? "Pengguna";
   const dailyCompletion = completionRate(completedDailyTasks, totalDailyTasks);
@@ -71,7 +76,7 @@ export default async function DashboardPage() {
           <div className="flex items-center gap-4">
             <InteractiveAvatar />
             <div>
-              <p className="text-sm text-text-dim">Assalamu alaikum,</p>
+              <p className="text-sm text-text-dim">{t("welcome")}</p>
               <h1 className="mt-1 text-2xl font-semibold">{name}</h1>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <Badge variant={rankBadge}>{stats.rank}-Rank</Badge>
