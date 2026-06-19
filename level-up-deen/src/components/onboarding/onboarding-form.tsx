@@ -1,7 +1,9 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { routes } from "@/lib/routes";
 import type { OnboardingAnswers, PersonalizationPlan } from "@/lib/types";
 
 const defaultAnswers: OnboardingAnswers = {
@@ -37,6 +39,7 @@ export function OnboardingForm() {
   const [plan, setPlan] = useState<PersonalizationPlan | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const onboardingCompleted = Boolean(plan);
 
   const handleChange = (key: keyof OnboardingAnswers, value: string | number | string[]) => {
     setForm((current) => ({
@@ -234,7 +237,27 @@ export function OnboardingForm() {
           </button>
 
           {message ? (
-            <p className="text-sm text-text-dim">{message}</p>
+            <p className="text-sm text-text-dim" aria-live="polite">
+              {message}
+            </p>
+          ) : null}
+
+          {onboardingCompleted ? (
+            <div className="flex flex-col gap-3 rounded-2xl border border-brand/30 bg-brand/10 p-4 sm:flex-row">
+              <Link
+                href={routes.dashboard}
+                data-testid="onboarding-continue-dashboard"
+                className="inline-flex items-center justify-center rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-black transition hover:bg-brand/90"
+              >
+                Lanjut ke Dashboard
+              </Link>
+              <Link
+                href={routes.quests}
+                className="inline-flex items-center justify-center rounded-2xl border border-brand/40 px-5 py-3 text-sm font-semibold text-brand transition hover:bg-brand/10"
+              >
+                Buka Daily Quest
+              </Link>
+            </div>
           ) : null}
         </Card>
 
@@ -282,6 +305,20 @@ export function OnboardingForm() {
               <div className="rounded-2xl border border-line bg-bg p-4 text-sm text-text-dim">
                 <p className="font-semibold">Reminder</p>
                 <p>{plan.suggestedReminders.join(" • ")}</p>
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Link
+                  href={routes.dashboard}
+                  className="inline-flex flex-1 items-center justify-center rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-black transition hover:bg-brand/90"
+                >
+                  Lanjut ke Dashboard
+                </Link>
+                <Link
+                  href={routes.quests}
+                  className="inline-flex flex-1 items-center justify-center rounded-2xl border border-line px-5 py-3 text-sm font-semibold text-text transition hover:border-brand hover:text-brand"
+                >
+                  Lihat Quest
+                </Link>
               </div>
             </Card>
           ) : null}

@@ -65,6 +65,12 @@ async function main() {
       );
       return "auth redirect";
     },
+    async () => {
+      const response = await fetchWithManualRedirect(joinUrl(baseUrl, "/onboarding"));
+      assert.equal(response.status, 307, "onboarding must redirect anonymous users");
+      assert.equal(response.headers.get("location"), "/login", "onboarding must send anonymous users to login");
+      return "onboarding redirect";
+    },
   ];
 
   for (const check of checks) {
