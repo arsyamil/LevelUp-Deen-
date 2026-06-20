@@ -1,6 +1,6 @@
 import { getCurrentUserId, normalizeRole } from "@/lib/auth";
 import { createSupabaseServerClient, createSupabaseAdminClient } from "@/lib/supabase/server";
-import { isAuthBypassEnabled, serverEnv } from "@/lib/env";
+import { isAuthBypassEnabled, serverEnv, getAuthBypassUserId } from "@/lib/env";
 import { RoleKey } from "@/lib/rbac";
 import { formatDateInTimeZone } from "@/lib/date";
 import type { DailyTask, UserProfile, UserStats } from "@/lib/types";
@@ -59,16 +59,27 @@ async function getSupabaseAuthEmail(): Promise<string> {
 }
 
 export async function getCurrentUserProfile(): Promise<AuthenticatedUserProfile | null> {
-  const userId = await getCurrentUserId();
-  if (!userId) {
-    return null;
+  const bypassEnabled = isAuthBypassEnabled();
+  let userId: string | null = null;
+  let email = "";
+
+  if (bypassEnabled) {
+    userId = getAuthBypassUserId();
+    email = "demo@levelupdeen.local";
+  } else {
+    try {
+      const supabase = await createSupabaseServerClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        userId = user.id;
+        email = user.email ?? "";
+      }
+    } catch {
+      // ignore
+    }
   }
 
-  const bypassEnabled = isAuthBypassEnabled();
-
-  // Get email from Supabase Auth
-  const email = bypassEnabled ? "demo@levelupdeen.local" : await getSupabaseAuthEmail();
-  if (!bypassEnabled && !email) {
+  if (!userId || (!bypassEnabled && !email)) {
     return null;
   }
 
@@ -140,39 +151,54 @@ export async function getCurrentUserDashboardData(
     return null;
   }
 
-  const userId = await getCurrentUserId();
-  if (!userId) {
-    return null;
-  }
+  const userId = profile.id;
 
   const admin = createSupabaseAdminClient();
 
-  const { data: statsData, error: statsError } = await admin
-    .from("user_stats")
-    .select(
-      "level, rank, total_exp, current_exp, next_level_exp, coins, prayer_streak, full_quest_streak"
-    )
-    .eq("user_id", userId)
-    .maybeSingle();
+  const today = formatDateInTimeZone();
 
-  if (statsError) {
-    if (isAuthBypassEnabled()) {
-      return {
-        profile,
-        stats: {
-          level: 1,
-          rank: "E",
-          totalExp: 0,
-          currentExp: 0,
-          nextLevelExp: 150,
-          coins: 0,
-          prayerStreak: 0,
-          fullQuestStreak: 0,
-        },
-        totalDailyTasks: 0,
-        completedDailyTasks: 0,
-      };
-    }
+  const [
+    { data: statsData, error: statsError },
+    totalTasksResult,
+    completedTasksResult
+  ] = await Promise.all([
+    admin
+      .from("user_stats")
+      .select("level, rank, total_exp, current_exp, next_level_exp, coins, prayer_streak, full_quest_streak")
+      .eq("user_id", userId)
+      .maybeSingle(),
+    admin
+      .from("user_tasks")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId),
+    admin
+      .from("daily_task_logs")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .eq("log_date", today)
+      .eq("status", "completed")
+  ]);
+
+  const totalDailyTasks = totalTasksResult.count ?? 0;
+  const completedDailyTasks = completedTasksResult.count ?? 0;
+
+  if (statsError && isAuthBypassEnabled()) {
+    return {
+      profile,
+      stats: {
+        level: 1,
+        rank: "E",
+        totalExp: 0,
+        currentExp: 0,
+        nextLevelExp: 150,
+        coins: 0,
+        prayerStreak: 0,
+        fullQuestStreak: 0,
+      },
+      totalDailyTasks,
+      completedDailyTasks,
+    };
+  } else if (statsError) {
     return null;
   }
 
@@ -198,23 +224,6 @@ export async function getCurrentUserDashboardData(
         fullQuestStreak: 0,
       };
 
-  const today = formatDateInTimeZone();
-
-  const totalTasksResult = await admin
-    .from("user_tasks")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", userId);
-
-  const completedTasksResult = await admin
-    .from("daily_task_logs")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", userId)
-    .eq("log_date", today)
-    .eq("status", "completed");
-
-  const totalDailyTasks = totalTasksResult.count ?? 0;
-  const completedDailyTasks = completedTasksResult.count ?? 0;
-
   return {
     profile,
     stats,
@@ -232,25 +241,23 @@ export async function getCurrentUserDailyTasks(): Promise<DailyTask[]> {
   const admin = createSupabaseAdminClient();
   const today = formatDateInTimeZone();
 
-  const { data: tasksData, error: tasksError } = await admin
-    .from("user_tasks")
-    .select(
-      "id, name, category, task_type, target_value, target_unit, exp_reward, coin_reward, is_active"
-    )
-    .eq("user_id", userId)
-    .eq("is_active", true);
+  const [
+    { data: tasksData, error: tasksError },
+    { data: logsData, error: logsError }
+  ] = await Promise.all([
+    admin
+      .from("user_tasks")
+      .select("id, name, category, task_type, target_value, target_unit, exp_reward, coin_reward, is_active")
+      .eq("user_id", userId)
+      .eq("is_active", true),
+    admin
+      .from("daily_task_logs")
+      .select("task_id, status")
+      .eq("user_id", userId)
+      .eq("log_date", today)
+  ]);
 
-  if (tasksError || !tasksData) {
-    return [];
-  }
-
-  const { data: logsData, error: logsError } = await admin
-    .from("daily_task_logs")
-    .select("task_id, status")
-    .eq("user_id", userId)
-    .eq("log_date", today);
-
-  if (logsError || !logsData) {
+  if (tasksError || !tasksData || logsError || !logsData) {
     return [];
   }
 

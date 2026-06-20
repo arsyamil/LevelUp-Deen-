@@ -66,11 +66,37 @@ export async function POST(request: Request) {
 
     // 6. Get squad name
     const { data: squad } = await admin
-      .from("squad_members_v2")
+      .from("squad_members")
       .select("squads(name)")
       .eq("user_id", userId)
       .limit(1)
       .maybeSingle();
+
+    // 7. Get last 7 days of daily_task_logs
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const { data: recentLogs } = await admin
+      .from("daily_task_logs")
+      .select("log_date, status, user_tasks(name, category)")
+      .eq("user_id", userId)
+      .gte("log_date", sevenDaysAgo.toISOString().slice(0, 10));
+
+    let completedTasks = 0;
+    let missedTasks = 0;
+    let missedWorship = [];
+    if (recentLogs) {
+      for (const log of recentLogs) {
+        if (log.status === "completed") {
+          completedTasks++;
+        } else if (log.status === "missed" || log.status === "skipped") {
+          missedTasks++;
+          const taskData = log.user_tasks as any;
+          if (taskData?.category === "Ibadah" || taskData?.category === "Spiritual") {
+            missedWorship.push(taskData?.name);
+          }
+        }
+      }
+    }
 
     // Build context
     const context = {
@@ -82,6 +108,11 @@ export async function POST(request: Request) {
       nextAssignment: nextAssigment ? `${nextAssigment.title} (Deadline: ${new Date(nextAssigment.deadline_at).toLocaleDateString("id-ID")})` : undefined,
       latestAchievement: (latestAchievement?.achievements as unknown as { name: string })?.name ?? undefined,
       squadName: (squad?.squads as unknown as { name: string })?.name ?? undefined,
+      recentPerformance: {
+        completedTasks,
+        missedTasks,
+        missedWorshipSummary: missedWorship.length > 0 ? missedWorship.join(", ") : "Tidak ada ibadah tertinggal",
+      }
     };
 
     // Generate AI response

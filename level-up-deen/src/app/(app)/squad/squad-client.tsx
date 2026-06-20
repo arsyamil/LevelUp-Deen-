@@ -86,7 +86,7 @@ export function SquadPageClient({
       <Card className="p-5">
         {/* Tab switcher */}
         {hasSquad ? (
-          <div className="mb-4 grid grid-cols-2 gap-2">
+          <div className="mb-4 grid gap-2 sm:grid-cols-2">
             <button
               type="button"
               onClick={() => setLeaderboardTab("global")}

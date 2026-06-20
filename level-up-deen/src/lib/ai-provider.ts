@@ -23,6 +23,11 @@ export async function generateCoachAdvice(
     nextAssignment?: string;
     latestAchievement?: string;
     squadName?: string;
+    recentPerformance?: {
+      completedTasks: number;
+      missedTasks: number;
+      missedWorshipSummary: string;
+    };
   },
   userMessage?: string
 ) {
@@ -42,6 +47,8 @@ export async function generateCoachAdvice(
 ${context.nextAssignment ? `- Tugas Terdekat: ${context.nextAssignment}` : ""}
 ${context.latestAchievement ? `- Pencapaian Terakhir: ${context.latestAchievement}` : ""}
 ${context.squadName ? `- Tergabung di Squad: ${context.squadName}` : ""}
+${context.recentPerformance ? `- Performa 7 Hari Terakhir: ${context.recentPerformance.completedTasks} tugas selesai, ${context.recentPerformance.missedTasks} tugas terlewat.
+- Catatan Ibadah Terlewat: ${context.recentPerformance.missedWorshipSummary}` : ""}
 `;
 
   const prompt = userMessage

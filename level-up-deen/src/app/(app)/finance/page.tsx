@@ -1,6 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { FinanceTracker } from "@/components/finance/finance-tracker";
 import { FinanceHealthCheck } from "@/components/finance/finance-health-check";
+import { ZiswafDashboard } from "@/components/finance/ziswaf-dashboard";
+import { DebtTracker } from "@/components/finance/debt-tracker";
+import { FinanceAdvisor } from "@/components/finance/finance-advisor";
 import { cookies } from "next/headers";
 import { getServerTranslation } from "@/lib/i18n";
 
@@ -17,7 +20,14 @@ export default async function FinancePage() {
         </p>
       </Card>
 
+      <FinanceAdvisor />
+
       <FinanceTracker />
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <ZiswafDashboard />
+        <DebtTracker />
+      </div>
 
       {/* Financial Health Check - Ratio Calculator */}
       <FinanceHealthCheck />

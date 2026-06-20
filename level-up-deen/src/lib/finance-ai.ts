@@ -8,7 +8,7 @@ Tugas: ekstrak informasi dari catatan transaksi natural language.
 
 Selalu balas HANYA dengan JSON valid (tidak ada teks lain), format:
 {
-  "type": "income" | "expense",
+  "type": "income" | "expense" | "transfer",
   "category": string,
   "amount": number,
   "note": string
@@ -27,7 +27,8 @@ Kategori yang tersedia:
 
 Rules:
 - amount dalam rupiah penuh (50rb = 50000, 1jt = 1000000)
-- type "income" jika ada kata: gaji, masuk, income, terima, dapat, transfer masuk
+- type "income" jika ada kata: gaji, masuk, income, terima, dapat
+- type "transfer" jika ada kata: transfer antar, pindah dana, mutasi antar akun
 - type "expense" untuk semua lainnya
 - note: salin teks asli dari user
 - Jika jumlah tidak jelas, amount = 0`;
@@ -60,8 +61,9 @@ export function parseNaturalTransaction(note: string): FinanceParseResult {
   if (/(gaji|salary|upah)/i.test(lowered)) category = "Income utama";
   if (/(freelance|proyek|honorarium|jasa)/i.test(lowered)) category = "Freelance";
 
-  const type: FinanceParseResult["type"] =
-    /(gaji|masuk|income|salary|terima|dapat|transfer masuk)/i.test(lowered) ? "income" : "expense";
+  let type: FinanceParseResult["type"] = "expense";
+  if (/(gaji|masuk|income|salary|terima|dapat)/i.test(lowered)) type = "income";
+  else if (/(transfer antar|pindah dana|mutasi antar)/i.test(lowered)) type = "transfer";
 
   return { type, category, amount, note };
 }

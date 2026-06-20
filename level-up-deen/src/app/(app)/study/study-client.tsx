@@ -250,7 +250,7 @@ export function StudyTrackerClient() {
       </AnimatePresence>
 
       {/* Tabs */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid gap-2 sm:grid-cols-3">
         {(["schedules", "courses", "assignments"] as Tab[]).map((t) => (
           <button
             key={t}
@@ -290,7 +290,7 @@ export function StudyTrackerClient() {
                     ))}
                   </select>
                 </label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid gap-3 sm:grid-cols-2">
                   <label className="block text-sm">
                     <span className="font-medium">Hari</span>
                     <select name="dayOfWeek" required className={selectClass}>
@@ -309,7 +309,7 @@ export function StudyTrackerClient() {
                     </select>
                   </label>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid gap-3 sm:grid-cols-2">
                   <label className="block text-sm">
                     <span className="font-medium">Jam Mulai</span>
                     <input type="time" name="startTime" required className={inputClass} />
@@ -319,7 +319,7 @@ export function StudyTrackerClient() {
                     <input type="time" name="endTime" required className={inputClass} />
                   </label>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid gap-3 sm:grid-cols-2">
                   <label className="block text-sm">
                     <span className="font-medium">Ruangan</span>
                     <input type="text" name="room" placeholder="Contoh: Lab A3" className={inputClass} />
@@ -466,7 +466,7 @@ export function StudyTrackerClient() {
                   <span className="font-medium">Nama Mata Kuliah *</span>
                   <input type="text" name="courseName" required maxLength={200} placeholder="Contoh: Kalkulus II" className={inputClass} />
                 </label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid gap-3 sm:grid-cols-2">
                   <label className="block text-sm">
                     <span className="font-medium">Kode MK</span>
                     <input type="text" name="courseCode" maxLength={30} placeholder="Contoh: MAT201" className={inputClass} />
@@ -547,7 +547,7 @@ export function StudyTrackerClient() {
                   <span className="font-medium">Deskripsi</span>
                   <input type="text" name="description" placeholder="Keterangan tambahan (opsional)" className={inputClass} />
                 </label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid gap-3 sm:grid-cols-2">
                   <label className="block text-sm">
                     <span className="font-medium">Deadline *</span>
                     <input type="datetime-local" name="deadlineAt" required className={inputClass} />

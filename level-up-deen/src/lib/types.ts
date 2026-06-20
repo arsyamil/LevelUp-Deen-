@@ -38,11 +38,41 @@ export interface DailyTask {
 
 export interface FinancialTransaction {
   id: string;
-  type: "income" | "expense";
+  type: "income" | "expense" | "transfer";
   category: string;
   amount: number;
   note: string;
   transactionDate: string;
+  accountId?: string;
+  toAccountId?: string;
+}
+
+export interface FinancialAccount {
+  id: string;
+  name: string;
+  type: "cash" | "bank" | "ewallet" | "investment";
+  balance: number;
+  is_default: boolean;
+}
+
+export interface FinancialDebt {
+  id: string;
+  type: "payable" | "receivable";
+  amount: number;
+  remaining_amount: number;
+  person_name: string;
+  due_date: string | null;
+  status: "active" | "paid";
+  note: string | null;
+}
+
+export interface ZiswafRecord {
+  id: string;
+  type: "zakat_maal" | "zakat_fitrah" | "infaq" | "waqaf" | "sadaqah";
+  amount: number;
+  date: string;
+  recipient: string | null;
+  note: string | null;
 }
 
 export interface BudgetItem {
@@ -96,7 +126,7 @@ export interface PersonalizationPlan {
 }
 
 export interface FinanceParseResult {
-  type: "income" | "expense";
+  type: "income" | "expense" | "transfer";
   category: string;
   amount: number;
   note: string;

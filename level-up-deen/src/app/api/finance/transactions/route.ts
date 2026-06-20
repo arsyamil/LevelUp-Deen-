@@ -6,11 +6,13 @@ import { formatDateInTimeZone } from "@/lib/date";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 
 const transactionSchema = z.object({
-  type: z.enum(["income", "expense"]),
+  type: z.enum(["income", "expense", "transfer"]),
   amount: z.number().positive().max(999_999_999),
-  category: z.string().min(1).max(80),
+  category: z.string().max(80).optional().default("Lainnya"),
   note: z.string().max(500).optional().default(""),
   transactionDate: z.string().date().optional(),
+  accountId: z.string().uuid(),
+  toAccountId: z.string().uuid().optional(),
 });
 
 const transactionUpdateSchema = transactionSchema.extend({
@@ -33,6 +35,8 @@ function toTransaction(row: Record<string, unknown>) {
     amount: Number(row.amount ?? 0),
     note: String(row.note ?? ""),
     transactionDate: String(row.transaction_date),
+    accountId: row.account_id ? String(row.account_id) : undefined,
+    toAccountId: row.to_account_id ? String(row.to_account_id) : undefined,
   };
 }
 
@@ -127,7 +131,7 @@ export async function GET(request: NextRequest) {
   const admin = createSupabaseAdminClient();
   const { data, error } = await admin
     .from("financial_transactions")
-    .select("id, type, amount, note, transaction_date, category:category_id(name)")
+    .select("id, type, amount, note, transaction_date, account_id, to_account_id, category:category_id(name)")
     .eq("user_id", userId)
     .gte("transaction_date", startDate)
     .lt("transaction_date", endDate)
@@ -177,10 +181,24 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  try {
-    const payload = result.data;
-    const categoryId = await getOrCreateCategory(userId, payload.category, payload.type);
-    const admin = createSupabaseAdminClient();
+    try {
+      const payload = result.data;
+      
+      const admin = createSupabaseAdminClient();
+      
+      // Validasi kepemilikan account_id
+      const { data: accData } = await admin.from("financial_accounts").select("id").eq("id", payload.accountId).eq("user_id", userId).maybeSingle();
+      if (!accData) return NextResponse.json({ error: "Rekening tidak ditemukan atau bukan milik Anda" }, { status: 403 });
+
+      if (payload.type === "transfer" && payload.toAccountId) {
+        const { data: toAccData } = await admin.from("financial_accounts").select("id").eq("id", payload.toAccountId).eq("user_id", userId).maybeSingle();
+        if (!toAccData) return NextResponse.json({ error: "Rekening tujuan tidak ditemukan atau bukan milik Anda" }, { status: 403 });
+      }
+
+      let categoryId = null;
+      if (payload.type !== "transfer" && payload.category) {
+        categoryId = await getOrCreateCategory(userId, payload.category, payload.type as "income"|"expense");
+      }
     const { data, error } = await admin
       .from("financial_transactions")
       .insert({
@@ -190,8 +208,10 @@ export async function POST(request: NextRequest) {
         amount: payload.amount,
         transaction_date: payload.transactionDate ?? formatDateInTimeZone(),
         note: payload.note,
+        account_id: payload.accountId,
+        to_account_id: payload.type === "transfer" ? payload.toAccountId : null,
       })
-      .select("id, type, amount, note, transaction_date, category:category_id(name)")
+      .select("id, type, amount, note, transaction_date, account_id, to_account_id, category:category_id(name)")
       .maybeSingle();
 
     if (error || !data) {
@@ -241,8 +261,22 @@ export async function PATCH(request: NextRequest) {
 
   try {
     const payload = result.data;
-    const categoryId = await getOrCreateCategory(userId, payload.category, payload.type);
+
     const admin = createSupabaseAdminClient();
+
+    // Validasi kepemilikan account_id
+    const { data: accData } = await admin.from("financial_accounts").select("id").eq("id", payload.accountId).eq("user_id", userId).maybeSingle();
+    if (!accData) return NextResponse.json({ error: "Rekening tidak ditemukan atau bukan milik Anda" }, { status: 403 });
+
+    if (payload.type === "transfer" && payload.toAccountId) {
+      const { data: toAccData } = await admin.from("financial_accounts").select("id").eq("id", payload.toAccountId).eq("user_id", userId).maybeSingle();
+      if (!toAccData) return NextResponse.json({ error: "Rekening tujuan tidak ditemukan atau bukan milik Anda" }, { status: 403 });
+    }
+
+    let categoryId = null;
+    if (payload.type !== "transfer" && payload.category) {
+      categoryId = await getOrCreateCategory(userId, payload.category, payload.type as "income"|"expense");
+    }
     const { data, error } = await admin
       .from("financial_transactions")
       .update({
@@ -251,10 +285,12 @@ export async function PATCH(request: NextRequest) {
         amount: payload.amount,
         transaction_date: payload.transactionDate ?? formatDateInTimeZone(),
         note: payload.note,
+        account_id: payload.accountId,
+        to_account_id: payload.type === "transfer" ? payload.toAccountId : null,
       })
       .eq("id", payload.id)
       .eq("user_id", userId)
-      .select("id, type, amount, note, transaction_date, category:category_id(name)")
+      .select("id, type, amount, note, transaction_date, account_id, to_account_id, category:category_id(name)")
       .maybeSingle();
 
     if (error) {

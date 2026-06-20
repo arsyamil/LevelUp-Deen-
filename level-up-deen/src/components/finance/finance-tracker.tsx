@@ -7,6 +7,8 @@ import { useTranslation } from "@/components/providers";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
 import { SavingsGoalsCard } from "./savings-goals-card";
 import { BudgetCard } from "./budget-card";
+import { AccountsCard } from "./accounts-card";
+import type { FinancialAccount } from "@/lib/types";
 
 const categoryOptions = [
   "Makan dan minum",
@@ -36,11 +38,13 @@ interface FinancePayload {
 }
 
 interface TransactionForm {
-  type: "income" | "expense";
+  type: "income" | "expense" | "transfer";
   amount: number;
   category: string;
   note: string;
   transactionDate: string;
+  accountId: string;
+  toAccountId: string;
 }
 
 function formatRupiah(value: number) {
@@ -90,13 +94,28 @@ export function FinanceTracker() {
   const [error, setError] = useState<string | null>(null);
   const [nlInput, setNlInput] = useState("");
   const [parsing, setParsing] = useState(false);
+  const [accounts, setAccounts] = useState<FinancialAccount[]>([]);
   const [form, setForm] = useState<TransactionForm>({
     type: "expense",
     amount: 0,
     category: "Makan dan minum",
     note: "",
     transactionDate: todayDate(),
+    accountId: "",
+    toAccountId: "",
   });
+
+  useEffect(() => {
+    fetch("/api/finance/accounts").then(res => res.json()).then(data => {
+      if (data?.data) {
+        setAccounts(data.data);
+        if (data.data.length > 0) {
+          const defaultAcc = data.data.find((a: any) => a.is_default) || data.data[0];
+          setForm(f => ({ ...f, accountId: defaultAcc.id }));
+        }
+      }
+    }).catch(() => {});
+  }, []);
 
   const parseWithAI = async () => {
     if (!nlInput.trim() || parsing) return;
@@ -172,6 +191,8 @@ export function FinanceTracker() {
       category: "Makan dan minum",
       note: "",
       transactionDate: todayDate(),
+      accountId: accounts.length > 0 ? (accounts.find(a => a.is_default)?.id || accounts[0].id) : "",
+      toAccountId: "",
     });
   };
 
@@ -183,6 +204,8 @@ export function FinanceTracker() {
       category: transaction.category,
       note: transaction.note ?? "",
       transactionDate: transaction.transactionDate,
+      accountId: transaction.accountId || accounts[0]?.id || "",
+      toAccountId: transaction.toAccountId || "",
     });
   };
 
@@ -376,8 +399,15 @@ export function FinanceTracker() {
         </div>
       </Card>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <BudgetCard categorySummary={categorySummary} selectedMonth={selectedMonth} />
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="md:col-span-1">
+          <AccountsCard />
+        </div>
+        <div className="md:col-span-2">
+          <BudgetCard categorySummary={categorySummary} selectedMonth={selectedMonth} />
+        </div>
+      </div>
+      <div className="grid gap-4 md:grid-cols-1">
         <SavingsGoalsCard />
       </div>
 
@@ -398,8 +428,8 @@ export function FinanceTracker() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className={tx.type === "income" ? "text-success" : "text-text"}>
-                        {tx.type === "income" ? "+" : "-"}
+                      <p className={tx.type === "income" ? "text-success" : tx.type === "expense" ? "text-danger" : "text-brand"}>
+                        {tx.type === "income" ? "+" : tx.type === "expense" ? "-" : "⇄ "}
                         {formatRupiah(tx.amount)}
                       </p>
                       <div className="mt-2 flex justify-end gap-2">
@@ -474,21 +504,59 @@ export function FinanceTracker() {
             </div>
           )}
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-            <div className="grid grid-cols-2 gap-2">
-              {(["expense", "income"] as const).map((type) => (
+            <div className="grid grid-cols-3 gap-2">
+              {(["expense", "income", "transfer"] as const).map((type) => (
                 <button
                   key={type}
                   type="button"
-                  onClick={() => setForm((current) => ({ ...current, type }))}
-                  className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${
+                  onClick={() => setForm((current) => ({ ...current, type, category: type === "transfer" ? "Transfer" : current.category }))}
+                  className={`rounded-2xl border px-3 py-2 text-xs md:text-sm font-semibold ${
                     form.type === type
                       ? "border-brand bg-brand text-text"
                       : "border-line bg-bg text-text"
                   }`}
                 >
-                  {type === "expense" ? t("expense") : t("income")}
+                  {type === "expense" ? t("expense") : type === "income" ? t("income") : "Transfer"}
                 </button>
               ))}
+            </div>
+            
+            <div className={`grid gap-4 ${form.type === 'transfer' ? 'grid-cols-2' : 'grid-cols-1'}`}>
+              <label className="block text-sm">
+                <span className="font-medium">{form.type === 'income' ? 'Masuk ke Akun' : 'Dari Akun'}</span>
+                <select
+                  required
+                  value={form.accountId}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, accountId: event.target.value }))
+                  }
+                  className="mt-2 w-full rounded-2xl border border-line bg-bg px-4 py-3 text-sm text-text outline-none transition focus:border-brand"
+                >
+                  <option value="" disabled>Pilih Akun...</option>
+                  {accounts.map((acc) => (
+                    <option key={acc.id} value={acc.id}>{acc.name} ({formatRupiah(acc.balance)})</option>
+                  ))}
+                </select>
+              </label>
+
+              {form.type === 'transfer' && (
+                <label className="block text-sm">
+                  <span className="font-medium">Ke Akun</span>
+                  <select
+                    required
+                    value={form.toAccountId}
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, toAccountId: event.target.value }))
+                    }
+                    className="mt-2 w-full rounded-2xl border border-line bg-bg px-4 py-3 text-sm text-text outline-none transition focus:border-brand"
+                  >
+                    <option value="" disabled>Pilih Akun Tujuan...</option>
+                    {accounts.map((acc) => (
+                      <option key={acc.id} value={acc.id} disabled={acc.id === form.accountId}>{acc.name}</option>
+                    ))}
+                  </select>
+                </label>
+              )}
             </div>
 
             <label className="block text-sm">
@@ -504,22 +572,24 @@ export function FinanceTracker() {
               />
             </label>
 
-            <label className="block text-sm">
-              <span className="font-medium">{t("category")}</span>
-              <select
-                value={form.category}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, category: event.target.value }))
-                }
-                className="mt-2 w-full rounded-2xl border border-line bg-bg px-4 py-3 text-sm text-text outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
-              >
-                {categoryOptions.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </label>
+            {form.type !== 'transfer' && (
+              <label className="block text-sm">
+                <span className="font-medium">{t("category")}</span>
+                <select
+                  value={form.category}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, category: event.target.value }))
+                  }
+                  className="mt-2 w-full rounded-2xl border border-line bg-bg px-4 py-3 text-sm text-text outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
+                >
+                  {categoryOptions.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
 
             <label className="block text-sm">
               <span className="font-medium">{t("date")}</span>
