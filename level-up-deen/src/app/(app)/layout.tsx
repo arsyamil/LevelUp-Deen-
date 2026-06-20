@@ -4,7 +4,6 @@ import { AppNav } from "@/components/layout/app-nav";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { SignOutButton } from "@/components/auth/sign-out-button";
 import { getCurrentUserProfile, getCurrentUserDashboardData } from "@/lib/user";
 import { routes } from "@/lib/routes";
 import { isAdminRole } from "@/lib/auth";
@@ -54,7 +53,14 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
                 <Badge variant="brand">{stats.rank}-Rank</Badge>
               </div>
             )}
-            <SignOutButton bypassEnabled={bypassEnabled} />
+            <Link 
+              href={routes.settings}
+              className="p-2 text-text-dim hover:text-text transition-colors"
+              aria-label="Pengaturan"
+              title="Pengaturan"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            </Link>
           </div>
         </div>
       </header>
