@@ -3,36 +3,30 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 
 const features = [
   {
-    label: "Deen",
-    title: "Ibadah harian terukur",
-    desc: "Checklist shalat, dzikir, tilawah, dan streak harian dalam alur quest yang ringan.",
+    label: "Hifdz ad-Din (Deen)",
+    title: "Menjaga Agama",
+    desc: "Checklist shalat, dzikir, tilawah, dan streak harian untuk memperkuat pondasi ibadah harian.",
   },
   {
-    label: "Body",
-    title: "Target fisik adaptif",
-    desc: "Push up, squat, lari, dan hidrasi disesuaikan dengan baseline personalmu.",
+    label: "Hifdz an-Nafs (Body)",
+    title: "Menjaga Fisik",
+    desc: "Aktivitas fisik dan hidrasi adaptif sebagai bentuk amanah menjaga raga yang sehat.",
   },
   {
-    label: "Wealth",
-    title: "Finansial lebih sadar",
-    desc: "Catat transaksi, pantau budget, dan rencanakan tabungan tanpa spreadsheet rumit.",
+    label: "Hifdz al-Maal (Wealth)",
+    title: "Menjaga Harta",
+    desc: "Catat transaksi dan ZISWAF berbasis Islamic Wealth Management tanpa spreadsheet rumit.",
   },
   {
-    label: "AI",
-    title: "Coach untuk konsistensi",
-    desc: "Pendamping refleksi dan motivasi personal, dengan guardrail agar tetap aman dan relevan.",
+    label: "Hifdz al-'Aql (Mind)",
+    title: "Menjaga Akal",
+    desc: "Pantau tugas dan ilmu yang dipelajari untuk terus menjaga ketajaman produktivitas pikiran.",
   },
   {
-    label: "Rank",
-    title: "Progress terasa hidup",
-    desc: "EXP, level, coin, rank E sampai S+, avatar, dan achievement menjaga momentum.",
+    label: "Hifdz an-Nasl (Squad)",
+    title: "Menjaga Sosial",
+    desc: "Bertumbuh bersama circle yang baik lewat squad publik atau privat untuk menjaga semangat.",
   },
-  {
-    label: "Squad",
-    title: "Tumbuh bersama",
-    desc: "Retensi sosial ringan lewat squad publik atau privat untuk saling menjaga semangat.",
-  },
-];
 
 const pillars = [
   { label: "Deen", pct: 78 },

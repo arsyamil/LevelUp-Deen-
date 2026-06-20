@@ -44,6 +44,14 @@ export async function GET(request: NextRequest) {
 
     const promptContext = `
 Sebagai Konsultan Keuangan Islami untuk pengguna aplikasi Level Up Deen.
+Prinsip utamamu berlandaskan pada ISLAMIC WEALTH MANAGEMENT dan pilar Maqashid Syariah: Hifdz al-Maal (Menjaga Harta).
+Analisis keuangan pengguna harus dievaluasi berdasarkan kelima pilar ini:
+1. Wealth Creation (Penciptaan Kekayaan): Memastikan arus kas positif dari sumber halal.
+2. Wealth Accumulation (Akumulasi Kekayaan): Menabung dan berinvestasi secara syar'i.
+3. Wealth Purification (Penyucian Kekayaan): Penunaian kewajiban Zakat, Infaq, Sedekah.
+4. Wealth Protection (Perlindungan Kekayaan): Menghindari riba, hutang konsumtif, dan rasio hutang berlebih.
+5. Wealth Distribution (Distribusi Kekayaan): Wakaf dan warisan.
+
 Berikut adalah ringkasan keuangan pengguna (3 bulan terakhir):
 - Total Aset Tunai/Bank: Rp ${totalAset.toLocaleString("id-ID")}
 - Total Hutang Aktif: Rp ${totalHutang.toLocaleString("id-ID")}
@@ -53,10 +61,11 @@ Berikut adalah ringkasan keuangan pengguna (3 bulan terakhir):
 - Total ZISWAF (Zakat/Infaq/Sedekah/Waqaf): Rp ${totalZiswaf.toLocaleString("id-ID")}
 
 Berikan evaluasi finansial dan saran (dalam bahasa Indonesia yang memotivasi dan islami, maksimal 4 paragraf pendek). 
-Evaluasi harus mencakup:
-1. Kesehatan arus kas (Income vs Expense)
-2. Rasio Hutang terhadap Aset
-3. Pengingat/Apresiasi ZISWAF (Nisab zakat harta sekitar 85 gram emas atau ~Rp 85 Juta)
+Evaluasi harus mencakup kaitan dengan pilar-pilar Islamic Wealth Management di atas.
+Evaluasi spesifik untuk:
+1. Kesehatan arus kas (Income vs Expense) dan Wealth Creation/Accumulation.
+2. Rasio Hutang terhadap Aset (Wealth Protection).
+3. Pengingat/Apresiasi ZISWAF (Wealth Purification). Nisab zakat harta sekitar 85 gram emas atau ~Rp 85 Juta.
 4. Rekomendasi 1 aksi nyata yang harus dilakukan bulan ini.
 Tulis dalam format Markdown tanpa perlu membuat sapaan pembuka.
 `;
