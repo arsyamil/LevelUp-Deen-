@@ -19,6 +19,25 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [guestLoading, setGuestLoading] = useState(false);
+
+  const handleGuestLogin = async () => {
+    setError(null);
+    setGuestLoading(true);
+    const supabase = createSupabaseBrowserClient();
+    
+    // Gunakan Anonymous Sign-in dari Supabase
+    const { error: signInError } = await supabase.auth.signInAnonymously();
+    
+    if (signInError) {
+      setError(signInError.message + " (Pastikan Anonymous Sign-In aktif di Supabase)");
+      setGuestLoading(false);
+      return;
+    }
+    
+    router.push(routes.onboarding);
+    router.refresh();
+  };
 
   const handleGoogleLogin = async () => {
     setError(null);
@@ -83,6 +102,15 @@ function LoginForm() {
           <path d="M1 1h22v22H1z" fill="none" />
         </svg>
         {t("continueWithGoogle")}
+      </button>
+
+      <button
+        type="button"
+        onClick={handleGuestLogin}
+        disabled={guestLoading || loading}
+        className="flex w-full items-center justify-center gap-3 rounded border border-line-medium bg-bg-card px-4 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-text transition hover:border-brand hover:text-brand"
+      >
+        {guestLoading ? "Memproses..." : "Masuk sebagai Guest"}
       </button>
 
       <div className="relative">

@@ -18,6 +18,24 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [guestLoading, setGuestLoading] = useState(false);
+
+  const handleGuestLogin = async () => {
+    setError(null);
+    setGuestLoading(true);
+    const supabase = createSupabaseBrowserClient();
+    
+    const { error: signInError } = await supabase.auth.signInAnonymously();
+    
+    if (signInError) {
+      setError(signInError.message + " (Pastikan Anonymous Sign-In aktif di Supabase)");
+      setGuestLoading(false);
+      return;
+    }
+    
+    router.push(routes.onboarding);
+    router.refresh();
+  };
 
   const handleGoogleRegister = async () => {
     setError(null);
@@ -107,8 +125,17 @@ export default function RegisterPage() {
               />
               <path d="M1 1h22v22H1z" fill="none" />
             </svg>
-            {t("registerWithGoogle")}
-          </button>
+            {t("continueWithGoogle")}
+      </button>
+
+      <button
+        type="button"
+        onClick={handleGuestLogin}
+        disabled={guestLoading || loading}
+        className="flex w-full items-center justify-center gap-3 rounded border border-line-medium bg-bg-card px-4 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-text transition hover:border-brand hover:text-brand"
+      >
+        {guestLoading ? "Memproses..." : "Mulai sebagai Guest"}
+      </button>
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
