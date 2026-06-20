@@ -68,6 +68,12 @@ export const APP_NAV = [
     emoji: "👥",
   },
   {
+    href: routes.achievements,
+    label: "Achievements",
+    description: "Badge, Exp, dan Koin",
+    emoji: "🏆",
+  },
+  {
     href: routes.study,
     label: "Study Tracker",
     description: "Jadwal kuliah & deadline tugas",

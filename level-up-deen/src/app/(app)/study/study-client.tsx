@@ -183,6 +183,37 @@ export function StudyTrackerClient() {
     }
   };
 
+  // ── Delete Actions ──
+  const handleDeleteCourse = async (id: string) => {
+    if (!confirm("Hapus mata kuliah ini? Semua jadwal & tugas terkait mungkin akan hilang.")) return;
+    try {
+      await fetch(`/api/study/courses?id=${id}`, { method: "DELETE" });
+      fetchAll();
+    } catch {
+      showMsg("Gagal menghapus mata kuliah", "error");
+    }
+  };
+
+  const handleDeleteSchedule = async (id: string) => {
+    if (!confirm("Hapus jadwal ini?")) return;
+    try {
+      await fetch(`/api/study/schedules?id=${id}`, { method: "DELETE" });
+      fetchAll();
+    } catch {
+      showMsg("Gagal menghapus jadwal", "error");
+    }
+  };
+
+  const handleDeleteAssignment = async (id: string) => {
+    if (!confirm("Hapus tugas ini?")) return;
+    try {
+      await fetch(`/api/study/assignments?id=${id}`, { method: "DELETE" });
+      fetchAll();
+    } catch {
+      showMsg("Gagal menghapus tugas", "error");
+    }
+  };
+
   const todayIndex = new Date().getDay();
 
   const inputClass =
@@ -349,41 +380,70 @@ export function StudyTrackerClient() {
                           </p>
                         </div>
                       </div>
+                      <button onClick={() => handleDeleteSchedule(s.id)} className="text-xs text-danger hover:underline">Hapus</button>
                     </motion.li>
                   ))}
               </ul>
             )}
           </Card>
 
-          {/* Full weekly overview */}
-          <Card className="p-5">
-            <h2 className="section-title">Jadwal Mingguan</h2>
-            <div className="mt-4 space-y-3">
-              {DAY_LABELS.map((day, i) => {
-                const daySchedules = schedules.filter((s) => s.day_of_week === i);
-                return (
-                  <div key={i}>
-                    <p className={`text-xs font-semibold uppercase tracking-wide ${i === todayIndex ? "text-brand" : "text-text-dim"}`}>
-                      {day} {i === todayIndex && "(Hari Ini)"}
-                    </p>
-                    {daySchedules.length === 0 ? (
-                      <p className="ml-2 mt-1 text-xs text-text-dim">—</p>
-                    ) : (
-                      <ul className="ml-2 mt-1 space-y-1">
-                        {daySchedules.map((s) => (
-                          <li key={s.id} className="text-sm">
-                            <span className="font-medium">{s.start_time.slice(0, 5)}</span>{" "}
-                            {s.course?.course_name ?? "—"}{" "}
-                            <span className="text-text-dim">
-                              ({s.session_type}{s.room ? `, ${s.room}` : ""})
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+          <Card className="p-5 overflow-x-auto">
+            <h2 className="section-title mb-4">Jadwal Mingguan</h2>
+            <div className="min-w-[700px]">
+              <div className="grid grid-cols-8 border-b border-line pb-2">
+                <div className="text-xs font-semibold text-text-dim text-center">Jam</div>
+                {DAY_LABELS.map((day, i) => (
+                  <div key={day} className={`text-xs font-semibold text-center ${i === todayIndex ? "text-brand" : "text-text-dim"}`}>
+                    {day}
                   </div>
-                );
-              })}
+                ))}
+              </div>
+              
+              <div className="relative mt-2 h-[600px] border-l border-line ml-[12.5%]">
+                {/* Horizontal lines for hours */}
+                {Array.from({ length: 15 }).map((_, i) => (
+                  <div key={i} className="absolute w-full border-t border-line/50" style={{ top: `${(i / 14) * 100}%` }}>
+                    <span className="absolute -left-12 -top-2.5 text-xs text-text-dim">{i + 7}:00</span>
+                  </div>
+                ))}
+
+                {/* Vertical lines for days */}
+                {DAY_LABELS.map((_, i) => (
+                  <div key={`v-${i}`} className="absolute h-full border-l border-line/30" style={{ left: `${(i / 7) * 100}%` }} />
+                ))}
+
+                {/* Schedule Blocks */}
+                {schedules.map((s) => {
+                  const startHour = parseInt(s.start_time.split(":")[0]) + parseInt(s.start_time.split(":")[1]) / 60;
+                  const endHour = parseInt(s.end_time.split(":")[0]) + parseInt(s.end_time.split(":")[1]) / 60;
+                  const top = ((startHour - 7) / 14) * 100;
+                  const height = ((endHour - startHour) / 14) * 100;
+                  const left = (s.day_of_week / 7) * 100;
+                  const width = 100 / 7;
+
+                  // Skip if out of bounds (before 07:00 or after 21:00)
+                  if (startHour < 7 || endHour > 21) return null;
+
+                  return (
+                    <div
+                      key={s.id}
+                      className="absolute rounded-md p-1.5 overflow-hidden border border-white/20 shadow-sm"
+                      style={{
+                        top: `${top}%`,
+                        height: `${height}%`,
+                        left: `${left}%`,
+                        width: `${width}%`,
+                        backgroundColor: s.course?.color ?? "#6366f1",
+                        color: "#fff",
+                      }}
+                    >
+                      <p className="text-[10px] font-bold leading-tight line-clamp-2">{s.course?.course_name}</p>
+                      <p className="text-[9px] opacity-90">{s.start_time.slice(0, 5)}</p>
+                      <p className="text-[9px] opacity-80 mt-0.5">{s.room}</p>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </Card>
         </div>
@@ -449,6 +509,7 @@ export function StudyTrackerClient() {
                         {c.semester && <p className="text-xs text-text-dim">📅 {c.semester}</p>}
                       </div>
                     </div>
+                    <button onClick={() => handleDeleteCourse(c.id)} className="text-xs text-danger hover:underline">Hapus</button>
                   </motion.li>
                 ))}
               </ul>
@@ -560,6 +621,7 @@ export function StudyTrackerClient() {
                           </p>
                         </div>
                       </div>
+                      <button onClick={() => handleDeleteAssignment(a.id)} className="text-xs text-danger hover:underline ml-3 shrink-0">Hapus</button>
                     </motion.li>
                   );
                 })}

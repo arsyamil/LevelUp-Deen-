@@ -189,5 +189,12 @@ export async function POST(request: NextRequest) {
     console.error("onboarding: failed to create initial tasks", e);
   }
 
+  // Award FIRST_STEP achievement
+  try {
+    await admin.rpc("award_achievement", { p_user_id: userId, p_code: "FIRST_STEP" });
+  } catch (e) {
+    console.error("Failed to award FIRST_STEP achievement:", e);
+  }
+
   return NextResponse.json({ plan, onboardingCompleted: true });
 }

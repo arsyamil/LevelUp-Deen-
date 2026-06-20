@@ -4,6 +4,9 @@ import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import type { FinancialTransaction } from "@/lib/types";
 import { useTranslation } from "@/components/providers";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
+import { SavingsGoalsCard } from "./savings-goals-card";
+import { BudgetCard } from "./budget-card";
 
 const categoryOptions = [
   "Makan dan minum",
@@ -283,59 +286,100 @@ export function FinanceTracker() {
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <div className="rounded-lg border border-line bg-bg-soft p-4">
             <p className="text-sm font-semibold">{t("expenseByCategory")}</p>
-            <div className="mt-3 space-y-3">
+            <div className="mt-4 h-48 w-full">
               {expenseCategorySummary.length > 0 ? (
-                (() => {
-                  const maxExp = Math.max(...expenseCategorySummary.map((i) => i.expense));
-                  return expenseCategorySummary.map((item) => (
-                    <div key={`expense-${item.category}`}>
-                      <div className="flex justify-between gap-3 text-sm mb-1">
-                        <span className="text-text-dim">{item.category}</span>
-                        <span className="font-medium">{formatRupiah(item.expense)}</span>
-                      </div>
-                      <div className="h-1.5 rounded-full bg-bg">
-                        <div
-                          className="h-full rounded-full bg-danger/60 transition-all"
-                          style={{ width: `${Math.round((item.expense / maxExp) * 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  ));
-                })()
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={expenseCategorySummary}
+                      dataKey="expense"
+                      nameKey="category"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={50}
+                      outerRadius={80}
+                      paddingAngle={2}
+                    >
+                      {expenseCategorySummary.map((entry, index) => {
+                        const colors = ["#ef4444", "#f97316", "#f59e0b", "#eab308", "#84cc16"];
+                        return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                      })}
+                    </Pie>
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    <RechartsTooltip formatter={(value: any) => formatRupiah(Number(value))} />
+                  </PieChart>
+                </ResponsiveContainer>
               ) : (
-                <p className="text-sm text-text-dim">{t("noExpenseMonth")}</p>
+                <p className="text-sm text-text-dim flex h-full items-center justify-center">{t("noExpenseMonth")}</p>
               )}
+            </div>
+            <div className="mt-2 space-y-1">
+              {expenseCategorySummary.map((item, index) => {
+                const colors = ["#ef4444", "#f97316", "#f59e0b", "#eab308", "#84cc16"];
+                return (
+                  <div key={`legend-${index}`} className="flex justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: colors[index % colors.length] }} />
+                      <span>{item.category}</span>
+                    </div>
+                    <span className="font-medium">{formatRupiah(item.expense)}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
           <div className="rounded-lg border border-line bg-bg-soft p-4">
             <p className="text-sm font-semibold">{t("incomeByCategory")}</p>
-            <div className="mt-3 space-y-3">
+            <div className="mt-4 h-48 w-full">
               {incomeCategorySummary.length > 0 ? (
-                (() => {
-                  const maxInc = Math.max(...incomeCategorySummary.map((i) => i.income));
-                  return incomeCategorySummary.map((item) => (
-                    <div key={`income-${item.category}`}>
-                      <div className="flex justify-between gap-3 text-sm mb-1">
-                        <span className="text-text-dim">{item.category}</span>
-                        <span className="font-medium text-success">{formatRupiah(item.income)}</span>
-                      </div>
-                      <div className="h-1.5 rounded-full bg-bg">
-                        <div
-                          className="h-full rounded-full bg-success/60 transition-all"
-                          style={{ width: `${Math.round((item.income / maxInc) * 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  ));
-                })()
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={incomeCategorySummary}
+                      dataKey="income"
+                      nameKey="category"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={50}
+                      outerRadius={80}
+                      paddingAngle={2}
+                    >
+                      {incomeCategorySummary.map((entry, index) => {
+                        const colors = ["#22c55e", "#10b981", "#14b8a6", "#06b6d4", "#3b82f6"];
+                        return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                      })}
+                    </Pie>
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    <RechartsTooltip formatter={(value: any) => formatRupiah(Number(value))} />
+                  </PieChart>
+                </ResponsiveContainer>
               ) : (
-                <p className="text-sm text-text-dim">{t("noIncomeMonth")}</p>
+                <p className="text-sm text-text-dim flex h-full items-center justify-center">{t("noIncomeMonth")}</p>
               )}
+            </div>
+            <div className="mt-2 space-y-1">
+              {incomeCategorySummary.map((item, index) => {
+                const colors = ["#22c55e", "#10b981", "#14b8a6", "#06b6d4", "#3b82f6"];
+                return (
+                  <div key={`legend-${index}`} className="flex justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: colors[index % colors.length] }} />
+                      <span>{item.category}</span>
+                    </div>
+                    <span className="font-medium">{formatRupiah(item.income)}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
       </Card>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <BudgetCard categorySummary={categorySummary} selectedMonth={selectedMonth} />
+        <SavingsGoalsCard />
+      </div>
 
       <div className="grid gap-4 xl:grid-cols-[1fr_420px]">
         <Card className="p-5">

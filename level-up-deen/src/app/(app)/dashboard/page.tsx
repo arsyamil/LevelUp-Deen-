@@ -8,6 +8,7 @@ import { routes } from "@/lib/routes";
 import { redirect } from "next/navigation";
 import { DailySummary } from "@/components/dashboard/daily-summary";
 import { InteractiveAvatar } from "@/components/avatar/interactive-avatar";
+import { TodayClasses } from "@/components/dashboard/today-classes";
 import { cookies } from "next/headers";
 import { getServerTranslation } from "@/lib/i18n";
 
@@ -178,6 +179,8 @@ export default async function DashboardPage() {
           )}
         </Card>
       </div>
+
+      <TodayClasses />
 
       {/* Quick links */}
       <Card className="p-5">

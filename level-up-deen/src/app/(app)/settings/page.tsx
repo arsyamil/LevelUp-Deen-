@@ -3,6 +3,7 @@ import { AccountDeletionCard } from "@/components/settings/account-deletion-card
 import { DataExportCard } from "@/components/settings/data-export-card";
 import { ProfileSettingsForm } from "@/components/settings/profile-settings-form";
 import { ReminderPreferencesCard } from "@/components/settings/reminder-preferences-card";
+import { PushSubscriptionCard } from "@/components/settings/push-subscription-card";
 import { getCurrentUserProfile } from "@/lib/user";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { isAuthBypassEnabled } from "@/lib/env";
@@ -44,6 +45,8 @@ export default async function SettingsPage() {
           dailyReflectionTime: "20:30",
         }}
       />
+
+      <PushSubscriptionCard />
 
       <DataExportCard />
       <AccountDeletionCard />

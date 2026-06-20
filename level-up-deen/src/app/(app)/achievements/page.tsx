@@ -1,48 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ProgressBar } from "@/components/ui/progress-bar";
-import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { getCurrentUserId } from "@/lib/auth";
+import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { routes } from "@/lib/routes";
-
-const rarityEmoji: Record<string, string> = {
-  bronze: "🥉",
-  silver: "🥈",
-  gold: "🥇",
-  platinum: "💎",
-  legendary: "👑",
-};
-
-const rarityBadge: Record<string, "muted" | "default" | "brand" | "success" | "danger"> = {
-  bronze: "muted",
-  silver: "default",
-  gold: "brand",
-  platinum: "success",
-  legendary: "danger",
-};
-
-interface AchRow {
-  id: string;
-  unlocked_at: string;
-  achievement: {
-    code: string;
-    name: string;
-    description: string;
-    reward_exp: number;
-    reward_coin: number;
-    rarity?: string;
-  } | null;
-}
-
-function formatDate(iso: string) {
-  return new Intl.DateTimeFormat("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Asia/Jakarta",
-  }).format(new Date(iso));
-}
 
 export default async function AchievementsPage() {
   const userId = await getCurrentUserId();
@@ -50,105 +11,80 @@ export default async function AchievementsPage() {
 
   const admin = createSupabaseAdminClient();
 
-  // Fetch unlocked achievements
-  const { data: raw, error } = await admin
-    .from("user_achievements")
-    .select(
-      "id, unlocked_at, achievement:achievement_id(code, name, description, reward_exp, reward_coin)"
-    )
-    .eq("user_id", userId)
-    .order("unlocked_at", { ascending: false });
-
-  // Fetch total available achievements for progress
-  const { count: totalAvailable } = await admin
+  // Ambil semua pencapaian
+  const { data: allAchievements } = await admin
     .from("achievements")
-    .select("id", { count: "exact", head: true });
+    .select("*")
+    .order("created_at", { ascending: true });
 
-  const achievements = (raw ?? []) as unknown as AchRow[];
-  const unlockedCount = achievements.length;
-  const pct =
-    totalAvailable && totalAvailable > 0
-      ? Math.round((unlockedCount / totalAvailable) * 100)
-      : 0;
+  // Ambil pencapaian pengguna saat ini
+  const { data: userAchievements } = await admin
+    .from("user_achievements")
+    .select("achievement_id, earned_at")
+    .eq("user_id", userId);
+
+  const earnedIds = new Set(userAchievements?.map(a => a.achievement_id) || []);
+
+  const totalExp = allAchievements?.reduce((sum, ach) => earnedIds.has(ach.id) ? sum + ach.reward_exp : sum, 0) || 0;
+  const totalCoins = allAchievements?.reduce((sum, ach) => earnedIds.has(ach.id) ? sum + ach.reward_coin : sum, 0) || 0;
 
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h1 className="text-2xl font-semibold">Achievements</h1>
+        <h1 className="text-2xl font-semibold">Pencapaian (Achievements)</h1>
         <p className="mt-2 text-sm text-text-dim">
-          Pencapaian khusus yang terbuka berdasarkan aktivitas dan konsistensimu.
+          Kumpulkan badge, Exp, dan Koin dengan menyelesaikan berbagai tantangan di dalam aplikasi.
         </p>
-      </Card>
-
-      {error && (
-        <div className="rounded-lg border border-danger/30 bg-danger/10 p-4 text-sm text-danger">
-          Gagal memuat: {error.message}
-        </div>
-      )}
-
-      {/* Progress overview */}
-      <Card className="p-5">
-        <div className="flex items-end justify-between gap-3">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-text-dim">Progress Koleksi</p>
-            <p className="mt-1 text-2xl font-semibold">
-              {unlockedCount}
-              {totalAvailable != null && (
-                <span className="text-base font-normal text-text-dim">
-                  {" "}/ {totalAvailable} achievement
-                </span>
-              )}
-            </p>
+        
+        <div className="mt-4 flex gap-4">
+          <div className="rounded-lg border border-brand/20 bg-brand/5 px-4 py-3">
+            <p className="text-xs text-brand">Total Exp Diraih</p>
+            <p className="text-xl font-bold text-brand">+{totalExp} XP</p>
           </div>
-          <p className="text-2xl font-semibold text-brand">{pct}%</p>
-        </div>
-        <div className="mt-3">
-          <ProgressBar value={pct} />
+          <div className="rounded-lg border border-success/20 bg-success/5 px-4 py-3">
+            <p className="text-xs text-success">Total Koin Diraih</p>
+            <p className="text-xl font-bold text-success">+{totalCoins} 🪙</p>
+          </div>
         </div>
       </Card>
 
-      {achievements.length === 0 ? (
-        <Card className="p-5">
-          <p className="text-sm text-text-dim">
-            Belum ada achievement yang terbuka. Selesaikan quest harian secara konsisten
-            untuk membuka pencapaian pertamamu! 🎯
-          </p>
-        </Card>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {achievements.map((row) => {
-            const a = row.achievement;
-            const rarity = a?.rarity ?? "bronze";
-            return (
-              <Card key={row.id} className="p-5">
-                <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-2xl">
-                    {rarityEmoji[rarity] ?? "🏆"}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                      <p className="font-semibold">{a?.name ?? "Unknown"}</p>
-                      <Badge variant={rarityBadge[rarity] ?? "muted"}>
-                        {rarity}
-                      </Badge>
-                    </div>
-                    <p className="mt-1 text-sm text-text-dim">{a?.description ?? ""}</p>
-                    <div className="mt-2 flex flex-wrap gap-3 text-xs text-text-dim">
-                      {(a?.reward_exp ?? 0) > 0 && (
-                        <span className="text-brand">+{a?.reward_exp} EXP</span>
-                      )}
-                      {(a?.reward_coin ?? 0) > 0 && (
-                        <span>+{a?.reward_coin} 🪙</span>
-                      )}
-                      <span>Dibuka: {formatDate(row.unlocked_at)}</span>
-                    </div>
-                  </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {allAchievements?.map(ach => {
+          const isEarned = earnedIds.has(ach.id);
+          const earnedData = userAchievements?.find(ua => ua.achievement_id === ach.id);
+          
+          return (
+            <Card key={ach.id} className={`relative overflow-hidden p-5 transition-all ${isEarned ? "border-brand/30 shadow-sm" : "opacity-75 grayscale"}`}>
+              {isEarned && (
+                <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-brand/10" />
+              )}
+              <div className="relative z-10 flex flex-col items-center text-center">
+                <div className={`mb-3 flex h-16 w-16 items-center justify-center rounded-full text-3xl shadow-inner ${isEarned ? "bg-gradient-to-br from-brand/20 to-brand/5" : "bg-bg-soft"}`}>
+                  {ach.icon_url ? <img src={ach.icon_url} alt="icon" className="w-10 h-10 object-contain" /> : "🏆"}
                 </div>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+                <h3 className="font-semibold">{ach.name}</h3>
+                <p className="mt-1 text-xs text-text-dim">{ach.description}</p>
+                
+                <div className="mt-4 flex flex-wrap justify-center gap-2">
+                  <Badge variant="brand" className="border-brand/30">+{ach.reward_exp} XP</Badge>
+                  <Badge variant="success" className="border-success/30">+{ach.reward_coin} Koin</Badge>
+                </div>
+                
+                {isEarned && earnedData && (
+                  <p className="mt-4 text-[10px] uppercase tracking-wider text-brand font-medium">
+                    Diraih pada {new Date(earnedData.earned_at).toLocaleDateString('id-ID')}
+                  </p>
+                )}
+                {!isEarned && (
+                  <p className="mt-4 text-[10px] uppercase tracking-wider text-text-dim">
+                    Belum diraih
+                  </p>
+                )}
+              </div>
+            </Card>
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -21,9 +21,9 @@ export async function GET() {
     if (!member) {
       // User is not in a squad, return available squads
       const { data: squads } = await admin
-        .from("squads")
+        .from("squad_groups")
         .select(`
-          id, name, description, emblem_url,
+          id, name,
           squad_members (count)
         `)
         .order("created_at", { ascending: false });
@@ -33,7 +33,7 @@ export async function GET() {
 
     // User is in a squad, return squad details + leaderboard
     const { data: squad } = await admin
-      .from("squads")
+      .from("squad_groups")
       .select("*")
       .eq("id", member.squad_id)
       .single();
@@ -75,7 +75,10 @@ export async function GET() {
 
     return NextResponse.json({
       inSquad: true,
-      squad,
+      squad: {
+        ...squad,
+        inviteCode: squad.invite_code
+      },
       myRole: member.role,
       members
     });
@@ -94,7 +97,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, description } = await request.json();
+    const { name } = await request.json();
     if (!name) return NextResponse.json({ error: "Nama squad wajib diisi" }, { status: 400 });
 
     const admin = createSupabaseAdminClient();
@@ -112,8 +115,8 @@ export async function POST(request: Request) {
 
     // Insert new squad
     const { data: squad, error: insertError } = await admin
-      .from("squads")
-      .insert({ name, description, created_by: userId })
+      .from("squad_groups")
+      .insert({ name, is_private: false, created_by: userId })
       .select()
       .single();
 
@@ -126,7 +129,7 @@ export async function POST(request: Request) {
       .from("squad_members")
       .insert({ squad_id: squad.id, user_id: userId, role: "leader" });
 
-    return NextResponse.json({ squad });
+    return NextResponse.json({ squad: { ...squad, inviteCode: squad.invite_code } });
 
   } catch (error) {
     console.error("POST Squad Error:", error);

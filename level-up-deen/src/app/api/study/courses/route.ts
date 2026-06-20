@@ -67,6 +67,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  // Award STUDIOUS achievement
+  try {
+    await admin.rpc("award_achievement", { p_user_id: userId, p_code: "STUDIOUS" });
+  } catch (e) {
+    console.error("Failed to award STUDIOUS achievement:", e);
+  }
+
   return NextResponse.json({ success: true, course });
 }
 

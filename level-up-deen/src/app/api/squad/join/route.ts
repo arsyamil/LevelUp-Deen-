@@ -9,8 +9,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { squadId } = await request.json();
-    if (!squadId) return NextResponse.json({ error: "squadId is required" }, { status: 400 });
+    const { inviteCode } = await request.json();
+    if (!inviteCode) return NextResponse.json({ error: "inviteCode is required" }, { status: 400 });
 
     const admin = createSupabaseAdminClient();
 
@@ -25,16 +25,27 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Anda sudah tergabung dalam Squad" }, { status: 400 });
     }
 
+    // Verify squad invite code
+    const { data: squadToJoin } = await admin
+      .from("squad_groups")
+      .select("id, name")
+      .eq("invite_code", inviteCode.toUpperCase())
+      .maybeSingle();
+
+    if (!squadToJoin) {
+      return NextResponse.json({ error: "Kode undangan tidak valid atau squad tidak ditemukan" }, { status: 404 });
+    }
+
     // Join squad
     const { error: insertError } = await admin
       .from("squad_members")
-      .insert({ squad_id: squadId, user_id: userId, role: "member" });
+      .insert({ squad_id: squadToJoin.id, user_id: userId, role: "member" });
 
     if (insertError) {
       return NextResponse.json({ error: "Gagal bergabung ke Squad" }, { status: 400 });
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, squadName: squadToJoin.name });
 
   } catch (error) {
     console.error("Join Squad Error:", error);
@@ -74,7 +85,7 @@ export async function DELETE() {
         return NextResponse.json({ error: "Leader tidak bisa keluar. Promosikan orang lain atau bubarkan squad jika kosong." }, { status: 400 });
       } else {
         // Last person, delete squad entirely
-        await admin.from("squads").delete().eq("id", member.squad_id);
+        await admin.from("squad_groups").delete().eq("id", member.squad_id);
         return NextResponse.json({ success: true, message: "Squad dibubarkan" });
       }
     }

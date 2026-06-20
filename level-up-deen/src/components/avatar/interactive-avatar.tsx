@@ -70,7 +70,6 @@ export function InteractiveAvatar() {
     return <div className="h-20 w-20 animate-pulse rounded-full bg-bg-soft border-2 border-line" />;
   }
 
-  const equipped = items.filter((i) => i.equipped);
   const owned = items.filter((i) => i.owned);
 
   return (

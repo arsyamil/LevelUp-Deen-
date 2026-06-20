@@ -36,7 +36,8 @@ export function MobileMenu({ showAdmin = false }: { showAdmin?: boolean }) {
       "Squad": "squad",
       "Settings": "settings",
       "Admin Console": "admin",
-      "AI Coach": "aiCoach"
+      "AI Coach": "aiCoach",
+      "Achievements": "achievements"
     };
     const key = keyMap[label];
     return key ? t(key) : label;

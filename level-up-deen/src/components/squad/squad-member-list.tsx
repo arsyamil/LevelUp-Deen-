@@ -91,8 +91,8 @@ export function SquadMemberList({ squad, currentUserId, onSquadChanged }: Props)
               <Badge variant="default">
                 {squad.memberCount} anggota
               </Badge>
-              <Badge variant={squad.myRole === "admin" ? "brand" : "muted"}>
-                {squad.myRole === "admin" ? "Admin" : "Member"}
+              <Badge variant={squad.myRole === "leader" ? "brand" : "muted"}>
+                {squad.myRole === "leader" ? "Leader" : "Member"}
               </Badge>
             </div>
           </div>
@@ -132,7 +132,7 @@ export function SquadMemberList({ squad, currentUserId, onSquadChanged }: Props)
                 <div className="flex items-center gap-3">
                   <div
                     className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
-                      member.role === "admin"
+                      member.role === "leader"
                         ? "bg-brand/20 text-brand"
                         : "bg-bg text-text-dim"
                     }`}
@@ -147,9 +147,9 @@ export function SquadMemberList({ squad, currentUserId, onSquadChanged }: Props)
                   </div>
                 </div>
                 <Badge
-                  variant={member.role === "admin" ? "brand" : "muted"}
+                  variant={member.role === "leader" ? "brand" : "muted"}
                 >
-                  {member.role === "admin" ? "Admin" : "Member"}
+                  {member.role === "leader" ? "Leader" : "Member"}
                 </Badge>
               </li>
             );
