@@ -20,6 +20,9 @@ export async function generateCoachAdvice(
     tasksRemaining: number;
     savings: number;
     expense: number;
+    nextAssignment?: string;
+    latestAchievement?: string;
+    squadName?: string;
   },
   userMessage?: string
 ) {
@@ -36,6 +39,9 @@ export async function generateCoachAdvice(
 - Tugas tertunda: ${context.tasksRemaining}
 - Tabungan/Saldo: Rp ${context.savings}
 - Pengeluaran: Rp ${context.expense}
+${context.nextAssignment ? `- Tugas Terdekat: ${context.nextAssignment}` : ""}
+${context.latestAchievement ? `- Pencapaian Terakhir: ${context.latestAchievement}` : ""}
+${context.squadName ? `- Tergabung di Squad: ${context.squadName}` : ""}
 `;
 
   const prompt = userMessage

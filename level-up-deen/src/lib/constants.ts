@@ -94,6 +94,13 @@ export const APP_NAV = [
     emoji: "📋",
   },
   {
+    href: routes.adminItems,
+    label: "Admin Shop",
+    description: "Kelola kosmetik avatar",
+    adminOnly: true,
+    emoji: "🛍️",
+  },
+  {
     href: routes.admin,
     label: "Admin Console",
     description: "Master data dan admin system",

@@ -68,8 +68,8 @@ export default function HomePage() {
       </header>
 
       <section className="cosmic-section min-h-[calc(100vh-4rem)]">
-        <div className="cosmic-orb left-1/2 top-16 -translate-x-1/2" />
-        <div className="cosmic-orb -left-48 top-64 opacity-40" />
+        <div className="cosmic-orb left-1/2 top-16 -translate-x-1/2 animate-pulse" />
+        <div className="cosmic-orb -left-48 top-64 opacity-40 animate-pulse delay-75" />
         <div className="pointer-events-none absolute left-0 right-0 top-1/2 h-px bg-gradient-to-r from-transparent via-brand-strong to-transparent opacity-50" />
         <div className="container-shell relative z-10 grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
@@ -151,7 +151,7 @@ export default function HomePage() {
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature) => (
-              <article key={feature.title} className="surface-card p-6">
+              <article key={feature.title} className="surface-card p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(var(--color-brand),0.15)]">
                 <p className="mb-4 text-xs uppercase tracking-[0.12em] text-brand-strong">
                   {feature.label}
                 </p>
@@ -177,7 +177,7 @@ export default function HomePage() {
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {steps.map((step) => (
-              <article key={step.n} className="surface-card p-5">
+              <article key={step.n} className="surface-card p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(var(--color-brand),0.15)]">
                 <p className="text-3xl text-brand-strong">{step.n}</p>
                 <h3 className="mt-5 text-lg font-semibold uppercase tracking-[0.06em]">
                   {step.title}
@@ -210,7 +210,7 @@ export default function HomePage() {
               ["Coin Reward", "Kumpulkan coin untuk membuka item kosmetik avatar."],
               ["Streak Bonus", "Prayer streak dan quest streak terlacak otomatis."],
             ].map(([title, desc]) => (
-              <article key={title} className="surface-card p-5">
+              <article key={title} className="surface-card p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(var(--color-brand),0.15)]">
                 <h3 className="text-base font-semibold uppercase tracking-[0.06em]">{title}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-text-dim">{desc}</p>
               </article>

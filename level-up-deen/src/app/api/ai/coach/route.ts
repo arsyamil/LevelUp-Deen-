@@ -45,6 +45,33 @@ export async function POST(request: Request) {
     }
     const savings = income - expense;
 
+    // 4. Get next assignment
+    const { data: nextAssigment } = await admin
+      .from("study_assignments")
+      .select("title, deadline_at")
+      .eq("user_id", userId)
+      .eq("is_completed", false)
+      .order("deadline_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    // 5. Get latest achievement
+    const { data: latestAchievement } = await admin
+      .from("user_achievements")
+      .select("achievements(name)")
+      .eq("user_id", userId)
+      .order("earned_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    // 6. Get squad name
+    const { data: squad } = await admin
+      .from("squad_members_v2")
+      .select("squads(name)")
+      .eq("user_id", userId)
+      .limit(1)
+      .maybeSingle();
+
     // Build context
     const context = {
       userName: profile?.full_name || "Sobat",
@@ -52,6 +79,9 @@ export async function POST(request: Request) {
       tasksRemaining: tasksRemaining || 0,
       savings,
       expense,
+      nextAssignment: nextAssigment ? `${nextAssigment.title} (Deadline: ${new Date(nextAssigment.deadline_at).toLocaleDateString("id-ID")})` : undefined,
+      latestAchievement: (latestAchievement?.achievements as unknown as { name: string })?.name ?? undefined,
+      squadName: (squad?.squads as unknown as { name: string })?.name ?? undefined,
     };
 
     // Generate AI response
