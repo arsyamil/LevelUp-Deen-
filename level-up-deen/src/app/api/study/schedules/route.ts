@@ -12,6 +12,9 @@ const scheduleSchema = z.object({
   room: z.string().max(80).optional(),
   building: z.string().max(120).optional(),
   reminderMinutes: z.number().int().min(0).max(120).default(30),
+}).refine(data => data.startTime < data.endTime, {
+  message: "Jam Selesai harus lebih besar dari Jam Mulai",
+  path: ["endTime"],
 });
 
 // GET /api/study/schedules — List user's schedules

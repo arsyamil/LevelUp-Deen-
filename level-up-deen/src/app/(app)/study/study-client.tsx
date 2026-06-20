@@ -133,7 +133,10 @@ export function StudyTrackerClient() {
         }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error);
+      if (!res.ok) {
+        const errorMsg = json.details?.fieldErrors?.endTime?.[0] || json.error || "Gagal menambah jadwal";
+        throw new Error(errorMsg);
+      }
       showMsg("Jadwal berhasil ditambahkan! 📅", "success");
       setShowScheduleForm(false);
       fetchAll();
