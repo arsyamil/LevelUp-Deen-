@@ -51,6 +51,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           variant !== "ghost" &&
             "shadow-[var(--glow-card),inset_var(--color-1-400)_0_6px_0_-5px,var(--color-1-700)_0_4px_10px_-5px] hover:-translate-y-px hover:shadow-[var(--glow-card-hover)]",
           isDisabled && "cursor-not-allowed bg-bg-soft opacity-60 shadow-none hover:translate-y-0",
+          "typeui-button-shell",
+          `typeui-button-${variant}`,
           wrapperVariantClasses[variant],
           className
         )}
@@ -61,6 +63,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           disabled={isDisabled}
           className={cn(
             "inline-flex w-full items-center justify-center gap-2 font-medium uppercase tracking-[0.08em] transition duration-300 disabled:cursor-not-allowed",
+            "typeui-button-control",
             buttonVariantClasses[variant],
             sizeClasses[size]
           )}

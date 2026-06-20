@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { FinanceTracker } from "@/components/finance/finance-tracker";
+import { FinanceHealthCheck } from "@/components/finance/finance-health-check";
 import { cookies } from "next/headers";
 import { getServerTranslation } from "@/lib/i18n";
 
@@ -17,6 +18,10 @@ export default async function FinancePage() {
       </Card>
 
       <FinanceTracker />
+
+      {/* Financial Health Check - Ratio Calculator */}
+      <FinanceHealthCheck />
     </div>
   );
 }
+

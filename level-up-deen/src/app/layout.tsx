@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Audiowide } from "next/font/google";
+import { Audiowide, DynaPuff } from "next/font/google";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -12,6 +12,12 @@ const audiowide = Audiowide({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-audiowide",
+});
+
+const dynaPuff = DynaPuff({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-dynapuff",
 });
 
 const geistSans = localFont({
@@ -44,7 +50,7 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body
-        className={`${audiowide.variable} ${geistSans.variable} ${geistMono.variable} min-h-screen bg-bg text-text antialiased`}
+        className={`${audiowide.variable} ${dynaPuff.variable} ${geistSans.variable} ${geistMono.variable} min-h-screen bg-bg text-text antialiased`}
       >
         <AppProviders attribute="class" defaultTheme="dark" enableSystem={false}>
           <RegisterServiceWorker />

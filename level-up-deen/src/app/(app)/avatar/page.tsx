@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { AvatarShop } from "@/components/avatar/avatar-shop";
+import { AvatarViewer } from "@/components/avatar/avatar-viewer";
 import { getCurrentUserId } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
@@ -47,7 +48,14 @@ export default async function AvatarPage() {
         </Card>
       </div>
 
+      {/* 3D Avatar Preview */}
+      <Card className="p-5">
+        <h2 className="section-title mb-4">🧑‍🎨 Avatar 3D Preview</h2>
+        <AvatarViewer />
+      </Card>
+
       <AvatarShop />
     </div>
   );
 }
+

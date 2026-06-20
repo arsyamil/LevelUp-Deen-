@@ -58,7 +58,7 @@ export function SquadPageClient({
       fetch("/api/squad")
         .then((res) => res.json())
         .then((json) => {
-          setSquadData(json.mySquad ?? null);
+          setSquadData(json.squad ?? null);
         })
         .finally(() => setSquadLoading(false));
     }
@@ -71,7 +71,7 @@ export function SquadPageClient({
     fetch("/api/squad")
       .then((res) => res.json())
       .then((json) => {
-        setSquadData(json.mySquad ?? null);
+        setSquadData(json.squad ?? null);
       });
   };
 

@@ -18,6 +18,7 @@ export const routes = {
   accessControl: "/access-control",
   admin: "/admin",
   adminAudit: "/admin/audit",
+  study: "/study",
   settings: "/settings",
   health: "/api/health",
 } as const;

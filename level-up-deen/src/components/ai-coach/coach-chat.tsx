@@ -23,6 +23,8 @@ const TrashIcon = () => (
   </svg>
 );
 
+import { AvatarViewer } from "@/components/avatar/avatar-viewer";
+
 const intents: { key: CoachIntent; label: string; prompt: string }[] = [
   { key: "burnout", label: "Cara atasi burnout", prompt: "Aku merasa agak lelah dan burnout akhir-akhir ini. Punya saran biar semangat lagi?" },
   { key: "time_management", label: "Manajemen Waktu", prompt: "Gimana ya caranya biar aku bisa ngatur waktu lebih baik setiap hari?" },
@@ -85,7 +87,7 @@ export function CoachChat() {
 
       if (!res.ok) throw new Error(payload.error ?? "Tidak dapat menghubungi AI Coach");
 
-      const answer: string = payload.answer ?? "Tidak ada jawaban.";
+      const answer: string = payload.reply ?? "Tidak ada jawaban.";
 
       setConversation((prev) =>
         prev.map((item, idx) =>
@@ -126,10 +128,8 @@ export function CoachChat() {
       <div className="flex-1 overflow-y-auto pb-44 no-scrollbar">
         {conversation.length === 0 ? (
           <section className="flex flex-col items-center text-center py-12 px-4">
-            <div className="w-20 h-20 bg-brand-soft rounded-3xl flex items-center justify-center mb-6 shadow-lg shadow-brand/20">
-              <div className="text-brand">
-                <SparklesIcon />
-              </div>
+            <div className="w-32 h-32 mb-6 shadow-lg shadow-brand/20 rounded-[2rem] overflow-hidden border-2 border-brand/30 bg-bg-soft">
+              <AvatarViewer coachMode />
             </div>
             <h2 className="text-2xl font-semibold text-text mb-2 tracking-wide">Coach Deen</h2>
             <p className="text-sm text-text-dim max-w-sm leading-relaxed">

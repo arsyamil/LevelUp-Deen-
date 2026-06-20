@@ -1,78 +1,68 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { NextResponse } from "next/server";
 import { getCurrentUserId } from "@/lib/auth";
-import { getGeminiCoachAnswer, CoachIntent, CoachMessage } from "@/lib/ai-coach";
+import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { generateCoachAdvice } from "@/lib/ai-provider";
 
-export async function POST(request: NextRequest) {
-  const userId = await getCurrentUserId();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export async function POST(request: Request) {
+  try {
+    const userId = await getCurrentUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const body = (await request.json()) as {
-    intent?: CoachIntent;
-    message?: string;
-    history?: CoachMessage[];
-  };
+    const { message } = await request.json().catch(() => ({ message: "" }));
 
-  const intent = body.intent;
-  const message = body.message?.trim() ?? "";
-  const history = body.history ?? [];
+    const admin = createSupabaseAdminClient();
 
-  if (!intent && !message) {
+    // 1. Get user profile & stats
+    const [{ data: profile }, { data: stats }] = await Promise.all([
+      admin.from("users_profile").select("full_name").eq("id", userId).maybeSingle(),
+      admin.from("user_stats").select("level, coins").eq("user_id", userId).maybeSingle(),
+    ]);
+
+    // 2. Get uncompleted tasks count
+    const { count: tasksRemaining } = await admin
+      .from("study_assignments")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .eq("is_completed", false);
+
+    // 3. Get financial summary for current month
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    const { data: txs } = await admin
+      .from("financial_transactions")
+      .select("type, amount")
+      .eq("user_id", userId)
+      .like("transaction_date", `${currentMonth}%`);
+
+    let income = 0;
+    let expense = 0;
+    if (txs) {
+      for (const tx of txs) {
+        if (tx.type === "income") income += tx.amount;
+        if (tx.type === "expense") expense += tx.amount;
+      }
+    }
+    const savings = income - expense;
+
+    // Build context
+    const context = {
+      userName: profile?.full_name || "Sobat",
+      level: stats?.level || 1,
+      tasksRemaining: tasksRemaining || 0,
+      savings,
+      expense,
+    };
+
+    // Generate AI response
+    const reply = await generateCoachAdvice(context, message);
+
+    return NextResponse.json({ reply });
+  } catch (error) {
+    console.error("AI Coach Error:", error);
     return NextResponse.json(
-      { error: "Intent atau pesan wajib diisi" },
-      { status: 400 }
+      { error: "Gagal menghubungkan ke AI Coach. Pastikan API key sudah diatur." },
+      { status: 500 }
     );
   }
-
-  const admin = createSupabaseAdminClient();
-
-  // Fetch user context to enrich the Gemini prompt
-  const [profileResult, statsResult, tasksResult] = await Promise.all([
-    admin
-      .from("users_profile")
-      .select("username, user_type")
-      .eq("id", userId)
-      .maybeSingle(),
-    admin
-      .from("user_stats")
-      .select("level, rank, coins, prayer_streak, full_quest_streak")
-      .eq("user_id", userId)
-      .maybeSingle(),
-    admin
-      .from("user_tasks")
-      .select("name, is_completed")
-      .eq("user_id", userId)
-      .eq("is_active", true)
-  ]);
-
-  const userContext = {
-    username: profileResult.data?.username ?? undefined,
-    userType: profileResult.data?.user_type ?? undefined,
-    level: statsResult.data?.level ?? 1,
-    rank: statsResult.data?.rank ?? "E",
-    prayerStreak: statsResult.data?.prayer_streak ?? 0,
-    questStreak: statsResult.data?.full_quest_streak ?? 0,
-    coins: statsResult.data?.coins ?? 0,
-    activeTasks: tasksResult.data ?? [],
-  };
-
-  const prompt = message || "Halo Coach, beri aku saran!";
-  const answer = await getGeminiCoachAnswer(prompt, history, intent, userContext);
-
-  // Log to ai_conversations table
-  const { error: logError } = await admin.from("ai_conversations").insert({
-    user_id: userId,
-    intent: intent ?? null,
-    prompt_summary: prompt.slice(0, 500),
-    response_summary: answer.slice(0, 500),
-  });
-
-  if (logError) {
-    // Non-fatal — don't fail the request just because logging failed
-    console.error("[ai/coach] Failed to log conversation:", logError.message);
-  }
-
-  return NextResponse.json({ answer, intent, message });
 }

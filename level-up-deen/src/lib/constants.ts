@@ -57,6 +57,11 @@ export const APP_NAV = [
     description: "Social retention lite",
   },
   {
+    href: routes.study,
+    label: "Study Tracker",
+    description: "Jadwal kuliah & deadline tugas",
+  },
+  {
     href: routes.accessControl,
     label: "Access Control",
     description: "Role & permission management",
