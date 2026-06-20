@@ -96,6 +96,7 @@ export function AvatarShop() {
       if (!res.ok) throw new Error(json.error ?? "Gagal mengubah equip.");
       showMsg(equip ? "Item dipakai!" : "Item dilepas.", "success");
       await fetchData();
+      window.dispatchEvent(new Event("avatar-updated"));
     } catch (err) {
       showMsg(err instanceof Error ? err.message : "Gagal equip.", "error");
     } finally {

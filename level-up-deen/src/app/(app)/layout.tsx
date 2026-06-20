@@ -11,6 +11,8 @@ import { isAdminRole } from "@/lib/auth";
 import { isAuthBypassEnabled } from "@/lib/env";
 import { ReactNode } from "react";
 
+import { MobileMenu } from "@/components/layout/mobile-menu";
+
 export const dynamic = "force-dynamic";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
@@ -36,9 +38,12 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       {/* Top header */}
       <header className="sticky top-0 z-40 border-b border-line bg-bg/90 backdrop-blur-md">
         <div className="container-shell flex h-16 items-center justify-between">
-          <Link href={routes.dashboard} className="cosmic-gradient-text font-semibold uppercase tracking-[0.12em]">
-            LEVEL UP DEEN
-          </Link>
+          <div className="flex items-center gap-2">
+            <MobileMenu showAdmin={showAdmin} />
+            <Link href={routes.dashboard} className="cosmic-gradient-text font-semibold uppercase tracking-[0.12em]">
+              LEVEL UP DEEN
+            </Link>
+          </div>
           <div className="flex items-center gap-3">
             {stats && (
               <div className="hidden items-center gap-3 text-sm sm:flex">

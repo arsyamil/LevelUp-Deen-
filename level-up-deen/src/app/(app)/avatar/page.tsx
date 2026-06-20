@@ -48,10 +48,11 @@ export default async function AvatarPage() {
         </Card>
       </div>
 
-      {/* 3D Avatar Preview */}
       <Card className="p-5">
         <h2 className="section-title mb-4">🧑‍🎨 Avatar 3D Preview</h2>
-        <AvatarViewer />
+        <div className="h-[280px] sm:h-[400px] w-full overflow-hidden rounded-2xl border-2 border-brand/30 bg-bg-soft">
+          <AvatarViewer coachMode />
+        </div>
       </Card>
 
       <AvatarShop />

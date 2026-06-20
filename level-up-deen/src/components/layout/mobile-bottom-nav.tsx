@@ -2,22 +2,45 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { routes } from "@/lib/routes";
-
-const BOTTOM_NAV = [
-  { href: routes.dashboard, label: "Home", emoji: "🏠" },
-  { href: routes.quests, label: "Quest", emoji: "⚡" },
-  { href: routes.deen, label: "Deen", emoji: "🕌" },
-  { href: routes.finance, label: "Finance", emoji: "💰" },
-  { href: routes.aiCoach, label: "Coach", emoji: "🤖" },
-];
+import { APP_NAV } from "@/lib/constants";
+import { useBottomNav } from "./use-bottom-nav";
+import { useTranslation } from "@/components/providers";
+import { TranslationKey } from "@/lib/i18n";
 
 export function MobileBottomNav() {
   const pathname = usePathname();
+  const { pins, isLoaded } = useBottomNav();
+  const { t } = useTranslation();
+
+  if (!isLoaded) return null; // Prevent hydration mismatch
+
+  // Filter APP_NAV to only pinned items
+  const activeNavItems = pins
+    .map(href => APP_NAV.find(nav => nav.href === href))
+    .filter(Boolean);
+
+  const getNavLabel = (label: string): string => {
+    const keyMap: Record<string, TranslationKey> = {
+      "Dashboard": "dashboard",
+      "Daily Quest": "quests",
+      "Planning": "planning",
+      "Finance": "finance",
+      "Fitness": "fitness",
+      "Water": "water",
+      "Squad": "squad",
+      "Settings": "settings",
+      "Admin Console": "admin",
+      "AI Coach": "aiCoach"
+    };
+    const key = keyMap[label];
+    return key ? t(key) : label;
+  };
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-line bg-bg/95 backdrop-blur-md lg:hidden">
       <div className="flex items-center justify-around py-2">
-        {BOTTOM_NAV.map((item) => {
+        {activeNavItems.map((item) => {
+          if (!item) return null;
           const isActive = pathname === item.href;
           return (
             <Link
@@ -29,7 +52,7 @@ export function MobileBottomNav() {
             >
               <span className="text-xl leading-none">{item.emoji}</span>
               <span className={`text-[10px] font-medium uppercase tracking-[0.08em] ${isActive ? "text-brand-strong" : ""}`}>
-                {item.label}
+                {getNavLabel(item.label)}
               </span>
             </Link>
           );

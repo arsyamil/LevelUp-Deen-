@@ -170,10 +170,17 @@ html:not(.dark) .container-shell {
 html:not(.dark) header.sticky,
 html:not(.dark) nav.fixed {
   border-color: var(--border-default);
-  border-width: 2px;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: none;
   box-shadow: var(--sticker-shadow-offset) var(--sticker-shadow-color);
+}
+
+html:not(.dark) header.sticky {
+  border-width: 0 0 2px;
+}
+
+html:not(.dark) nav.fixed {
+  border-width: 2px 0 0;
 }
 
 html:not(.dark) a {
@@ -220,16 +227,33 @@ html:not(.dark) .surface-card {
   isolation: isolate;
   position: relative;
   z-index: 0;
-  border: 4px solid var(--border-default);
-  border-radius: 0;
+  border: 2px solid var(--border-default);
+  border-radius: 16px;
   background: var(--bg-panel);
-  box-shadow: none;
+  box-shadow: var(--sticker-shadow-offset) var(--sticker-shadow-color);
   backdrop-filter: none;
 }
 
 html:not(.dark) .surface-card::before,
 html:not(.dark) .surface-card::after {
+  display: none;
+}
+
+html:not(.dark) .surface-card:hover {
+  border-color: var(--border-default);
+  box-shadow: -3px 4px 0 0 var(--sticker-shadow-color);
+}
+
+html:not(.dark) .typeui-fan-card {
+  border: 4px solid var(--border-default);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+html:not(.dark) .typeui-fan-card::before,
+html:not(.dark) .typeui-fan-card::after {
   content: "";
+  display: block;
   position: absolute;
   inset: 0;
   z-index: -1;
@@ -240,29 +264,25 @@ html:not(.dark) .surface-card::after {
   transition: transform 150ms ease;
 }
 
-html:not(.dark) .surface-card::before {
+html:not(.dark) .typeui-fan-card::before {
   transform: translateY(-2%) rotate(-6deg);
 }
 
-html:not(.dark) .surface-card::after {
+html:not(.dark) .typeui-fan-card::after {
   transform: translateY(2%) rotate(6deg);
 }
 
-html:not(.dark) .surface-card:hover {
+html:not(.dark) .typeui-fan-card:hover {
   border-color: var(--border-default);
   box-shadow: none;
 }
 
-html:not(.dark) .surface-card:hover::before {
+html:not(.dark) .typeui-fan-card:hover::before {
   transform: translateY(-2%) rotate(-4deg);
 }
 
-html:not(.dark) .surface-card:hover::after {
+html:not(.dark) .typeui-fan-card:hover::after {
   transform: translateY(2%) rotate(4deg);
-}
-
-html:not(.dark) .grid:has(> .surface-card) {
-  gap: 2rem;
 }
 
 html:not(.dark) .cosmic-badge {
@@ -283,17 +303,6 @@ html:not(.dark) .surface-card:has(form) {
   border-width: 2px;
   border-radius: 16px;
   box-shadow: var(--sticker-shadow-offset) var(--sticker-shadow-color);
-}
-
-html:not(.dark) aside .surface-card::before,
-html:not(.dark) aside .surface-card::after,
-html:not(.dark) .surface-card:has(nav)::before,
-html:not(.dark) .surface-card:has(nav)::after,
-html:not(.dark) .surface-card:has(table)::before,
-html:not(.dark) .surface-card:has(table)::after,
-html:not(.dark) .surface-card:has(form)::before,
-html:not(.dark) .surface-card:has(form)::after {
-  display: none;
 }
 
 html:not(.dark) nav a {
@@ -371,9 +380,7 @@ html:not(.dark) .typeui-button-shell {
 }
 
 html:not(.dark) .typeui-button-control,
-html:not(.dark) .cosmic-button-link,
-html:not(.dark) button.bg-brand[class*="px-"],
-html:not(.dark) a.bg-brand[class*="px-"] {
+html:not(.dark) .cosmic-button-link {
   clip-path: none !important;
   border: 2px solid transparent;
   border-radius: 7px;
@@ -400,28 +407,6 @@ html:not(.dark) .cosmic-button-secondary {
   box-shadow: var(--button-neutral-shadow);
 }
 
-html:not(.dark) button.bg-bg-soft[class*="px-"],
-html:not(.dark) a.bg-bg-soft[class*="px-"],
-html:not(.dark) button.border-line[class*="px-"] {
-  border: 2px solid transparent;
-  border-radius: 7px;
-  background:
-    linear-gradient(140.14deg, var(--bg-panel) 15.05%, var(--button-tertiary) 114.99%) padding-box,
-    linear-gradient(142.51deg, var(--line) 8.65%, var(--border-default) 88.82%) border-box;
-  color: var(--text);
-  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
-  letter-spacing: 0;
-  text-shadow: none;
-  box-shadow: var(--button-neutral-shadow);
-}
-
-html:not(.dark) button.bg-bg-soft[class*="px-"]:hover,
-html:not(.dark) a.bg-bg-soft[class*="px-"]:hover,
-html:not(.dark) button.border-line[class*="px-"]:hover {
-  opacity: 0.8;
-  box-shadow: none;
-}
-
 html:not(.dark) .typeui-button-danger .typeui-button-control {
   background:
     linear-gradient(140.14deg, var(--danger) 15.05%, var(--danger-strong) 114.99%) padding-box,
@@ -439,17 +424,13 @@ html:not(.dark) .typeui-button-ghost .typeui-button-control {
 }
 
 html:not(.dark) .typeui-button-control:hover,
-html:not(.dark) .cosmic-button-link:hover,
-html:not(.dark) button.bg-brand[class*="px-"]:hover,
-html:not(.dark) a.bg-brand[class*="px-"]:hover {
+html:not(.dark) .cosmic-button-link:hover {
   opacity: 0.8;
   box-shadow: none;
 }
 
 html:not(.dark) .typeui-button-control:focus-visible,
-html:not(.dark) .cosmic-button-link:focus-visible,
-html:not(.dark) button.bg-brand[class*="px-"]:focus-visible,
-html:not(.dark) a.bg-brand[class*="px-"]:focus-visible {
+html:not(.dark) .cosmic-button-link:focus-visible {
   outline: 2px solid var(--brand-medium);
   outline-offset: 3px;
 }

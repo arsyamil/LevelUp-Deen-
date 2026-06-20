@@ -200,6 +200,10 @@ export function AvatarViewer({ coachMode = false }: { coachMode?: boolean }) {
 
   useEffect(() => {
     fetchEquipped();
+    
+    const handleUpdate = () => fetchEquipped();
+    window.addEventListener("avatar-updated", handleUpdate);
+    return () => window.removeEventListener("avatar-updated", handleUpdate);
   }, [fetchEquipped]);
 
   const bgItem = equipped.find((e) => e.item?.item_type === "background");
