@@ -6,6 +6,7 @@ import { ReminderPreferencesCard } from "@/components/settings/reminder-preferen
 import { getCurrentUserProfile } from "@/lib/user";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { isAuthBypassEnabled } from "@/lib/env";
+import { SettingsToggle } from "@/components/layout/settings-toggle";
 
 export default async function SettingsPage() {
   const profile = await getCurrentUserProfile();
@@ -18,6 +19,11 @@ export default async function SettingsPage() {
         <p className="mt-2 text-sm text-text-dim">
           Pengelolaan profil, reminder, export data, dan otentikasi akun.
         </p>
+      </Card>
+
+      <Card className="p-5">
+        <h2 className="section-title mb-4">Preferensi Tampilan & Bahasa</h2>
+        <SettingsToggle />
       </Card>
 
       {profile ? (
