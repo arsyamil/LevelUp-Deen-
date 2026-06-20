@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
@@ -168,26 +168,8 @@ function LoginForm() {
 export default function LoginPage() {
   const { t } = useTranslation();
 
-  useEffect(() => {
-    const root = document.documentElement;
-    const hadDarkClass = root.classList.contains("dark");
-    const hadLightClass = root.classList.contains("light");
-
-    root.classList.add("dark");
-    root.classList.remove("light");
-
-    return () => {
-      if (!hadDarkClass) {
-        root.classList.remove("dark");
-      }
-      if (hadLightClass) {
-        root.classList.add("light");
-      }
-    };
-  }, []);
-
   return (
-    <main className="cosmic-section min-h-screen">
+    <main className="auth-dark dark cosmic-section min-h-screen">
       <div className="cosmic-orb left-1/2 top-12 -translate-x-1/2" />
       <Card className="mx-auto max-w-md p-8">
         <div className="cosmic-heading-glow">

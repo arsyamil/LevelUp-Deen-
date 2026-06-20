@@ -435,6 +435,90 @@ html:not(.dark) .cosmic-button-link:focus-visible {
   outline-offset: 3px;
 }
 
+html:not(.dark) .auth-dark {
+  --bg: #040b17;
+  --bg-soft: #071420;
+  --bg-card: rgba(7, 20, 32, 0.72);
+  --text: #e2e8f0;
+  --text-dim: #7a8ba0;
+  --line: #0a1c2e;
+  --line-medium: #0d2740;
+  --line-strong: #123650;
+  --brand: #1a5080;
+  --brand-soft: #0a1e30;
+  --brand-strong: #2670ad;
+  --danger: #f43f5e;
+  --danger-bg: #2a0010;
+  --success: #10b981;
+  --success-bg: #021a14;
+  --warning: #fbbf24;
+  --warning-bg: #2a1508;
+  --disabled: #071420;
+  --glow-text: drop-shadow(0 0 30px rgba(38, 112, 173, 0.6)) drop-shadow(0 0 60px rgba(26, 80, 128, 0.3));
+  --glow-card: 0 1px 2px 0 rgb(0 0 0 / 0.2), 0 0 10px rgba(6, 18, 29, 0.2);
+  --glow-card-hover: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.25), 0 0 15px rgba(10, 28, 46, 0.4), 0 0 30px rgba(6, 18, 29, 0.15);
+  color: var(--text);
+}
+
+html:not(.dark) .auth-dark.cosmic-section {
+  background:
+    radial-gradient(circle at 50% -10%, rgba(26, 80, 128, 0.18), transparent 38rem),
+    radial-gradient(circle at 12% 20%, rgba(6, 182, 212, 0.08), transparent 28rem),
+    linear-gradient(rgba(10, 28, 46, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 28, 46, 0.15) 1px, transparent 1px),
+    var(--bg);
+  background-size: auto, auto, 64px 64px, 64px 64px, auto;
+}
+
+html:not(.dark) .auth-dark.cosmic-section::before {
+  background:
+    linear-gradient(rgba(10, 28, 46, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 28, 46, 0.15) 1px, transparent 1px);
+  background-size: 64px 64px;
+  opacity: 0.7;
+}
+
+html:not(.dark) .auth-dark.cosmic-section::after {
+  inset: auto 0 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line) 30%, var(--line-strong) 50%, var(--line) 70%, transparent);
+  opacity: 1;
+}
+
+html:not(.dark) .auth-dark h1,
+html:not(.dark) .auth-dark h2,
+html:not(.dark) .auth-dark h3,
+html:not(.dark) .auth-dark h4,
+html:not(.dark) .auth-dark h5,
+html:not(.dark) .auth-dark h6 {
+  background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+html:not(.dark) .auth-dark .surface-card {
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--bg-card);
+  box-shadow: var(--glow-card);
+  backdrop-filter: blur(12px);
+}
+
+html:not(.dark) .auth-dark .input-field,
+html:not(.dark) .auth-dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]) {
+  border-color: var(--line-medium);
+  border-radius: 4px;
+  background: var(--bg-soft);
+  color: var(--text);
+  box-shadow: none;
+}
+
 @layer base {
   h1 {
     background: linear-gradient(135deg, var(--brand), var(--brand-strong));
