@@ -53,3 +53,6 @@ insert into public.financial_ratio_templates (name, description, formula, variab
   '["needs", "expense"]'::jsonb,
   40, 60, '%', 5
 );
+
+alter table public.financial_ratio_templates enable row level security;
+create policy "Templates are viewable by everyone" on public.financial_ratio_templates for select using (true);
