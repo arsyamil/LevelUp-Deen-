@@ -103,7 +103,7 @@ function summarizeCategories(transactions: ReturnType<typeof toTransaction>[]) {
 
     if (transaction.type === "income") {
       current.income += transaction.amount;
-    } else {
+    } else if (transaction.type === "expense") {
       current.expense += transaction.amount;
     }
 
@@ -147,7 +147,7 @@ export async function GET(request: NextRequest) {
     (acc, transaction) => {
       if (transaction.type === "income") {
         acc.income += transaction.amount;
-      } else {
+      } else if (transaction.type === "expense") {
         acc.expense += transaction.amount;
       }
       return acc;
