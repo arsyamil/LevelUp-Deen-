@@ -250,19 +250,20 @@ export function StudyTrackerClient() {
       </AnimatePresence>
 
       {/* Tabs */}
-      <div className="grid gap-2 sm:grid-cols-3">
+      <div className="grid grid-cols-3 gap-2">
         {(["schedules", "courses", "assignments"] as Tab[]).map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => setTab(t)}
-            className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+            className={`rounded-2xl border px-2 py-2 sm:px-4 sm:py-3 text-[11px] sm:text-sm font-semibold transition flex flex-col sm:flex-row items-center justify-center gap-1 ${
               tab === t ? "border-brand bg-brand text-text" : "border-line bg-bg text-text-dim"
             }`}
           >
-            {t === "schedules" && "📅 Jadwal"}
-            {t === "courses" && "🎓 Mata Kuliah"}
-            {t === "assignments" && "📝 Tugas"}
+            {t === "schedules" && <span>📅<span className="hidden sm:inline"> Jadwal</span></span>}
+            {t === "courses" && <span>🎓<span className="hidden sm:inline"> Matkul</span></span>}
+            {t === "assignments" && <span>📝<span className="hidden sm:inline"> Tugas</span></span>}
+            <span className="sm:hidden">{t === "schedules" ? "Jadwal" : t === "courses" ? "Matkul" : "Tugas"}</span>
           </button>
         ))}
       </div>
@@ -371,16 +372,16 @@ export function StudyTrackerClient() {
                           className="h-10 w-1 rounded-full"
                           style={{ backgroundColor: s.course?.color ?? "#6366f1" }}
                         />
-                        <div>
-                          <p className="font-medium">{s.course?.course_name ?? "—"}</p>
-                          <p className="text-xs text-text-dim">
+                        <div className="min-w-0">
+                          <p className="font-medium truncate">{s.course?.course_name ?? "—"}</p>
+                          <p className="text-xs text-text-dim truncate">
                             {s.start_time.slice(0, 5)} – {s.end_time.slice(0, 5)} · {s.session_type}
                             {s.room && ` · ${s.room}`}
                             {s.course?.lecturer_name && ` · ${s.course.lecturer_name}`}
                           </p>
                         </div>
                       </div>
-                      <button onClick={() => handleDeleteSchedule(s.id)} className="text-xs text-danger hover:underline">Hapus</button>
+                      <button onClick={() => handleDeleteSchedule(s.id)} className="text-xs text-danger hover:underline shrink-0 ml-2">Hapus</button>
                     </motion.li>
                   ))}
               </ul>
@@ -388,7 +389,10 @@ export function StudyTrackerClient() {
           </Card>
 
           <Card className="p-5 overflow-x-auto">
-            <h2 className="section-title mb-4">Jadwal Mingguan</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="section-title">Jadwal Mingguan</h2>
+              <span className="text-[10px] text-text-dim sm:hidden">← Geser →</span>
+            </div>
             <div className="min-w-[700px]">
               <div className="grid grid-cols-8 border-b border-line pb-2">
                 <div className="text-xs font-semibold text-text-dim text-center">Jam</div>
@@ -500,16 +504,16 @@ export function StudyTrackerClient() {
                   >
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-1 rounded-full" style={{ backgroundColor: c.color }} />
-                      <div>
-                        <p className="font-medium">
+                      <div className="min-w-0">
+                        <p className="font-medium truncate">
                           {c.course_name}
                           {c.course_code && <span className="ml-2 text-xs text-text-dim">({c.course_code})</span>}
                         </p>
-                        {c.lecturer_name && <p className="text-xs text-text-dim">👨‍🏫 {c.lecturer_name}</p>}
-                        {c.semester && <p className="text-xs text-text-dim">📅 {c.semester}</p>}
+                        {c.lecturer_name && <p className="text-xs text-text-dim truncate">👨‍🏫 {c.lecturer_name}</p>}
+                        {c.semester && <p className="text-xs text-text-dim truncate">📅 {c.semester}</p>}
                       </div>
                     </div>
-                    <button onClick={() => handleDeleteCourse(c.id)} className="text-xs text-danger hover:underline">Hapus</button>
+                    <button onClick={() => handleDeleteCourse(c.id)} className="text-xs text-danger hover:underline shrink-0 ml-2">Hapus</button>
                   </motion.li>
                 ))}
               </ul>
@@ -611,9 +615,9 @@ export function StudyTrackerClient() {
                         >
                           {a.is_completed && "✓"}
                         </button>
-                        <div>
-                          <p className={`font-medium ${a.is_completed ? "line-through" : ""}`}>{a.title}</p>
-                          <p className="text-xs text-text-dim">
+                        <div className="min-w-0">
+                          <p className={`font-medium truncate ${a.is_completed ? "line-through" : ""}`}>{a.title}</p>
+                          <p className="text-[11px] sm:text-xs text-text-dim truncate">
                             {a.course?.course_name ?? "—"} ·{" "}
                             <span className={isOverdue ? "text-danger font-semibold" : isUrgent ? "text-amber-400 font-semibold" : ""}>
                               {isOverdue ? "Terlambat!" : deadline.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
