@@ -379,66 +379,106 @@ export function StudyTrackerClient() {
             )}
           </Card>
 
-          <Card className="p-5 overflow-x-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="section-title">Jadwal Mingguan</h2>
-              <span className="text-[10px] text-text-dim sm:hidden">← Geser →</span>
-            </div>
-            <div className="min-w-[700px]">
-              <div className="grid grid-cols-8 border-b border-line pb-2">
-                <div className="text-xs font-semibold text-text-dim text-center">Jam</div>
-                {DAY_LABELS.map((day, i) => (
-                  <div key={day} className={`text-xs font-semibold text-center ${i === todayIndex ? "text-brand" : "text-text-dim"}`}>
-                    {day}
-                  </div>
-                ))}
+          <Card className="p-4 sm:p-5">
+            <h2 className="section-title mb-4">Jadwal Mingguan</h2>
+            
+            {/* Desktop Grid View */}
+            <div className="hidden sm:block overflow-x-auto">
+              <div className="min-w-[700px]">
+                <div className="grid grid-cols-8 border-b border-line pb-2">
+                  <div className="text-xs font-semibold text-text-dim text-center">Jam</div>
+                  {DAY_LABELS.map((day, i) => (
+                    <div key={day} className={`text-xs font-semibold text-center ${i === todayIndex ? "text-brand" : "text-text-dim"}`}>
+                      {day}
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="relative mt-2 h-[600px] border-l border-line ml-[12.5%]">
+                  {/* Horizontal lines for hours */}
+                  {Array.from({ length: 15 }).map((_, i) => (
+                    <div key={i} className="absolute w-full border-t border-line/50" style={{ top: `${(i / 14) * 100}%` }}>
+                      <span className="absolute -left-12 -top-2.5 text-xs text-text-dim">{i + 7}:00</span>
+                    </div>
+                  ))}
+
+                  {/* Vertical lines for days */}
+                  {DAY_LABELS.map((_, i) => (
+                    <div key={`v-${i}`} className="absolute h-full border-l border-line/30" style={{ left: `${(i / 7) * 100}%` }} />
+                  ))}
+
+                  {/* Schedule Blocks */}
+                  {schedules.map((s) => {
+                    const startHour = parseInt(s.start_time.split(":")[0]) + parseInt(s.start_time.split(":")[1]) / 60;
+                    const endHour = parseInt(s.end_time.split(":")[0]) + parseInt(s.end_time.split(":")[1]) / 60;
+                    const top = ((startHour - 7) / 14) * 100;
+                    const height = ((endHour - startHour) / 14) * 100;
+                    const left = (s.day_of_week / 7) * 100;
+                    const width = 100 / 7;
+
+                    // Skip if out of bounds (before 07:00 or after 21:00)
+                    if (startHour < 7 || endHour > 21) return null;
+
+                    return (
+                      <div
+                        key={s.id}
+                        className="absolute rounded-md p-1.5 overflow-hidden border border-white/20 shadow-sm"
+                        style={{
+                          top: `${top}%`,
+                          height: `${height}%`,
+                          left: `${left}%`,
+                          width: `${width}%`,
+                          backgroundColor: s.course?.color ?? "#6366f1",
+                          color: "#fff",
+                        }}
+                      >
+                        <p className="text-[10px] font-bold leading-tight line-clamp-2">{s.course?.course_name}</p>
+                        <p className="text-[9px] opacity-90">{s.start_time.slice(0, 5)}</p>
+                        <p className="text-[9px] opacity-80 mt-0.5 truncate">{s.room}</p>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              
-              <div className="relative mt-2 h-[600px] border-l border-line ml-[12.5%]">
-                {/* Horizontal lines for hours */}
-                {Array.from({ length: 15 }).map((_, i) => (
-                  <div key={i} className="absolute w-full border-t border-line/50" style={{ top: `${(i / 14) * 100}%` }}>
-                    <span className="absolute -left-12 -top-2.5 text-xs text-text-dim">{i + 7}:00</span>
-                  </div>
-                ))}
+            </div>
 
-                {/* Vertical lines for days */}
-                {DAY_LABELS.map((_, i) => (
-                  <div key={`v-${i}`} className="absolute h-full border-l border-line/30" style={{ left: `${(i / 7) * 100}%` }} />
-                ))}
-
-                {/* Schedule Blocks */}
-                {schedules.map((s) => {
-                  const startHour = parseInt(s.start_time.split(":")[0]) + parseInt(s.start_time.split(":")[1]) / 60;
-                  const endHour = parseInt(s.end_time.split(":")[0]) + parseInt(s.end_time.split(":")[1]) / 60;
-                  const top = ((startHour - 7) / 14) * 100;
-                  const height = ((endHour - startHour) / 14) * 100;
-                  const left = (s.day_of_week / 7) * 100;
-                  const width = 100 / 7;
-
-                  // Skip if out of bounds (before 07:00 or after 21:00)
-                  if (startHour < 7 || endHour > 21) return null;
-
+            {/* Mobile List View */}
+            <div className="sm:hidden space-y-6">
+              {schedules.length === 0 ? (
+                <p className="text-sm text-text-dim">Belum ada jadwal mingguan.</p>
+              ) : (
+                DAY_LABELS.map((day, i) => {
+                  const daySchedules = schedules
+                    .filter((s) => s.day_of_week === i)
+                    .sort((a, b) => a.start_time.localeCompare(b.start_time));
+                  if (daySchedules.length === 0) return null;
+                  
                   return (
-                    <div
-                      key={s.id}
-                      className="absolute rounded-md p-1.5 overflow-hidden border border-white/20 shadow-sm"
-                      style={{
-                        top: `${top}%`,
-                        height: `${height}%`,
-                        left: `${left}%`,
-                        width: `${width}%`,
-                        backgroundColor: s.course?.color ?? "#6366f1",
-                        color: "#fff",
-                      }}
-                    >
-                      <p className="text-[10px] font-bold leading-tight line-clamp-2">{s.course?.course_name}</p>
-                      <p className="text-[9px] opacity-90">{s.start_time.slice(0, 5)}</p>
-                      <p className="text-[9px] opacity-80 mt-0.5">{s.room}</p>
+                    <div key={day} className="space-y-3">
+                      <h3 className={`text-sm font-bold border-b border-line pb-1 ${i === todayIndex ? "text-brand" : "text-text"}`}>
+                        {day} {i === todayIndex && "(Hari Ini)"}
+                      </h3>
+                      <div className="space-y-2">
+                        {daySchedules.map((s) => (
+                          <div key={s.id} className="flex items-start gap-3 rounded-lg border border-line bg-bg-soft p-3">
+                            <div className="h-full w-1.5 rounded-full shrink-0" style={{ backgroundColor: s.course?.color ?? "#6366f1", minHeight: "40px" }} />
+                            <div className="min-w-0 flex-1">
+                              <p className="font-semibold text-sm truncate">{s.course?.course_name}</p>
+                              <div className="flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-text-dim mt-1">
+                                <span className="font-medium text-text bg-bg px-1.5 py-0.5 rounded">
+                                  {s.start_time.slice(0, 5)} - {s.end_time.slice(0, 5)}
+                                </span>
+                                {s.room && <span>📍 {s.room}</span>}
+                                <span>📚 {s.session_type}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   );
-                })}
-              </div>
+                })
+              )}
             </div>
           </Card>
         </div>
