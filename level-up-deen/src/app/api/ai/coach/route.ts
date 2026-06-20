@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     // 6. Get squad name
     const { data: squad } = await admin
       .from("squad_members")
-      .select("squads(name)")
+      .select("squad_groups(name)")
       .eq("user_id", userId)
       .limit(1)
       .maybeSingle();
@@ -83,16 +83,16 @@ export async function POST(request: Request) {
 
     let completedTasks = 0;
     let missedTasks = 0;
-    let missedWorship = [];
+    const missedWorship: string[] = [];
     if (recentLogs) {
       for (const log of recentLogs) {
         if (log.status === "completed") {
           completedTasks++;
         } else if (log.status === "missed" || log.status === "skipped") {
           missedTasks++;
-          const taskData = log.user_tasks as any;
+          const taskData = log.user_tasks as { category?: string; name?: string } | null;
           if (taskData?.category === "Ibadah" || taskData?.category === "Spiritual") {
-            missedWorship.push(taskData?.name);
+            missedWorship.push(taskData.name ?? "Ibadah");
           }
         }
       }
@@ -107,7 +107,7 @@ export async function POST(request: Request) {
       expense,
       nextAssignment: nextAssigment ? `${nextAssigment.title} (Deadline: ${new Date(nextAssigment.deadline_at).toLocaleDateString("id-ID")})` : undefined,
       latestAchievement: (latestAchievement?.achievements as unknown as { name: string })?.name ?? undefined,
-      squadName: (squad?.squads as unknown as { name: string })?.name ?? undefined,
+      squadName: (squad?.squad_groups as unknown as { name: string })?.name ?? undefined,
       recentPerformance: {
         completedTasks,
         missedTasks,

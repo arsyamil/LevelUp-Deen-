@@ -40,8 +40,7 @@ export async function generateCoachAdvice(
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY is missing from environment variables.");
   }
-
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   const contextString = `
 [DATA PENGGUNA SAAT INI]
