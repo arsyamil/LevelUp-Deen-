@@ -1,19 +1,16 @@
 "use client";
 
 import { cn } from "@/lib/cn";
-import { HTMLMotionProps, motion } from "framer-motion";
-import { forwardRef } from "react";
+import { forwardRef, HTMLAttributes } from "react";
 
-type CardProps = HTMLMotionProps<"div">;
+type CardProps = HTMLAttributes<HTMLDivElement>;
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ className, whileHover, ...props }, ref) => {
+  ({ className, ...props }, ref) => {
     return (
-      <motion.div
+      <div
         ref={ref}
-        className={cn("surface-card", className)}
-        whileHover={whileHover ?? { y: -2 }}
-        transition={{ duration: 0.2 }}
+        className={cn("surface-card transition-transform duration-200 hover:-translate-y-0.5", className)}
         {...props}
       />
     );

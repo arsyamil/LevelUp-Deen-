@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { SquadManager } from "@/components/squad/squad-manager";
@@ -128,12 +127,9 @@ export function SquadPageClient({
         ) : (
           <ul className="mt-3 space-y-2">
             {currentLeaderboard.map((entry) => (
-              <motion.li
-                layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+              <li
                 key={entry.userId}
-                className={`flex items-center justify-between rounded-lg border px-3 py-2 text-sm ${
+                className={`animate-in fade-in slide-in-from-bottom-2 flex items-center justify-between rounded-lg border px-3 py-2 text-sm ${
                   entry.isMe
                     ? "border-brand/40 bg-brand/10"
                     : "border-line bg-bg-soft"
@@ -166,7 +162,7 @@ export function SquadPageClient({
                   )}
                   <span className="text-text-dim">{entry.score} pts</span>
                 </div>
-              </motion.li>
+              </li>
             ))}
           </ul>
         )}

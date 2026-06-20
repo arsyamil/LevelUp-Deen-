@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 
 interface RatioResult {
@@ -139,64 +138,49 @@ export function FinanceHealthCheck() {
       </Card>
 
       {/* Individual ratios */}
-      <AnimatePresence>
-        {data.ratios.map((ratio, index) => {
-          const config = statusConfig[ratio.status];
-          const percentage =
-            ratio.value !== null
-              ? Math.min(Math.max((ratio.value / Math.max(ratio.healthyMax, 1)) * 100, 0), 100)
-              : 0;
+      {data.ratios.map((ratio) => {
+        const config = statusConfig[ratio.status];
+        const percentage =
+          ratio.value !== null
+            ? Math.min(Math.max((ratio.value / Math.max(ratio.healthyMax, 1)) * 100, 0), 100)
+            : 0;
 
-          return (
-            <motion.div
-              key={ratio.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.08 }}
-            >
-              <Card className={`border ${config.borderColor} p-5`}>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span>{config.emoji}</span>
-                      <h3 className="font-semibold">{ratio.name}</h3>
-                    </div>
-                    <p className="mt-1 text-xs text-text-dim">{ratio.description}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className={`text-xl font-bold ${config.textColor}`}>
-                      {ratio.value !== null ? ratio.value : "—"}{ratio.unit}
-                    </p>
-                    <span className={`inline-block mt-1 rounded-full border px-2 py-0.5 text-xs font-medium ${config.borderColor} ${config.bgColor} ${config.textColor}`}>
-                      {config.label}
-                    </span>
-                  </div>
+        return (
+          <Card key={ratio.id} className={`border ${config.borderColor} p-5`}>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span>{config.emoji}</span>
+                  <h3 className="font-semibold">{ratio.name}</h3>
                 </div>
-
-                {/* Progress bar */}
-                <div className="mt-3">
-                  <div className="flex justify-between text-xs text-text-dim mb-1">
-                    <span>Min: {ratio.healthyMin}{ratio.unit}</span>
-                    <span>Max: {ratio.healthyMax}{ratio.unit}</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-bg-soft">
-                    <motion.div
-                      className={`h-full rounded-full ${config.barColor}`}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${percentage}%` }}
-                      transition={{ duration: 0.6, delay: index * 0.08 }}
-                    />
-                  </div>
-                </div>
-
-                <p className="mt-2 text-xs text-text-dim">
-                  Formula: <code className="rounded bg-bg-soft px-1 py-0.5">{ratio.formula}</code>
+                <p className="mt-1 text-xs text-text-dim">{ratio.description}</p>
+              </div>
+              <div className="text-right">
+                <p className={`text-xl font-bold ${config.textColor}`}>
+                  {ratio.value !== null ? ratio.value : "—"}{ratio.unit}
                 </p>
-              </Card>
-            </motion.div>
-          );
-        })}
-      </AnimatePresence>
+                <span className={`mt-1 inline-block rounded-full border px-2 py-0.5 text-xs font-medium ${config.borderColor} ${config.bgColor} ${config.textColor}`}>
+                  {config.label}
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-3">
+              <div className="mb-1 flex justify-between text-xs text-text-dim">
+                <span>Min: {ratio.healthyMin}{ratio.unit}</span>
+                <span>Max: {ratio.healthyMax}{ratio.unit}</span>
+              </div>
+              <div className="h-2 rounded-full bg-bg-soft">
+                <div className={`h-full rounded-full transition-[width] duration-700 ${config.barColor}`} style={{ width: `${percentage}%` }} />
+              </div>
+            </div>
+
+            <p className="mt-2 text-xs text-text-dim">
+              Formula: <code className="rounded bg-bg-soft px-1 py-0.5">{ratio.formula}</code>
+            </p>
+          </Card>
+        );
+      })}
     </div>
   );
 }

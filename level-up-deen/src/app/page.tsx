@@ -27,6 +27,7 @@ const features = [
     title: "Menjaga Sosial",
     desc: "Bertumbuh bersama circle yang baik lewat squad publik atau privat untuk menjaga semangat.",
   },
+];
 
 const pillars = [
   { label: "Deen", pct: 78 },

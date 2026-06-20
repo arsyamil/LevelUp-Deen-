@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -24,7 +25,25 @@ const rarityBadge: Record<string, "default" | "brand" | "success" | "danger" | "
   legendary: "danger",
 };
 
-import { AvatarViewer } from "@/components/avatar/avatar-viewer";
+const AvatarViewer = dynamic(
+  () => import("@/components/avatar/avatar-viewer").then((mod) => mod.AvatarViewer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full w-full items-center justify-center rounded-full bg-bg-soft text-xs text-text-dim">
+        Memuat
+      </div>
+    ),
+  }
+);
+
+function AvatarPreview() {
+  return (
+    <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-brand-soft via-bg-soft to-bg">
+      <span className="text-lg font-semibold text-brand">LD</span>
+    </div>
+  );
+}
 
 export function InteractiveAvatar() {
   const [items, setItems] = useState<ShopItem[]>([]);
@@ -80,7 +99,7 @@ export function InteractiveAvatar() {
         title="Sesuaikan Avatar"
       >
         <div className="h-full w-full overflow-hidden rounded-full border-2 border-brand/30 bg-bg-soft">
-          <AvatarViewer coachMode />
+          <AvatarPreview />
         </div>
         {/* Hover overlay hint */}
         <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 transition-opacity flex items-center justify-center group-hover:opacity-100">

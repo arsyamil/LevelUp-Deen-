@@ -1,13 +1,12 @@
 "use client";
 
 import { cn } from "@/lib/cn";
-import { forwardRef, ReactNode } from "react";
-import { motion, HTMLMotionProps } from "framer-motion";
+import { ButtonHTMLAttributes, forwardRef, ReactNode } from "react";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
-interface ButtonProps extends Omit<HTMLMotionProps<"button">, "size" | "children"> {
+interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> {
   variant?: Variant;
   size?: Size;
   loading?: boolean;
@@ -39,7 +38,7 @@ const clipPath =
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { className, variant = "secondary", size = "md", loading, disabled, children, whileTap, whileHover, ...props },
+    { className, variant = "secondary", size = "md", loading, disabled, children, ...props },
     ref
   ) => {
     const isDisabled = disabled || loading;
@@ -58,25 +57,23 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         style={{ clipPath }}
       >
-        <motion.button
+        <button
           ref={ref}
           disabled={isDisabled}
           className={cn(
-            "inline-flex w-full items-center justify-center gap-2 font-medium uppercase tracking-[0.08em] transition duration-300 disabled:cursor-not-allowed",
+            "inline-flex w-full items-center justify-center gap-2 font-medium uppercase tracking-[0.08em] transition duration-300 active:scale-[0.96] disabled:cursor-not-allowed disabled:active:scale-100",
             "typeui-button-control",
             buttonVariantClasses[variant],
             sizeClasses[size]
           )}
           style={{ clipPath }}
-          whileTap={!isDisabled ? (whileTap ?? { scale: 0.96 }) : undefined}
-          whileHover={!isDisabled ? (whileHover ?? { scale: 1.01 }) : undefined}
           {...props}
         >
           {loading && (
             <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
           )}
           {children}
-        </motion.button>
+        </button>
       </span>
     );
   }

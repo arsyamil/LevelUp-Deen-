@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { startStudyReminders, stopStudyReminders } from "@/lib/study-reminders";
@@ -232,22 +231,17 @@ export function StudyTrackerClient() {
   return (
     <div className="space-y-4">
       {/* Status message */}
-      <AnimatePresence>
-        {message && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className={`rounded-lg border p-3 text-sm ${
-              message.type === "success"
-                ? "border-success/30 bg-success/10 text-success"
-                : "border-danger/30 bg-danger/10 text-danger"
-            }`}
-          >
-            {message.text}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {message && (
+        <div
+          className={`animate-in fade-in slide-in-from-top-2 rounded-lg border p-3 text-sm ${
+            message.type === "success"
+              ? "border-success/30 bg-success/10 text-success"
+              : "border-danger/30 bg-danger/10 text-danger"
+          }`}
+        >
+          {message.text}
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="grid grid-cols-3 gap-2">
@@ -360,12 +354,9 @@ export function StudyTrackerClient() {
                 {schedules
                   .filter((s) => s.day_of_week === todayIndex)
                   .map((s) => (
-                    <motion.li
+                    <li
                       key={s.id}
-                      layout
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex items-center justify-between rounded-lg border border-line bg-bg-soft p-3"
+                      className="animate-in fade-in slide-in-from-bottom-2 flex items-center justify-between rounded-lg border border-line bg-bg-soft p-3"
                     >
                       <div className="flex items-center gap-3">
                         <div
@@ -382,7 +373,7 @@ export function StudyTrackerClient() {
                         </div>
                       </div>
                       <button onClick={() => handleDeleteSchedule(s.id)} className="text-xs text-danger hover:underline shrink-0 ml-2">Hapus</button>
-                    </motion.li>
+                    </li>
                   ))}
               </ul>
             )}
@@ -495,12 +486,9 @@ export function StudyTrackerClient() {
             ) : (
               <ul className="mt-4 space-y-2">
                 {courses.map((c) => (
-                  <motion.li
+                  <li
                     key={c.id}
-                    layout
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center justify-between rounded-lg border border-line bg-bg-soft p-3"
+                    className="animate-in fade-in slide-in-from-bottom-2 flex items-center justify-between rounded-lg border border-line bg-bg-soft p-3"
                   >
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-1 rounded-full" style={{ backgroundColor: c.color }} />
@@ -514,7 +502,7 @@ export function StudyTrackerClient() {
                       </div>
                     </div>
                     <button onClick={() => handleDeleteCourse(c.id)} className="text-xs text-danger hover:underline shrink-0 ml-2">Hapus</button>
-                  </motion.li>
+                  </li>
                 ))}
               </ul>
             )}
@@ -594,12 +582,9 @@ export function StudyTrackerClient() {
                   };
 
                   return (
-                    <motion.li
+                    <li
                       key={a.id}
-                      layout
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`flex items-center justify-between rounded-lg border p-3 ${
+                      className={`animate-in fade-in slide-in-from-bottom-2 flex items-center justify-between rounded-lg border p-3 ${
                         a.is_completed ? "border-line bg-bg-soft opacity-60" : priorityColors[a.priority] ?? "border-line bg-bg-soft"
                       }`}
                     >
@@ -626,7 +611,7 @@ export function StudyTrackerClient() {
                         </div>
                       </div>
                       <button onClick={() => handleDeleteAssignment(a.id)} className="text-xs text-danger hover:underline ml-3 shrink-0">Hapus</button>
-                    </motion.li>
+                    </li>
                   );
                 })}
               </ul>

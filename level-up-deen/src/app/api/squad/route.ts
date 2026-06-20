@@ -19,8 +19,8 @@ export async function GET() {
       .maybeSingle();
 
     if (!member) {
-      // User is not in a squad, return available squads
-      const { data: squads } = await admin
+      // User is not in a squad, return available squad_groups
+      const { data: squad_groups } = await admin
         .from("squad_groups")
         .select(`
           id, name,
@@ -28,7 +28,7 @@ export async function GET() {
         `)
         .order("created_at", { ascending: false });
         
-      return NextResponse.json({ inSquad: false, squads });
+      return NextResponse.json({ inSquad: false, squads: squad_groups });
     }
 
     // User is in a squad, return squad details + leaderboard
